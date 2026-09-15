@@ -12,11 +12,10 @@ Acá se documenta, se prototipa y —más adelante— se construye. Hoy contiene
 
 | Ruta | Qué es |
 |---|---|
-| `index.html` y demás `.html` | La maqueta del sitio. HTML, CSS y JS a mano, sin build ni dependencias |
-| `assets/` | Estilos, datos semilla, ícono e imagen de previsualización |
-| `docs/` | Documentación del nodo |
+| [`prototipos/`](prototipos/) | La maqueta del sitio. HTML, CSS y JS a mano, sin build ni dependencias |
+| [`docs/`](docs/) | Documentación del nodo |
 
-La maqueta está en la raíz porque así GitHub Pages la publica sin configuración. **Cuando entren el backend y el frontend**, la maqueta se mueve a una carpeta propia y el despliegue pasa a un workflow de Actions — es un commit de migración, no un rediseño.
+Cuando entren el backend y el frontend, la maqueta se queda en `prototipos/` y el código de producto vive en su propia estructura. El despliegue de la maqueta ya corre por un workflow de Actions.
 
 ## Documentación
 
@@ -27,22 +26,29 @@ La maqueta está en la raíz porque así GitHub Pages la publica sin configuraci
 
 ## Ver la maqueta sin publicarla
 
-Doble clic en `index.html` basta para todo salvo `404.html`, que usa rutas absolutas porque se sirve desde cualquier URL y por eso se ve sin estilos en local. Para verlo tal cual quedará:
+Doble clic en `prototipos/index.html` basta para todo salvo `404.html`, que usa rutas absolutas porque se sirve desde cualquier URL y por eso se ve sin estilos en local. Para verlo tal cual quedará:
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --directory prototipos
 # http://localhost:8000
 ```
 
 ## Publicar
 
+La maqueta se publica en **GitHub Pages** al hacer push a `main` (workflow [`.github/workflows/pages-prototipos.yml`](.github/workflows/pages-prototipos.yml)).
+
 ```bash
 git add .
 git commit -m "Maqueta del sitio del Nodo SUBDERE"
-git push -u origin main
+git push origin main
 ```
 
-Después, en GitHub: **Settings → Pages → Source: Deploy from a branch → Branch: `main` / `(root)`**. Queda publicado en un par de minutos.
+### Activar GitHub Pages (una sola vez)
+
+1. En GitHub: **Settings → Pages**
+2. **Build and deployment → Source:** `GitHub Actions`
+3. Push a `main` o ejecutar **Actions → Deploy prototipos → Run workflow**
+4. Cuando termine en verde: **Settings → Pages** muestra la URL
 
 ---
 

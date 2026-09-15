@@ -1,23 +1,23 @@
 # Nodo SUBDERE — maqueta del sitio
 
 Maqueta estática para revisión, previa al desarrollo en Django + React.
-Sin build, sin dependencias: se abre con doble clic o se publica tal cual.
+Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre con doble clic o se publica tal cual.
 
 ## Páginas
 
 | Archivo | Qué es |
 |---|---|
-| `index.html` | Landing — qué es el nodo y para quién |
-| `que-es.html` | Descripción general: cómo funciona, alcance de la validación, los tres casos de municipio |
-| `catalogo.html` | Catálogo de nodos, con filtro por ámbito y buscador |
-| `nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a los trece |
-| `participar.html` | Cómo participar y qué está definido y qué no |
-| `comentarios.html` | A quién escribir, cuatro preguntas para el QA y lo que ya sabemos que falta |
-| `404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
-| `assets/data.js` | **Los datos y el modelo.** Cada campo de aquí debería existir en el modelo Django |
-| `assets/styles.css` | Estilos, con la paleta del proyecto en variables CSS |
-| `assets/favicon.svg` | Ícono del sitio |
-| `assets/og.png` | Imagen de previsualización cuando se comparte el enlace |
+| `prototipos/index.html` | Landing — qué es el nodo y para quién |
+| `prototipos/que-es.html` | Descripción general: cómo funciona, alcance de la validación, los tres casos de municipio |
+| `prototipos/catalogo.html` | Catálogo de nodos, con filtro por ámbito y buscador |
+| `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a los trece |
+| `prototipos/participar.html` | Cómo participar y qué está definido y qué no |
+| `prototipos/comentarios.html` | A quién escribir, cuatro preguntas para el QA y lo que ya sabemos que falta |
+| `prototipos/404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
+| `prototipos/assets/data.js` | **Los datos y el modelo.** Cada campo de aquí debería existir en el modelo Django |
+| `prototipos/assets/styles.css` | Estilos, con la paleta del proyecto en variables CSS |
+| `prototipos/assets/favicon.svg` | Ícono del sitio |
+| `prototipos/assets/og.png` | Imagen de previsualización cuando se comparte el enlace |
 
 Las rutas son todas relativas —salvo las de `404.html`, por lo dicho arriba—, así que el sitio funciona igual en un subdirectorio que en la raíz. Cómo publicarlo está en el [README del repositorio](../README.md).
 
@@ -25,7 +25,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 
 ## El modelo del catálogo
 
-`assets/data.js` es la maqueta del modelo. Los campos:
+`prototipos/assets/data.js` es la maqueta del modelo. Los campos:
 
 | Campo | Tipo | Nota |
 |---|---|---|
