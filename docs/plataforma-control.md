@@ -13,7 +13,7 @@
 
 La Plataforma de Control es la capa compartida de **publicación y gobierno de acceso** del Nodo SUBDERE: gateway, identidad de llamada y logs. Es el único camino por el que un consumidor alcanza una API publicada en el catálogo.
 
-| Pieza | Qué es | ¿Nodo del catálogo? | ¿À la carte? |
+| Pieza | Qué es | ¿Nodo del catálogo? | ¿Consumo por módulo? |
 |---|---|---|---|
 | **Plataforma de Control** | Cómo se llega (gateway, token, cuota, log) | No. Es el frente del catálogo | No aplica |
 | **Core SGM** (C1–C11) | Identidad de funcionario, tenants, RBAC, parámetros, auditoría de negocio, documentos, adaptadores (Mercado Público, FirmaGob, DocDigital) | Sí, clase `plataforma` | **No.** Condición de cualquier módulo SGM |
@@ -21,7 +21,7 @@ La Plataforma de Control es la capa compartida de **publicación y gobierno de a
 
 **Regla.** Usar cualquier API del Nodo SUBDERE pasa por acá. Las APIs internas no se exponen a Internet.
 
-**Paridad.** El frontend de SGM es un consumidor más, sin canal interno ni privilegios (principio no negociable n.° 1 del corpus SGM). Si el front habla con Adquisiciones por un camino distinto al de un municipio à la carte, la paridad se rompe.
+**Paridad.** El frontend de SGM es un consumidor más, sin canal interno ni privilegios (principio no negociable n.° 1 del corpus SGM). Si el front habla con Adquisiciones por un camino distinto al de un municipio en consumo por módulo, la paridad se rompe.
 
 Esta capa **no** define el negocio de ningún nodo. El contrato de cada nodo sigue siendo su especificación legible por máquina (OpenAPI, JSON Schema o AsyncAPI), según el ADR de septiembre de 2026. Sin control y sin logs, publicar una API no constituye nodo.
 
@@ -67,7 +67,7 @@ Ambos atraviesan la Plataforma de Control. La plataforma **no sustituye** Clave 
 | Plano | Mecanismo | Quién | Uso |
 |---|---|---|---|
 | **Personas** | Clave Única (vía C1 del core: SGM no es IdP de personas) | Funcionario en el frontend SGM | Operación humana |
-| **Sistemas** | OAuth 2.0 client credentials (o equivalente) | Sistema municipal à la carte, integrador en convenio | Máquina a máquina (**X-02**) |
+| **Sistemas** | OAuth 2.0 client credentials (o equivalente) | Sistema municipal en consumo por módulo, integrador en convenio | Máquina a máquina (**X-02**) |
 
 Clave Única autentica a la persona. La Plataforma de Control autentica **la llamada** (token, scope, municipio, cuota, log). El plano M2M se resuelve aquí, no dentro de cada módulo.
 
@@ -118,13 +118,13 @@ Cada caso: actor, qué pide, qué garantiza la Plataforma de Control, qué sigue
 | **Qué sigue siendo del nodo** | Contratos del core y de Adquisiciones; reglas de negocio |
 | **Pendiente** | Servicio en ejecución; plano persona cableado (C1); **X-02** formalizado |
 
-Es el caso que demuestra paridad **sin** esperar un municipio à la carte ni el resto del ERP. Si el front no puede operar Adquisiciones salvo pasando por el gateway, la plataforma hace su trabajo.
+Es el caso que demuestra paridad **sin** esperar un municipio en consumo por módulo ni el resto del ERP. Si el front no puede operar Adquisiciones salvo pasando por el gateway, la plataforma hace su trabajo.
 
 ### UC-1b — Cliente M2M → Control → core (obligatorio) + Adquisiciones (elegido)
 
 | | |
 |---|---|
-| **Actor** | Sistema municipal propio (modo à la carte) o integrador autorizado |
+| **Actor** | Sistema municipal propio (consumo por módulo) o integrador autorizado |
 | **Qué pide** | Consumir el OpenAPI de Adquisiciones (y el del core) |
 | **Qué garantiza el Control** | Client credentials, scopes por módulo y municipio, aislamiento, revocación |
 | **Qué sigue siendo del nodo** | Adquisiciones declara contratos de proveedor (Presupuestos, Contabilidad); el core no se sustituye |
@@ -161,7 +161,7 @@ Clave Única **no** está fuera de alcance: es el plano persona que la plataform
 
 ## 8. Relación con el precedente
 
-Del Nodo Laboral y Previsional se copia la idea de **plataforma compartida** y de anexo técnico ejecutable (scopes, minimización). No se copia PISEE como transporte: esta licitación **sí** construye el frente de acceso, porque el consumidor privado o municipal à la carte no entra a la red de interoperabilidad por diseño normativo.
+Del Nodo Laboral y Previsional se copia la idea de **plataforma compartida** y de anexo técnico ejecutable (scopes, minimización). No se copia PISEE como transporte: esta licitación **sí** construye el frente de acceso, porque el consumidor privado o municipal en consumo por módulo no entra a la red de interoperabilidad por diseño normativo.
 
 Detalle del precedente: [`nodo-lp-precedente.md`](nodo-lp-precedente.md). Delimitación frente a la red de interoperabilidad: corpus SGM, `nodo-integracion-subdere.md` §2.
 

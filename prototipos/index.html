@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nodo SUBDERE</title>
-<meta name="description" content="Una sola puerta entre el municipio y el Estado: un contrato técnico publicado por cada intercambio, validación antes de enviar y constancia de lo entregado.">
+<meta name="description" content="Una sola puerta entre el municipio y el Estado: contratos técnicos publicados, entrega con constancia y consulta de servicios. Todo el tráfico pasa por la Plataforma de Control.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nodo SUBDERE">
 <meta property="og:title" content="Nodo SUBDERE">
-<meta property="og:description" content="Una sola puerta entre el municipio y el Estado: un contrato técnico publicado por cada intercambio, validación antes de enviar y constancia de lo entregado.">
+<meta property="og:description" content="Una sola puerta entre el municipio y el Estado: contratos técnicos publicados, entrega con constancia y consulta de servicios.">
 <meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/index.html">
 <meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Contenido preliminar con datos reales del mapeo de nodos del Juzgado de Policía Local. No es un sitio publicado ni un compromiso institucional.</div></div>
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> El catálogo junta el mapeo del Juzgado de Policía Local, el prototipo de división territorial y los primeros nodos del SGM. No es un sitio publicado ni un compromiso institucional.</div></div>
 
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
@@ -36,8 +36,8 @@
 <div class="hero"><div class="wrap">
   <p class="eyebrow">Subsecretaría de Desarrollo Regional y Administrativo</p>
   <h1>Una sola puerta entre el municipio y el Estado</h1>
-  <p>En vez de una conexión distinta con cada institución que le pide información, el municipio tiene una. El Nodo SUBDERE publica el contrato técnico de cada intercambio, revisa antes de enviar y deja constancia de lo entregado.</p>
-  <p>No reemplaza ninguna plataforma: entrega a cada una en el formato que ya acepta. Y no es un sistema que el municipio tenga que operar, ni le exige cambiar el que tiene.</p>
+  <p>El Nodo SUBDERE publica el contrato técnico de cada intercambio. Por algunos nodos el municipio <strong>entrega</strong> información —una vez, con validación previa y constancia—. Por otros <strong>consulta</strong> un servicio publicado —códigos territoriales, compras, identidad de plataforma—. En ambos casos hay una sola puerta: la Plataforma de Control.</p>
+  <p>No reemplaza ninguna plataforma destinataria: cuando entrega, lo hace en el formato que esa plataforma ya acepta. Tampoco es un sistema que el municipio tenga que operar, ni le exige cambiar el que tiene.</p>
   <div class="acciones">
     <a class="btn btn-p" href="catalogo.html">Ver el catálogo de nodos</a>
     <a class="btn btn-s" href="que-es.html">Cómo funciona</a>
@@ -85,8 +85,8 @@
       <p>Es la misma información que el municipio ya entrega hoy. Lo que cambia es cuántas veces la prepara.</p>
     </div>
     <div class="card">
-      <h3>No extrae: recibe</h3>
-      <p>El reporte sigue siendo un acto del municipio. Nada sale sin que el municipio lo autorice, y queda registro de cada envío.</p>
+      <h3>Cuando entrega, no extrae: recibe</h3>
+      <p>El reporte sigue siendo un acto del municipio. Nada sale sin que el municipio lo autorice, y queda registro de cada envío. Cuando consulta —un código de comuna, un expediente de compra—, el municipio (o su sistema) pide; el nodo no empuja el dato.</p>
     </div>
     <div class="card">
       <h3>No lo decide SUBDERE</h3>
@@ -99,9 +99,9 @@
 <section><div class="wrap">
   <p class="eyebrow">Cómo está armado</p>
   <h2>Un catálogo de nodos, no una plataforma monolítica</h2>
-  <p class="lead">Cada intercambio entre el municipio y una institución del Estado es un <strong>nodo</strong>: tiene una función, instituciones involucradas, un estándar publicado y un estado de madurez. El catálogo es la lista de esos nodos, abierta a quien quiera consultarla.</p>
-  <p class="lead">La primera carga del catálogo viene del mapeo levantado con el Juzgado de Policía Local: <strong>una sola unidad de un municipio, nueve intercambios distintos</strong>. Tres de ellos no son con el resto del Estado sino con otras direcciones del propio municipio — que también dependen de que el sistema deje salir el dato.</p>
-  <p class="lead">Se suma a ellos un décimo que no viene del mapeo: la <a href="nodo.html?id=division-territorial">división político-administrativa</a>, que ya existe como servicio dentro de SUBDERE y es el único del catálogo con estándar publicado. Está ahí para mostrar cómo se ve un nodo cuando deja de ser una aspiración.</p>
+  <p class="lead">Cada intercambio —o cada condición de plataforma— es un <strong>nodo</strong>: tiene una función, instituciones involucradas, un estado de madurez y, cuando existe, un contrato técnico. El catálogo es la lista de esos nodos. Toda API publicada se alcanza por la Plataforma de Control.</p>
+  <p class="lead">La primera carga vino del mapeo con el Juzgado de Policía Local: <strong>una sola unidad de un municipio, nueve intercambios distintos</strong>, hoy en estado deseable. Tres de ellos no son con el resto del Estado sino con otras direcciones del propio municipio.</p>
+  <p class="lead">Se suman la <a href="nodo.html?id=division-territorial">división político-administrativa</a> (servicio existente en SEM, con OpenAPI en la ficha) y dos nodos del <strong>SGM</strong>: el <a href="nodo.html?id=sgm-core">core de plataforma</a>, que no se elige por módulo, y <a href="nodo.html?id=adquisiciones">Adquisiciones</a>, primer módulo de negocio. Ambos declaran contrato; ninguno está expuesto todavía. El SGM es además el primer consumidor de la Plataforma de Control: su frontend entra por la misma puerta que cualquier otro sistema.</p>
   <div class="acciones" style="margin-top:22px">
     <a class="btn btn-p" href="catalogo.html">Entrar al catálogo</a>
   </div>

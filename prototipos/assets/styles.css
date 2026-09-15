@@ -155,10 +155,22 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer a{color:var(--navy-t);text-decoration:underline}
 footer b{color:#fff}
 
+/* ---------- flujo simplificado (Plataforma de Control) ---------- */
+.flujo{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin:28px 0 8px}
+.flujo__caja{flex:1 1 140px;background:#fff;border:1px solid var(--line-l);border-radius:10px;padding:16px 14px;text-align:center}
+.flujo__caja strong{display:block;color:var(--navy);font-size:14px;margin-bottom:4px}
+.flujo__caja span{display:block;font-size:12.5px;color:var(--muted);line-height:1.4}
+.flujo__flecha{display:flex;align-items:center;justify-content:center;color:var(--navy-l);font-size:20px;font-weight:700;padding:0 2px;flex:0 0 auto}
+.pasos{margin:18px 0 0;padding-left:20px;color:var(--body);font-size:15px}
+.pasos li{margin-bottom:6px}
+.pasos li:last-child{margin-bottom:0}
+
 @media (max-width:820px){
   .cols-3,.cols-2,.grid-nodos{grid-template-columns:1fr}
   .ficha-grid{grid-template-columns:1fr;gap:28px}
   .hero h1{font-size:29px}
   .hero{padding:40px 0 46px}
   .nav{margin-left:0;gap:16px}
+  .flujo{flex-direction:column}
+  .flujo__flecha{transform:rotate(90deg);padding:4px 0}
 }

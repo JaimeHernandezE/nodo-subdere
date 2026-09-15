@@ -8,7 +8,7 @@
    «utilitarios» del equipo SEM, y el único con implementación existente.
 
    Dos nodos más, ámbito SGM, se agregaron el 15 de septiembre de 2026:
-     sgm-core        — core de plataforma (clase plataforma, no à la carte)
+     sgm-core        — core de plataforma (clase plataforma, no se elige por módulo)
      adquisiciones   — primer módulo de negocio con OpenAPI de piloto
 
    Este archivo es la maqueta del modelo de datos del catálogo. Cada campo de aquí
@@ -16,7 +16,7 @@
 
    Campos:
      clase    intercambio | plataforma
-              plataforma = condición de otros; no se elige à la carte
+              plataforma = condición de otros; no se elige por módulo
 
    Campos opcionales, presentes solo cuando el nodo ya tiene contrato publicado:
      espec    { archivo?, formato, validador, registrada, origen, acceso }
@@ -35,7 +35,7 @@ const NODOS = [
     ambito: "SGM",
     clase: "plataforma",
     funcion: "Identidad, tenants, roles, parámetros, auditoría, documentos y adaptadores que todo módulo SGM necesita.",
-    descripcion: "No es un módulo de negocio ni se elige à la carte: es la condición de cualquier módulo SGM. Cubre autenticación federada (Clave Única), autorización RBAC, gestión de tenants, parámetros normativos, auditoría de actos, notificaciones, documentos (DocumentRef), Mercado Público, FirmaGob y DocDigital. Un municipio que consume solo Adquisiciones igual consume este nodo. Distinto de la Plataforma de Control (el frente de acceso del catálogo) y de los Estándares de Gobierno Digital (restricción SGD, no API de SUBDERE).",
+    descripcion: "No es un módulo de negocio ni se elige por módulo: es la condición de cualquier módulo SGM. Cubre autenticación federada (Clave Única), autorización RBAC, gestión de tenants, parámetros normativos, auditoría de actos, notificaciones, documentos (DocumentRef), Mercado Público, FirmaGob y DocDigital. Un municipio que consume solo Adquisiciones igual consume este nodo. Distinto de la Plataforma de Control (el frente de acceso del catálogo) y de los Estándares de Gobierno Digital (restricción SGD, no API de SUBDERE).",
     instituciones: ["SUBDERE — SGM", "Municipios", "Proveedores de sistemas de gestión municipal"],
     intercambio: "Transversal",
     madurez: "En desarrollo",
@@ -57,7 +57,7 @@ const NODOS = [
     ambito: "SGM",
     clase: "intercambio",
     funcion: "Ciclo de compras públicas municipales, desde la SOLPED hasta el pago, en las modalidades de la Ley 19.886.",
-    descripcion: "Primer módulo de negocio del SGM publicado como nodo del catálogo. Expone el contrato HTTP del ciclo de compras (Compra Ágil como piloto; Convenio Marco, Licitación Pública y Trato Directo en la misma especificación). El frontend de SGM y un municipio à la carte consumen el mismo OpenAPI a través de la Plataforma de Control. Depende del core de plataforma y de contratos de proveedor hacia Presupuestos y Contabilidad: «solo Adquisiciones» no es un módulo suelto.",
+    descripcion: "Primer módulo de negocio del SGM publicado como nodo del catálogo. Expone el contrato HTTP del ciclo de compras (Compra Ágil como piloto; Convenio Marco, Licitación Pública y Trato Directo en la misma especificación). El frontend de SGM y un municipio en consumo por módulo usan el mismo OpenAPI a través de la Plataforma de Control. Depende del core de plataforma y de contratos de proveedor hacia Presupuestos y Contabilidad: «solo Adquisiciones» no es un módulo suelto.",
     instituciones: ["SUBDERE — SGM", "Municipios", "Proveedores de sistemas de gestión municipal", "ChileCompra / Mercado Público"],
     intercambio: "El municipio consulta",
     madurez: "En desarrollo",
@@ -69,7 +69,7 @@ const NODOS = [
       validador: "https://spec.openapis.org/oas/v3.1.0",
       registrada: "15 de septiembre de 2026",
       origen: "Punto de entrada en el repositorio sgm-nueva-arquitectura: sgm-docs/modulos/adquisiciones/openapi/adquisiciones.openapi.yaml. Spec seccionada con $ref a archivos hermanos; el catálogo no la copia. El renderizador de la maqueta solo resuelve punteros internos, así que acá se declara el metadato sin ensamblar el archivo.",
-      acceso: "Dos planos: personas (Clave Única, frontend SGM) y sistemas (OAuth 2.0 client credentials, à la carte). Toda llamada pasa por la Plataforma de Control."
+      acceso: "Dos planos: personas (Clave Única, frontend SGM) y sistemas (OAuth 2.0 client credentials, consumo por módulo). Toda llamada pasa por la Plataforma de Control."
     },
     pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción."
   },
@@ -164,7 +164,7 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
-    nota: "Condición de los demás más que nodo propio: lo que aquí se defina restringe a todo el resto del catálogo. Clase plataforma: no se elige à la carte."
+    nota: "Condición de los demás más que nodo propio: lo que aquí se defina restringe a todo el resto del catálogo. Clase plataforma: no se elige por módulo."
   },
   {
     id: "correos",

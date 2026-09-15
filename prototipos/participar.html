@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cómo participar · Nodo SUBDERE</title>
-<meta name="description" content="Tres caminos según quién sea usted: municipio, proveedor o institución que recibe información municipal.">
+<meta name="description" content="Sandbox con datos sintéticos sin convenio; operación con municipalidades mediante convenio con SUBDERE e identificador de cliente.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nodo SUBDERE">
 <meta property="og:title" content="Cómo participar · Nodo SUBDERE">
-<meta property="og:description" content="Tres caminos según quién sea usted: municipio, proveedor o institución que recibe información municipal.">
+<meta property="og:description" content="Sandbox con datos sintéticos sin convenio; operación con municipalidades mediante convenio con SUBDERE e identificador de cliente.">
 <meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/participar.html">
 <meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Los requisitos de participación todavía no están definidos. Esta página muestra la estructura, no el contenido final.</div></div>
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> La participación se describe como <b>diseño previsto</b>: el sandbox y el convenio aún no están operativos. Ver también <a href="que-es.html">Qué es el nodo</a>.</div></div>
 
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
@@ -36,21 +36,22 @@
 <section><div class="wrap">
   <p class="eyebrow">Cómo participar</p>
   <h2>Tres caminos, según quién sea usted</h2>
-  <p class="lead">El nodo distingue dos planos que conviene no mezclar: <strong>construir y probar</strong>, que está abierto a cualquiera sin convenio ni datos reales; y <strong>operar con datos de un municipio</strong>, que requiere la autorización de ese municipio.</p>
-  <p class="lead">Y una precisión de entrada: <strong>el nodo conecta sistemas, no personas.</strong> No tiene pantalla para subir planillas, y no la va a tener — para eso ya existen los canales de carga de las plataformas que reciben. Lo que el nodo aporta es que el sistema del municipio mantenga una sola conexión en vez de una por institución: entrega una vez, sabe antes de enviar si está correcto y recibe constancia.</p>
+  <p class="lead">El nodo distingue dos planos que conviene no mezclar: <strong>construir y probar</strong>, y <strong>operar con datos de un municipio</strong>. Ambos pasan por la Plataforma de Control. El detalle del flujo está en <a href="que-es.html">Qué es el nodo</a>.</p>
+  <p class="lead"><strong>Diseño previsto.</strong> Cada endpoint publicado tendrá un <strong>sandbox</strong> con el mismo contrato que producción y <strong>datos sintéticos</strong>, sin convenio. Para operar con una municipalidad hace falta un <strong>convenio con SUBDERE</strong>; ese convenio habilita un <strong>identificador de cliente</strong> (credencial de sistema) con el que se obtienen tokens y se usa la plataforma. Hoy ningún sandbox está desplegado.</p>
+  <p class="lead"><strong>El nodo conecta sistemas, no personas.</strong> No tiene pantalla para subir planillas — para eso ya existen los canales de carga de las plataformas que reciben.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
   <div class="cols-3">
     <div class="card">
       <div class="num">MUNICIPIOS</div>
-      <h3>Quiero entregar por el nodo</h3>
-      <p>No necesita cambiar de sistema. Si el suyo ya implementa el estándar, conversa directo con el nodo. Si todavía no, el estándar es público y su proveedor puede implementarlo — usted no tiene que hacer nada técnico, solo pedirlo. Si no tiene sistema, el camino es el SGM.</p>
+      <h3>Quiero usar el nodo</h3>
+      <p>No necesita cambiar de sistema. Si el suyo implementa el estándar, conversa con la Plataforma de Control. Para datos reales: convenio con SUBDERE e identificador de cliente. También puede <strong>consumir por módulo</strong> —por ejemplo solo Adquisiciones—, siempre con el core de plataforma, que no se elige. Si no tiene sistema, el camino es el SGM.</p>
     </div>
     <div class="card">
       <div class="num">PROVEEDORES</div>
       <h3>Quiero conectar mi sistema</h3>
-      <p>El estándar es público y el ambiente de pruebas está abierto: se construye y se prueba sin convenio y sin datos reales. Para operar con datos de un municipio hace falta la autorización de ese municipio.</p>
+      <p>El estándar es público. El diseño prevé construir y probar en sandbox con datos sintéticos, sin convenio. Para operar con datos de un municipio hace falta el convenio de ese municipio con SUBDERE (y el identificador de cliente asociado). El frontend del SGM y un sistema municipal entran por la misma puerta: no hay privilegios.</p>
     </div>
     <div class="card">
       <div class="num">INSTITUCIONES</div>
@@ -61,14 +62,26 @@
 </div></section>
 
 <section><div class="wrap">
+  <h2>Sandbox y convenio</h2>
+  <table>
+    <tr><th></th><th>Pruebas (sandbox)</th><th>Operación</th></tr>
+    <tr><td><strong>Quién</strong></td><td>Cualquiera que construya contra el estándar</td><td>Municipio (o el sistema que él autorice) con convenio</td></tr>
+    <tr><td><strong>Datos</strong></td><td>Sintéticos; sin datos reales de municipios</td><td>Datos del municipio autorizado</td></tr>
+    <tr><td><strong>Convenio</strong></td><td>No hace falta</td><td>Convenio con SUBDERE</td></tr>
+    <tr><td><strong>Credencial</strong></td><td>De prueba / abierta según el nodo</td><td>Identificador de cliente emitido a partir del convenio</td></tr>
+  </table>
+  <div class="aviso"><p>Sin identificador de cliente no hay operación sobre datos reales. El sandbox no sustituye el convenio: solo permite implementar y probar.</p></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
   <h2>Qué está definido y qué no</h2>
   <table>
     <tr><th>Materia</th><th>Estado</th></tr>
-    <tr><td>Estándar técnico de cada nodo</td><td><span class="tag tag-mad">Por definir</span></td></tr>
-    <tr><td>Ambiente de pruebas</td><td><span class="tag tag-mad">Por definir</span></td></tr>
-    <tr><td>Requisitos para operar con datos reales</td><td><span class="tag tag-mad">Por definir</span></td></tr>
-    <tr><td>Autenticación y control de acceso</td><td><span class="tag tag-mad">En discusión de arquitectura</span></td></tr>
-    <tr><td>Catálogo de nodos y sus fichas</td><td><span class="tag">Primera versión publicada</span></td></tr>
+    <tr><td>Estándar técnico de cada nodo</td><td><span class="tag tag-dev">Parcial</span> — hay contrato en división territorial (OpenAPI local), Adquisiciones y core SGM (metadato; spec en el corpus SGM). El resto del mapeo JPL sigue pendiente.</td></tr>
+    <tr><td>Ambiente de pruebas (sandbox)</td><td><span class="tag tag-dev">Diseño previsto</span> — un sandbox por endpoint, mismo contrato que producción, datos sintéticos. Ninguno desplegado aún; el catálogo lo declara ficha por ficha.</td></tr>
+    <tr><td>Convenio e identificador de cliente</td><td><span class="tag tag-dev">Diseño previsto</span> — convenio con SUBDERE para operar con municipalidades; el convenio habilita la credencial de sistema ante la Plataforma de Control.</td></tr>
+    <tr><td>Autenticación y control de acceso</td><td><span class="tag tag-dev">Propuesta</span> — Plataforma de Control: identidad, puerta única, cuotas y logs. Base técnica en la documentación del repositorio.</td></tr>
+    <tr><td>Catálogo de nodos y sus fichas</td><td><span class="tag">Primera versión publicada</span> — incluye ámbito SGM y clase plataforma.</td></tr>
   </table>
   <div class="aviso"><p>Esta tabla es deliberadamente honesta sobre lo que falta. Un catálogo que promete lo que todavía no existe es la forma más rápida de que nadie vuelva a mirarlo.</p></div>
 </div></section>

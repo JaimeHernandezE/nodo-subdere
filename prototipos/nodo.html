@@ -39,7 +39,7 @@
 
 <footer><div class="wrap">
   <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
-  <div>Datos semilla: mapeo de nodos del JPL, septiembre de 2026</div>
+  <div>Datos semilla: mapeo JPL, prototipo SEM y primeros nodos SGM · septiembre de 2026</div>
 </div></footer>
 
 <script src="assets/js-yaml.min.js"></script>
@@ -82,7 +82,7 @@
   var nota = n.nota ? '<div class="aviso"><p>' + esc(n.nota) + '</p></div>' : '';
   var clase = n.clase || 'intercambio';
   var etiquetaClase = clase === 'plataforma'
-    ? '<span class="tag tag-plataforma">Plataforma · no à la carte</span> '
+    ? '<span class="tag tag-plataforma">Plataforma · no por módulo</span> '
     : '';
 
   // El estándar no se transcribe: se declara de dónde viene y, si hay archivo local, se renderiza.
@@ -139,7 +139,7 @@
 
     + '<aside class="panel"><dl>'
     + '<dt>Clase</dt><dd>' + (clase === 'plataforma'
-        ? 'Plataforma — condición de otros; no se elige à la carte'
+        ? 'Plataforma — condición de otros; no se elige por módulo'
         : 'Intercambio — módulo o canal de datos') + '</dd>'
     + '<dt>Estado de madurez</dt><dd><span class="' + (n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad') + '">' + esc(n.madurez) + '</span></dd>'
     + '<dt>Factibilidad</dt><dd>' + esc(n.factibilidad) + '</dd>'

@@ -35,7 +35,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 | `id` | slug | Clave de la URL de la ficha |
 | `nombre` | texto | |
 | `ambito` | opción | **SGM** · Transversal · Juzgado de Policía Local · Pagos · Municipal |
-| `clase` | opción | **intercambio** (módulo o canal de datos) · **plataforma** (condición de otros; no à la carte) |
+| `clase` | opción | **intercambio** (módulo o canal de datos) · **plataforma** (condición de otros; no se elige por módulo) |
 | `funcion` | texto corto | Una línea, aparece en la tarjeta del catálogo |
 | `descripcion` | texto largo | Cuerpo de la ficha |
 | `instituciones` | lista | Relación en Django, no texto libre |
@@ -45,7 +45,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 | `origen` | texto | De dónde salió el nodo, para poder auditar el catálogo |
 | `nota` | texto | Advertencia destacada en la ficha, opcional |
 
-**`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido à la carte cuando aplique). Un nodo `plataforma` es condición de otros: el core SGM y los Estándares de Gobierno Digital. Sin ese campo, el core se leería como un módulo más.
+**`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: el core SGM y los Estándares de Gobierno Digital. Sin ese campo, el core se leería como un módulo más.
 
 Los dos campos que conviene no dejar para después son **`madurez`** y **`factibilidad`**: agregar una columna a un modelo que ya tiene datos y vistas siempre cuesta más que preverla. María José dejó esa evaluación explícitamente pendiente, y el catálogo es el lugar natural donde vive.
 
