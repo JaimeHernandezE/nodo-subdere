@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Ficha de ejemplo. El estándar técnico y las operaciones todavía no están definidos para ningún nodo.</div></div>
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> <span id="avisoFicha">Ficha de ejemplo.</span></div></div>
 
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
@@ -60,9 +60,38 @@
 
   document.title = n.nombre + ' · Nodo SUBDERE';
   document.getElementById('miga').textContent = '/ ' + n.nombre;
+  document.getElementById('avisoFicha').textContent = n.estandar
+    ? 'Este nodo se levanta sobre un servicio que ya existe, así que su estándar es real. Lo que no está comprometido es su disponibilidad como nodo.'
+    : 'Ficha de ejemplo. El estándar técnico y las operaciones de este nodo todavía no están definidos.';
 
   var nota = n.nota
     ? '<div class="aviso"><p>' + esc(n.nota) + '</p></div>' : '';
+
+  // Los tres bloques del contrato técnico. Si el nodo no los trae, queda el pendiente.
+  function pendiente(txt){ return '<div class="pendiente">' + txt + '</div>'; }
+
+  var estandar = n.estandar
+    ? '<p>' + esc(n.estandar.resumen) + '</p>'
+      + '<dl class="contrato">'
+      + '<dt>Formato</dt><dd>' + esc(n.estandar.formato) + '</dd>'
+      + '<dt>Versión</dt><dd>' + esc(n.estandar.version) + '</dd>'
+      + '<dt>Ruta base</dt><dd><code>' + esc(n.estandar.base) + '</code></dd>'
+      + '<dt>Acceso</dt><dd>' + esc(n.estandar.autenticacion) + '</dd>'
+      + '</dl>'
+    : pendiente('Pendiente. Acá va el contrato técnico del nodo: qué datos se intercambian, en qué formato, con qué operaciones y con qué versión. Se publica antes de que exista implementación, y se versiona aparte de esta ficha.');
+
+  var operaciones = n.operaciones && n.operaciones.length
+    ? '<div class="tabla-ancha"><table><tr><th>Operación</th><th>Qué devuelve</th></tr>'
+      + n.operaciones.map(function(o){
+          return '<tr><td><code>' + esc(o.metodo) + ' ' + esc(o.ruta) + '</code></td>'
+               + '<td>' + esc(o.que) + '</td></tr>';
+        }).join('')
+      + '</table></div>'
+    : pendiente('Pendiente. Las primeras operaciones candidatas son de consulta y validación, no transaccionales.');
+
+  var pruebas = n.pruebas
+    ? '<p>' + esc(n.pruebas) + '</p>'
+    : pendiente('Pendiente. Cualquiera podrá construir contra el ambiente de pruebas sin convenio y sin datos reales, antes de solicitar acceso.');
 
   cont.innerHTML =
     '<div class="wrap"><div class="ficha-cab">'
@@ -74,12 +103,9 @@
     + '<div class="ficha-grid"><div>'
     + '<h2>Qué resuelve</h2><p>' + esc(n.descripcion) + '</p>'
     + nota
-    + '<h2>Estándar publicado</h2>'
-    + '<div class="pendiente">Pendiente. Acá va el contrato técnico del nodo: qué datos se intercambian, en qué formato, con qué operaciones y con qué versión. Se publica antes de que exista implementación, y se versiona aparte de esta ficha.</div>'
-    + '<h2>Operaciones</h2>'
-    + '<div class="pendiente">Pendiente. Las primeras operaciones candidatas son de consulta y validación, no transaccionales.</div>'
-    + '<h2>Ambiente de pruebas</h2>'
-    + '<div class="pendiente">Pendiente. Cualquiera podrá construir contra el ambiente de pruebas sin convenio y sin datos reales, antes de solicitar acceso.</div>'
+    + '<h2>Estándar publicado</h2>' + estandar
+    + '<h2>Operaciones</h2>' + operaciones
+    + '<h2>Ambiente de pruebas</h2>' + pruebas
     + '</div>'
 
     + '<aside class="panel"><dl>'

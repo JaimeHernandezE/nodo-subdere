@@ -10,7 +10,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/index.html` | Landing — qué es el nodo y para quién |
 | `prototipos/que-es.html` | Descripción general: cómo funciona, alcance de la validación, los tres casos de municipio |
 | `prototipos/catalogo.html` | Catálogo de nodos, con filtro por ámbito y buscador |
-| `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a los trece |
+| `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a los catorce |
 | `prototipos/participar.html` | Cómo participar y qué está definido y qué no |
 | `prototipos/comentarios.html` | A quién escribir, cuatro preguntas para el QA y lo que ya sabemos que falta |
 | `prototipos/404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
@@ -43,11 +43,25 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 
 Los dos campos que conviene no dejar para después son **`madurez`** y **`factibilidad`**: agregar una columna a un modelo que ya tiene datos y vistas siempre cuesta más que preverla. María José dejó esa evaluación explícitamente pendiente, y el catálogo es el lugar natural donde vive.
 
-Faltan por definir, y están como bloques «Pendiente» en la ficha: el estándar técnico de cada nodo, sus operaciones y el ambiente de pruebas.
+### El contrato técnico, cuando existe
+
+Tres campos más, opcionales. Un nodo que no los trae muestra el bloque «Pendiente» correspondiente en su ficha; uno que sí los trae publica su contrato. Hoy solo `division-territorial` los tiene.
+
+| Campo | Tipo | Nota |
+|---|---|---|
+| `estandar` | objeto | `{ formato, version, base, autenticacion, resumen }` |
+| `operaciones` | lista | `{ metodo, ruta, que }` por operación. En Django es un modelo aparte con relación al nodo, no un campo JSON |
+| `pruebas` | texto | Estado del ambiente de pruebas |
+
+`estandar.version` se versiona **aparte de la ficha**: el contrato puede cambiar sin que cambie la descripción del nodo, y al revés. Conviene que en el modelo sean dos historias distintas desde el principio.
 
 ## Datos
 
-Los trece nodos vienen del mapeo de interoperabilidad del Juzgado de Policía Local, enviado por María José Besa el 8 de septiembre de 2026 tras la reunión con el JPL de Lo Barnechea. Los tres últimos los agregó Allison Díaz. Todos están declarados a nivel **deseable**; la evaluación de complejidad y factibilidad está pendiente y el catálogo lo muestra explícitamente.
+Trece de los catorce nodos vienen del mapeo de interoperabilidad del Juzgado de Policía Local, enviado por María José Besa el 8 de septiembre de 2026 tras la reunión con el JPL de Lo Barnechea. Los tres últimos de esa lista los agregó Allison Díaz. Todos están declarados a nivel **deseable**; la evaluación de complejidad y factibilidad está pendiente y el catálogo lo muestra explícitamente.
+
+El decimocuarto, **División Político-Administrativa**, no viene del mapeo. Es un prototipo levantado sobre el repositorio `utilitarios` del equipo SEM de SUBDERE: una API Flask de regiones, provincias y comunas que ya opera dentro de esa infraestructura, con especificación OpenAPI 3.0.3. Está en el catálogo para mostrar cómo se ve una ficha cuando el estándar existe, y es el único que llena los tres bloques que en los demás dicen «Pendiente».
+
+Que su ficha publique el estándar no significa que el nodo esté disponible: el servicio responde solo dentro de la red de SEM y no tiene nivel de servicio comprometido. La ficha lo dice explícitamente en su nota.
 
 ## Para el QA
 

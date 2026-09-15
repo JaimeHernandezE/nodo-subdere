@@ -85,6 +85,7 @@ p{color:var(--body)}
 .ficha-cab h1{font-size:30px;margin:8px 0 10px;color:var(--navy);line-height:1.25}
 .ficha-cab .func{font-size:17px;color:var(--body);max-width:70ch;margin:0 0 16px}
 .ficha-grid{display:grid;grid-template-columns:1fr 300px;gap:44px;padding:32px 0 60px;align-items:start}
+.ficha-grid>*{min-width:0}
 .ficha-grid h2{font-size:19px;margin:28px 0 10px}
 .ficha-grid h2:first-child{margin-top:0}
 .ficha-grid p{font-size:15.5px}
@@ -97,6 +98,15 @@ p{color:var(--body)}
 .aviso{background:var(--amb-bg);border-left:3px solid var(--amb);padding:14px 18px;border-radius:0 6px 6px 0;margin:22px 0}
 .aviso p{margin:0;font-size:14.5px;color:var(--amb-md)}
 .pendiente{border:1px dashed var(--line);border-radius:8px;padding:18px;color:var(--muted);font-size:14px;background:#fff}
+
+/* contrato técnico, cuando el nodo sí tiene estándar publicado */
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:var(--grey);border:1px solid var(--hair);border-radius:4px;padding:1px 5px;color:var(--navy-2);white-space:nowrap}
+.contrato{display:grid;grid-template-columns:118px 1fr;gap:10px 18px;margin:18px 0 0;padding:18px 20px;background:var(--grey);border:1px solid var(--hair);border-radius:8px}
+.contrato dt{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700;padding-top:2px}
+.contrato dd{margin:0;font-size:14.5px;color:var(--ink)}
+.tabla-ancha{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabla-ancha table{min-width:420px}
+@media (max-width:560px){ .contrato{grid-template-columns:1fr;gap:3px 0} .contrato dd{margin-bottom:10px} }
 
 /* ---------- tabla simple ---------- */
 table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14.5px}
