@@ -57,8 +57,10 @@ git push origin main
 
 Maqueta para revisión, septiembre de 2026. Nada de lo que muestra está comprometido institucionalmente.
 
-Trece de los catorce nodos del catálogo vienen del mapeo de interoperabilidad del Juzgado de Policía Local y están declarados a nivel **deseable**: la evaluación de complejidad y factibilidad está pendiente, y el catálogo lo muestra en vez de esconderlo.
+Nueve de los diez nodos del catálogo vienen del mapeo de interoperabilidad del Juzgado de Policía Local y están declarados a nivel **deseable**: la evaluación de complejidad y factibilidad está pendiente, y el catálogo lo muestra en vez de esconderlo.
 
-El decimocuarto —división político-administrativa— es un prototipo levantado sobre el repositorio `utilitarios` del equipo SEM, y el único con estándar publicado en su ficha. Está ahí para mostrar a qué debería llegar cada uno de los demás.
+El décimo —división político-administrativa— es un prototipo levantado sobre el repositorio `utilitarios` del equipo SEM, y el único con estándar publicado en su ficha. Está ahí para mostrar a qué debería llegar cada uno de los demás.
+
+El mapeo traía trece nodos: cuatro se retiraron por ser consultas a otros órganos del Estado, que corresponden a PISEE y no a este catálogo. El motivo está en [`docs/maqueta.md`](docs/maqueta.md).
 
 Comentarios a jaime.hernandez@subdere.gov.cl — División de Políticas y Estudios, SUBDERE.

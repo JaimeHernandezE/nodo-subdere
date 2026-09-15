@@ -10,7 +10,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/index.html` | Landing — qué es el nodo y para quién |
 | `prototipos/que-es.html` | Descripción general: cómo funciona, alcance de la validación, los tres casos de municipio |
 | `prototipos/catalogo.html` | Catálogo de nodos, con filtro por ámbito y buscador |
-| `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a los catorce |
+| `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a los diez |
 | `prototipos/participar.html` | Cómo participar y qué está definido y qué no |
 | `prototipos/comentarios.html` | A quién escribir, cuatro preguntas para el QA y lo que ya sabemos que falta |
 | `prototipos/404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
@@ -34,7 +34,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 |---|---|---|
 | `id` | slug | Clave de la URL de la ficha |
 | `nombre` | texto | |
-| `ambito` | opción | Transversal · Justicia local · Pagos · Identidad · Municipal |
+| `ambito` | opción | Transversal · Juzgado de Policía Local · Pagos · Municipal |
 | `funcion` | texto corto | Una línea, aparece en la tarjeta del catálogo |
 | `descripcion` | texto largo | Cuerpo de la ficha |
 | `instituciones` | lista | Relación en Django, no texto libre |
@@ -65,9 +65,19 @@ Las especificaciones registradas viven en [`prototipos/estandares/`](../prototip
 
 ## Datos
 
-Trece de los catorce nodos vienen del mapeo de interoperabilidad del Juzgado de Policía Local, enviado por María José Besa el 8 de septiembre de 2026 tras la reunión con el JPL de Lo Barnechea. Los tres últimos de esa lista los agregó Allison Díaz. Todos están declarados a nivel **deseable**; la evaluación de complejidad y factibilidad está pendiente y el catálogo lo muestra explícitamente.
+Nueve de los diez nodos vienen del mapeo de interoperabilidad del Juzgado de Policía Local, enviado por María José Besa el 8 de septiembre de 2026 tras la reunión con el JPL de Lo Barnechea. Algunos de esa lista los agregó Allison Díaz. Todos están declarados a nivel **deseable**; la evaluación de complejidad y factibilidad está pendiente y el catálogo lo muestra explícitamente.
 
-El decimocuarto, **División Político-Administrativa**, no viene del mapeo. Es un prototipo levantado sobre el repositorio `utilitarios` del equipo SEM de SUBDERE: una API Flask de regiones, provincias y comunas que ya opera dentro de esa infraestructura, con especificación OpenAPI 3.0.3. Está en el catálogo para mostrar cómo se ve una ficha cuando el estándar existe, y es el único que llena los tres bloques que en los demás dicen «Pendiente».
+### Cuatro nodos del mapeo que no están en el catálogo
+
+El mapeo traía trece. Cuatro se retiraron el 15 de septiembre de 2026: **Registro Civil, Transportes, Obras Públicas (multas TAG) y Carabineros y Gendarmería**.
+
+Los cuatro son consultas del municipio a otro órgano de la Administración del Estado, que es exactamente lo que resuelve la Plataforma Integrada de Servicios Electrónicos del Estado. Publicarlos como nodos del catálogo habría presentado al Nodo SUBDERE como una plataforma paralela a PISEE, que no es lo que se quiere construir — y sería incoherente con el precedente que el propio proyecto adoptó: el [Nodo Laboral y Previsional](nodo-lp-precedente.md) se montó sobre PISEE 2.0 en vez de construir transporte propio.
+
+Se retiran del catálogo, no del levantamiento: siguen siendo intercambios reales que el juzgado necesita. Lo que cambia es quién los provee.
+
+**Queda pendiente verificar si PISEE alcanza hoy a los municipios en la práctica**, no solo en la ley. Si no los alcanza, la decisión habría que revisarla.
+
+El décimo, **División Político-Administrativa**, no viene del mapeo. Es un prototipo levantado sobre el repositorio `utilitarios` del equipo SEM de SUBDERE: una API Flask de regiones, provincias y comunas que ya opera dentro de esa infraestructura, con especificación OpenAPI 3.0.3. Está en el catálogo para mostrar cómo se ve una ficha cuando el estándar existe, y es el único que llena los tres bloques que en los demás dicen «Pendiente».
 
 Que su ficha publique el estándar no significa que el nodo esté disponible: el servicio responde solo dentro de la red de SEM y no tiene nivel de servicio comprometido. La ficha lo dice explícitamente en su nota.
 

@@ -60,49 +60,10 @@ const NODOS = [
   {
     id: "indice-expedientes",
     nombre: "Índice de Expedientes",
-    ambito: "Justicia local",
+    ambito: "Juzgado de Policía Local",
     funcion: "Carpeta digital por ROL, con documentos firmados e identificador único nacional.",
     descripcion: "Establece un identificador numérico único a nivel nacional, con formato conocido y trazable, que permite seguir una causa a lo largo de su recorrido y entre instituciones. Sin un identificador común, cada institución vuelve a nombrar el mismo expediente a su manera.",
     instituciones: ["Poder Judicial", "Corte Suprema"],
-    intercambio: "Bidireccional",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: ""
-  },
-  {
-    id: "registro-civil",
-    nombre: "Registro Civil",
-    ambito: "Identidad",
-    funcion: "Consulta automatizada de patentes y del registro de multas no pagadas para identificar infractores.",
-    descripcion: "Permite al tribunal resolver la identidad y el domicilio del infractor sin oficios ni esperas: datos personales, domicilio, estado civil, y la consulta al registro de deudores de pensiones de alimentos. Hoy buena parte de esto se resuelve por vías manuales.",
-    instituciones: ["Servicio de Registro Civil e Identificación"],
-    intercambio: "El municipio consulta",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: ""
-  },
-  {
-    id: "mtt",
-    nombre: "Transportes",
-    ambito: "Justicia local",
-    funcion: "Recepción de lotes de partes empadronados y envío de morosos al registro nacional.",
-    descripcion: "Recibe en lote las infracciones cursadas por fiscalización de transportes, en vez de digitarlas una por una, y devuelve al registro nacional de multas no pagadas a quienes quedan en mora.",
-    instituciones: ["Ministerio de Transportes y Telecomunicaciones", "Servicio de Registro Civil e Identificación"],
-    intercambio: "Bidireccional",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: ""
-  },
-  {
-    id: "mop",
-    nombre: "Obras Públicas — multas TAG",
-    ambito: "Justicia local",
-    funcion: "Recepción de lotes de multas de autopistas y tramitación masiva de causas.",
-    descripcion: "Habilita la tramitación masiva de causas y notificaciones asociadas a multas de autopistas concesionadas, que hoy llegan en volúmenes que el tribunal no puede procesar de a una. Devuelve los morosos al registro nacional.",
-    instituciones: ["Ministerio de Obras Públicas", "Servicio de Registro Civil e Identificación"],
     intercambio: "Bidireccional",
     madurez: "Deseable",
     factibilidad: "Por evaluar",
@@ -121,19 +82,6 @@ const NODOS = [
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
     nota: "Su factibilidad no es técnica: depende de que se apruebe la norma que lo habilita."
-  },
-  {
-    id: "carabineros-gendarmeria",
-    nombre: "Carabineros y Gendarmería",
-    ambito: "Justicia local",
-    funcion: "Partes, órdenes de búsqueda y arresto, y coordinación de sanciones.",
-    descripcion: "Canal para la recepción de partes y para las medidas de apercibimiento, órdenes de búsqueda y arresto, y la coordinación de sanciones que hoy se tramitan por oficio.",
-    instituciones: ["Carabineros de Chile", "Gendarmería de Chile"],
-    intercambio: "Bidireccional",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: ""
   },
   {
     id: "dom",
@@ -203,7 +151,7 @@ const NODOS = [
   {
     id: "entre-juzgados",
     nombre: "Interoperabilidad entre Juzgados de Policía Local",
-    ambito: "Justicia local",
+    ambito: "Juzgado de Policía Local",
     funcion: "Tramitación electrónica de exhortos y diligencias entre tribunales.",
     descripcion: "Permite que dos juzgados de policía local se envíen exhortos y otras diligencias por vía electrónica, evitando el intercambio físico de documentos entre comunas.",
     instituciones: ["Juzgados de Policía Local"],
@@ -215,4 +163,4 @@ const NODOS = [
   }
 ];
 
-const AMBITOS = ["Transversal", "Justicia local", "Pagos", "Identidad", "Municipal"];
+const AMBITOS = ["Transversal", "Juzgado de Policía Local", "Pagos", "Municipal"];
