@@ -37,12 +37,13 @@
   <p class="eyebrow">Descripción general</p>
   <h2>Un contrato técnico publicado, y el componente que lo opera</h2>
   <p class="lead">El Nodo SUBDERE existe para que el municipio entregue su información una sola vez y llegue a cada destino en el formato que ese destino ya acepta. No reemplaza a ninguna plataforma existente: mantiene un adaptador por cada una y les entrega en el formato que hoy usan.</p>
+  <p class="lead"><strong>Es una conexión entre sistemas.</strong> El nodo no tiene pantallas para que un funcionario cargue planillas: las plataformas que reciben ya tienen sus propios canales de carga y el nodo no los duplica. Quien conversa con el nodo es el sistema de gestión del municipio, y lo hace contra un contrato técnico publicado.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Cómo funciona</p>
   <h2>Un ejemplo concreto</h2>
-  <p class="lead">Dos municipios tienen que entregar el mismo reporte a fin de mes. Uno trabaja con un sistema de gestión que ya implementa el estándar; el otro arma su planilla a mano. Desde la validación en adelante, el camino es idéntico para los dos.</p>
+  <p class="lead">Dos municipios tienen que entregar el mismo reporte a fin de mes. Uno usa un sistema que desarrolló su propia unidad de informática; el otro compró el suyo a un proveedor. Desde la validación en adelante, el camino es idéntico para los dos: <strong>el nodo no distingue quién construyó el sistema, solo si cumple el estándar publicado.</strong></p>
   <div class="cols-2">
     <div class="card">
       <h3>Antes de que empiece nada</h3>
@@ -50,7 +51,7 @@
     </div>
     <div class="card">
       <h3>Validar es gratis y no envía</h3>
-      <p>El municipio valida cuantas veces quiera y recibe las observaciones en la misma pantalla donde trabaja. Nada sale del municipio en este paso.</p>
+      <p>El sistema del municipio valida cuantas veces quiera y muestra las observaciones en la misma pantalla donde el funcionario trabaja. Nada sale del municipio en este paso.</p>
     </div>
     <div class="card">
       <h3>Enviar es otro acto</h3>
@@ -79,24 +80,26 @@
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Qué necesita cada municipio</p>
-  <h2>Ninguno queda fuera por no tener sistema</h2>
+  <h2>Qué hace falta para entregar por el nodo</h2>
+  <p class="lead">Una sola cosa: un sistema que implemente el estándar. De ahí en adelante no importa de dónde venga ese sistema.</p>
   <div class="cols-3">
     <div class="card">
       <div class="num">A</div>
-      <h3>Con un sistema que implementa el estándar</h3>
+      <h3>Con un sistema que ya implementa el estándar</h3>
       <p>El sistema arma el reporte y conversa con el nodo por interfaz. El funcionario valida y envía desde la pantalla donde ya trabaja.</p>
     </div>
     <div class="card">
       <div class="num">B</div>
-      <h3>Con cualquier otro sistema</h3>
-      <p>El municipio carga su archivo en el nodo y recibe exactamente la misma revisión, las mismas observaciones y la misma constancia.</p>
+      <h3>Con un sistema que todavía no lo implementa</h3>
+      <p>El estándar es público y el ambiente de pruebas está abierto. El municipio no tiene que hacer nada técnico: se lo pide a su proveedor, y su proveedor lo implementa sin pedirle permiso a nadie.</p>
     </div>
     <div class="card">
       <div class="num">C</div>
-      <h3>Con un proveedor que quiera conectarse</h3>
-      <p>Cualquier proveedor puede implementar el estándar publicado y conectar el sistema de sus municipios. No necesita convenio para construir ni para probar.</p>
+      <h3>Sin ningún sistema</h3>
+      <p>El nodo conecta sistemas, así que no es la respuesta para este caso. La respuesta es el <strong>SGM</strong>: código abierto, sin costo de licencia y conforme al estándar de origen.</p>
     </div>
   </div>
+  <div class="aviso"><p>El nodo <b>no recibe planillas cargadas a mano</b>. Las plataformas que reciben información municipal ya tienen sus propios canales de carga y seguirán funcionando; el nodo no los reemplaza ni los duplica. Lo que agrega es que el sistema del municipio entregue una vez, con validación previa y constancia de lo enviado.</p></div>
 </div></section>
 
 <footer><div class="wrap">
