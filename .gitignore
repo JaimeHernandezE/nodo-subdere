@@ -1,0 +1,34 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python / Django (cuando llegue el backend)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.sqlite3
+.env
+.env.*
+!.env.example
+staticfiles/
+media/
+
+# Node / React (cuando llegue el frontend)
+node_modules/
+dist/
+build/
+.cache/
+npm-debug.log*
+yarn-error.log*
+
+# Otros
+*.log

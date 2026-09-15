@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catálogo de nodos · Nodo SUBDERE</title>
+<meta name="description" content="Cada nodo es un intercambio entre el municipio y una institución: qué hace, con quién conversa y en qué estado está.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Catálogo de nodos · Nodo SUBDERE">
+<meta property="og:description" content="Cada nodo es un intercambio entre el municipio y una institución: qué hace, con quién conversa y en qué estado está.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/catalogo.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Los nodos que se listan provienen del mapeo del Juzgado de Policía Local, declarado a nivel deseable. Falta evaluar complejidad y factibilidad de cada uno.</div></div>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <a href="catalogo.html" aria-current="page">Catálogo</a>
+    <a href="participar.html">Cómo participar</a>
+    <a href="comentarios.html">Comentarios</a>
+  </nav>
+</div></header>
+
+<section style="padding-bottom:18px"><div class="wrap">
+  <p class="eyebrow">Catálogo</p>
+  <h2>Los nodos publicados</h2>
+  <p class="lead">Cada nodo es un intercambio entre el municipio y una institución. Acá está qué hace cada uno, con quién conversa y en qué estado se encuentra. El estándar de cada nodo se publica en su ficha.</p>
+
+  <div class="filtros">
+    <button class="chip" data-ambito="todos" aria-pressed="true">Todos</button>
+    <button class="chip" data-ambito="Justicia local" aria-pressed="false">Justicia local</button>
+    <button class="chip" data-ambito="Pagos" aria-pressed="false">Pagos</button>
+    <button class="chip" data-ambito="Identidad" aria-pressed="false">Identidad</button>
+    <button class="chip" data-ambito="Municipal" aria-pressed="false">Municipal</button>
+    <button class="chip" data-ambito="Transversal" aria-pressed="false">Transversal</button>
+    <input class="buscador" id="q" type="search" placeholder="Buscar por nombre o institución…" aria-label="Buscar nodos">
+  </div>
+  <p class="conteo" id="conteo"></p>
+
+  <div class="grid-nodos" id="grid"></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">Cómo leer el estado</p>
+  <h2>Todos los nodos están todavía en «deseable»</h2>
+  <p class="lead">No es un error del catálogo: es el estado real del trabajo. El mapeo se declaró a nivel deseable y la evaluación de complejidad y factibilidad de cada nodo está pendiente. El catálogo lo muestra en vez de esconderlo, y esa columna es la que debería ir cambiando.</p>
+  <table>
+    <tr><th>Estado</th><th>Qué significa</th></tr>
+    <tr><td><span class="tag tag-mad">Deseable</span></td><td>Está identificado como necesario, sin evaluación de factibilidad ni compromiso institucional.</td></tr>
+    <tr><td><span class="tag">En evaluación</span></td><td>Se está estimando su complejidad técnica y la disposición de la contraparte.</td></tr>
+    <tr><td><span class="tag">En desarrollo</span></td><td>Hay definición técnica y trabajo en curso, pero todavía no opera.</td></tr>
+    <tr><td><span class="tag">Operativo</span></td><td>El estándar está publicado y hay municipios usándolo.</td></tr>
+  </table>
+</div></section>
+
+<footer><div class="wrap">
+  <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+  <div>Datos semilla: mapeo de nodos del JPL, septiembre de 2026</div>
+</div></footer>
+
+<script src="assets/data.js"></script>
+<script>
+(function(){
+  var grid = document.getElementById('grid');
+  var conteo = document.getElementById('conteo');
+  var q = document.getElementById('q');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+
+  // Estado inicial desde la dirección, para poder compartir un catálogo filtrado
+  var params = new URLSearchParams(location.search);
+  var filtro = params.get('ambito') || 'todos';
+  if (!chips.some(function(c){ return c.getAttribute('data-ambito') === filtro; })) filtro = 'todos';
+  q.value = params.get('q') || '';
+  chips.forEach(function(c){
+    c.setAttribute('aria-pressed', c.getAttribute('data-ambito') === filtro ? 'true' : 'false');
+  });
+
+  function guardaEstado(){
+    var p = new URLSearchParams();
+    if (filtro !== 'todos') p.set('ambito', filtro);
+    if (q.value.trim()) p.set('q', q.value.trim());
+    var s = p.toString();
+    history.replaceState(null, '', s ? '?' + s : location.pathname);
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function tarjeta(n){
+    var inst = n.instituciones.slice(0,2).map(function(i){
+      return '<span class="tag tag-inst">'+esc(i)+'</span>'; }).join('');
+    var mas = n.instituciones.length > 2
+      ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
+    return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
+      + '<div class="cab"><h3>'+esc(n.nombre)+'</h3>'
+      + '<span class="tag tag-mad">'+esc(n.madurez)+'</span></div>'
+      + '<p class="func">'+esc(n.funcion)+'</p>'
+      + '<div class="meta"><span class="tag tag-ambito">'+esc(n.ambito)+'</span>'
+      + inst + mas + '</div></a>';
+  }
+
+  function pinta(){
+    var texto = q.value.trim().toLowerCase();
+    var lista = NODOS.filter(function(n){
+      var okAmb = (filtro === 'todos') || (n.ambito === filtro);
+      var okTxt = !texto
+        || n.nombre.toLowerCase().indexOf(texto) > -1
+        || n.funcion.toLowerCase().indexOf(texto) > -1
+        || n.instituciones.join(' ').toLowerCase().indexOf(texto) > -1;
+      return okAmb && okTxt;
+    });
+    grid.innerHTML = lista.length
+      ? lista.map(tarjeta).join('')
+      : '<p class="pendiente">Ningún nodo coincide con esa búsqueda. Puede que el catálogo todavía no lo incluya — la primera carga viene del mapeo del Juzgado de Policía Local.</p>';
+    conteo.textContent = lista.length === NODOS.length
+      ? NODOS.length + ' nodos en el catálogo'
+      : lista.length + ' de ' + NODOS.length + ' nodos';
+    guardaEstado();
+  }
+
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      chips.forEach(function(o){ o.setAttribute('aria-pressed','false'); });
+      c.setAttribute('aria-pressed','true');
+      filtro = c.getAttribute('data-ambito');
+      pinta();
+    });
+  });
+  q.addEventListener('input', pinta);
+  pinta();
+})();
+</script>
+</body>
+</html>

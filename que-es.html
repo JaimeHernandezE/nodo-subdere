@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qué es el nodo · Nodo SUBDERE</title>
+<meta name="description" content="Un contrato técnico publicado y el componente que lo opera, para que el municipio entregue una sola vez.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Qué es el nodo · Nodo SUBDERE">
+<meta property="og:description" content="Un contrato técnico publicado y el componente que lo opera, para que el municipio entregue una sola vez.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/que-es.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Texto preliminar, sujeto a la definición de arquitectura en curso.</div></div>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html" aria-current="page">Qué es el nodo</a>
+    <a href="catalogo.html">Catálogo</a>
+    <a href="participar.html">Cómo participar</a>
+    <a href="comentarios.html">Comentarios</a>
+  </nav>
+</div></header>
+
+<section><div class="wrap">
+  <p class="eyebrow">Descripción general</p>
+  <h2>Un contrato técnico publicado, y el componente que lo opera</h2>
+  <p class="lead">El Nodo SUBDERE existe para que el municipio entregue su información una sola vez y llegue a cada destino en el formato que ese destino ya acepta. No reemplaza a ninguna plataforma existente: mantiene un adaptador por cada una y les entrega en el formato que hoy usan.</p>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">Cómo funciona</p>
+  <h2>Un ejemplo concreto</h2>
+  <p class="lead">Dos municipios tienen que entregar el mismo reporte a fin de mes. Uno trabaja con un sistema de gestión que ya implementa el estándar; el otro arma su planilla a mano. Desde la validación en adelante, el camino es idéntico para los dos.</p>
+  <div class="cols-2">
+    <div class="card">
+      <h3>Antes de que empiece nada</h3>
+      <p>El destinatario publica en el nodo la plantilla del reporte y sus reglas, con número de versión. El nodo no inventa la regla: la guarda y la aplica. Si el destinatario cambia lo que pide, publica una versión nueva.</p>
+    </div>
+    <div class="card">
+      <h3>Validar es gratis y no envía</h3>
+      <p>El municipio valida cuantas veces quiera y recibe las observaciones en la misma pantalla donde trabaja. Nada sale del municipio en este paso.</p>
+    </div>
+    <div class="card">
+      <h3>Enviar es otro acto</h3>
+      <p>Recién cuando el informe está limpio, el funcionario responsable autoriza el envío. El reporte sigue siendo un acto del municipio.</p>
+    </div>
+    <div class="card">
+      <h3>Y queda constancia</h3>
+      <p>Qué salió, cuándo, a dónde, y contra qué versión de la regla se validó. Consultable después, no un aviso que aparece y se va.</p>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">Alcance de la validación</p>
+  <h2>Lo que el nodo puede revisar, y lo que no</h2>
+  <p class="lead">No todos los destinatarios publican sus reglas, y no hay razón para exigírselo. Por eso el servicio se declara por destinatario y el municipio ve exactamente qué se hizo con su información.</p>
+  <table>
+    <tr><th>Nivel</th><th>Qué hace el nodo</th><th>Cuándo aplica</th></tr>
+    <tr><td><strong>Valida con reglas del destinatario</strong></td><td>Revisa antes de enviar contra la plantilla publicada y versionada.</td><td>Cuando el destinatario publica sus reglas.</td></tr>
+    <tr><td><strong>Valida con reglas de norma pública</strong></td><td>Aplica las reglas que están en la norma, codificadas y mantenidas al día.</td><td>Cuando el requisito es público aunque el destinatario no publique nada.</td></tr>
+    <tr><td><strong>Formatea y entrega</strong></td><td>Da el formato que el destino consume, entrega y devuelve el comprobante y las observaciones que lleguen.</td><td>El piso. El municipio deja de preparar varios formatos a mano.</td></tr>
+    <tr><td><strong>Genera el archivo</strong></td><td>Produce el documento y se lo devuelve al municipio.</td><td>Cuando el municipio publica por su cuenta y no hay destinatario que convenir.</td></tr>
+  </table>
+  <div class="aviso"><p>Prometer validación donde no la hay sería la forma más rápida de perder la confianza que este servicio necesita. Por eso cada entrega dice qué se revisó y qué no.</p></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">Qué necesita cada municipio</p>
+  <h2>Ninguno queda fuera por no tener sistema</h2>
+  <div class="cols-3">
+    <div class="card">
+      <div class="num">A</div>
+      <h3>Con un sistema que implementa el estándar</h3>
+      <p>El sistema arma el reporte y conversa con el nodo por interfaz. El funcionario valida y envía desde la pantalla donde ya trabaja.</p>
+    </div>
+    <div class="card">
+      <div class="num">B</div>
+      <h3>Con cualquier otro sistema</h3>
+      <p>El municipio carga su archivo en el nodo y recibe exactamente la misma revisión, las mismas observaciones y la misma constancia.</p>
+    </div>
+    <div class="card">
+      <div class="num">C</div>
+      <h3>Con un proveedor que quiera conectarse</h3>
+      <p>Cualquier proveedor puede implementar el estándar publicado y conectar el sistema de sus municipios. No necesita convenio para construir ni para probar.</p>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+  <div>División de Políticas y Estudios · SUBDERE</div>
+</div></footer>
+
+</body>
+</html>

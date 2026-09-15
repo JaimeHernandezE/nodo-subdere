@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ficha de nodo · Nodo SUBDERE</title>
+<meta name="description" content="Ficha de un nodo del catálogo: función, instituciones involucradas, madurez y estándar.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Ficha de nodo · Nodo SUBDERE">
+<meta property="og:description" content="Ficha de un nodo del catálogo: función, instituciones involucradas, madurez y estándar.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/nodo.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Ficha de ejemplo. El estándar técnico y las operaciones todavía no están definidos para ningún nodo.</div></div>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <a href="catalogo.html" aria-current="page">Catálogo</a>
+    <a href="participar.html">Cómo participar</a>
+    <a href="comentarios.html">Comentarios</a>
+  </nav>
+</div></header>
+
+<div class="wrap"><p class="miga"><a href="catalogo.html">Catálogo</a> <span id="miga"></span></p></div>
+
+<div id="ficha"></div>
+
+<footer><div class="wrap">
+  <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+  <div>Datos semilla: mapeo de nodos del JPL, septiembre de 2026</div>
+</div></footer>
+
+<script src="assets/data.js"></script>
+<script>
+(function(){
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  var id = new URLSearchParams(location.search).get('id');
+  var n = NODOS.filter(function(x){ return x.id === id; })[0];
+  var cont = document.getElementById('ficha');
+
+  if(!n){
+    cont.innerHTML = '<div class="wrap"><section><h2>Nodo no encontrado</h2>'
+      + '<p class="lead">Volver al <a href="catalogo.html">catálogo</a>.</p></section></div>';
+    return;
+  }
+
+  document.title = n.nombre + ' · Nodo SUBDERE';
+  document.getElementById('miga').textContent = '/ ' + n.nombre;
+
+  var nota = n.nota
+    ? '<div class="aviso"><p>' + esc(n.nota) + '</p></div>' : '';
+
+  cont.innerHTML =
+    '<div class="wrap"><div class="ficha-cab">'
+    + '<span class="tag tag-ambito">' + esc(n.ambito) + '</span>'
+    + '<h1>' + esc(n.nombre) + '</h1>'
+    + '<p class="func">' + esc(n.funcion) + '</p>'
+    + '</div>'
+
+    + '<div class="ficha-grid"><div>'
+    + '<h2>Qué resuelve</h2><p>' + esc(n.descripcion) + '</p>'
+    + nota
+    + '<h2>Estándar publicado</h2>'
+    + '<div class="pendiente">Pendiente. Acá va el contrato técnico del nodo: qué datos se intercambian, en qué formato, con qué operaciones y con qué versión. Se publica antes de que exista implementación, y se versiona aparte de esta ficha.</div>'
+    + '<h2>Operaciones</h2>'
+    + '<div class="pendiente">Pendiente. Las primeras operaciones candidatas son de consulta y validación, no transaccionales.</div>'
+    + '<h2>Ambiente de pruebas</h2>'
+    + '<div class="pendiente">Pendiente. Cualquiera podrá construir contra el ambiente de pruebas sin convenio y sin datos reales, antes de solicitar acceso.</div>'
+    + '</div>'
+
+    + '<aside class="panel"><dl>'
+    + '<dt>Estado de madurez</dt><dd><span class="tag tag-mad">' + esc(n.madurez) + '</span></dd>'
+    + '<dt>Factibilidad</dt><dd>' + esc(n.factibilidad) + '</dd>'
+    + '<dt>Tipo de intercambio</dt><dd>' + esc(n.intercambio) + '</dd>'
+    + '<dt>Instituciones involucradas</dt><dd><ul>'
+    + n.instituciones.map(function(i){ return '<li>' + esc(i) + '</li>'; }).join('')
+    + '</ul></dd>'
+    + '<dt>Origen</dt><dd>' + esc(n.origen) + '</dd>'
+    + '<dt>Última revisión</dt><dd>8 de septiembre de 2026</dd>'
+    + '</dl></aside></div></div>';
+})();
+</script>
+</body>
+</html>
