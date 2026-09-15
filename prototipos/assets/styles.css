@@ -80,6 +80,7 @@ p{color:var(--body)}
 
 .tag{font-size:11.5px;padding:3px 9px;border-radius:4px;background:var(--grey);color:var(--muted);border:1px solid var(--hair);white-space:nowrap}
 .tag-ambito{background:#EAF1F8;color:var(--navy);border-color:#D3E2F0}
+.tag-plataforma{background:#F3E8FF;color:#5B21B6;border-color:#E9D5FF}
 .tag-mad{background:var(--amb-bg);color:var(--amb-md);border-color:#F0D9B5}
 .tag-dev{background:#ECFDF5;color:#065F46;border-color:#A7F3D0}
 .tag-inst{background:#fff;color:var(--muted);border-color:var(--line-l)}

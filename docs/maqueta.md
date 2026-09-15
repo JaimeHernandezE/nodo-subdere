@@ -10,12 +10,12 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/index.html` | Landing — qué es el nodo y para quién |
 | `prototipos/que-es.html` | Descripción general: cómo funciona, alcance de la validación, los tres casos de municipio |
 | `prototipos/catalogo.html` | Catálogo de nodos, con filtro por ámbito y buscador |
-| `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a los diez |
+| `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a todos |
 | `prototipos/participar.html` | Cómo participar y qué está definido y qué no |
 | `prototipos/comentarios.html` | A quién escribir, cuatro preguntas para el QA y lo que ya sabemos que falta |
 | `prototipos/404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
 | `prototipos/assets/data.js` | **Los datos y el modelo.** Cada campo de aquí debería existir en el modelo Django |
-| `prototipos/estandares/` | Las especificaciones registradas, tal cual las publica cada nodo |
+| `prototipos/estandares/` | Las especificaciones registradas localmente (hoy solo división territorial) |
 | `prototipos/assets/openapi.js` | Renderiza una especificación OpenAPI en la ficha. Nada de lo que se ve ahí está transcrito |
 | `prototipos/assets/js-yaml.min.js` | Lector de YAML, incluido para no depender de la red |
 | `prototipos/assets/styles.css` | Estilos, con la paleta del proyecto en variables CSS |
@@ -24,7 +24,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 
 Las rutas son todas relativas —salvo las de `404.html`, por lo dicho arriba—, así que el sitio funciona igual en un subdirectorio que en la raíz. Cómo publicarlo está en el [README del repositorio](../README.md).
 
-El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalogo.html?ambito=Pagos` se puede compartir tal cual.
+El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalogo.html?ambito=SGM` se puede compartir tal cual.
 
 ## El modelo del catálogo
 
@@ -34,7 +34,8 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 |---|---|---|
 | `id` | slug | Clave de la URL de la ficha |
 | `nombre` | texto | |
-| `ambito` | opción | Transversal · Juzgado de Policía Local · Pagos · Municipal |
+| `ambito` | opción | **SGM** · Transversal · Juzgado de Policía Local · Pagos · Municipal |
+| `clase` | opción | **intercambio** (módulo o canal de datos) · **plataforma** (condición de otros; no à la carte) |
 | `funcion` | texto corto | Una línea, aparece en la tarjeta del catálogo |
 | `descripcion` | texto largo | Cuerpo de la ficha |
 | `instituciones` | lista | Relación en Django, no texto libre |
@@ -44,28 +45,38 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 | `origen` | texto | De dónde salió el nodo, para poder auditar el catálogo |
 | `nota` | texto | Advertencia destacada en la ficha, opcional |
 
+**`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido à la carte cuando aplique). Un nodo `plataforma` es condición de otros: el core SGM y los Estándares de Gobierno Digital. Sin ese campo, el core se leería como un módulo más.
+
 Los dos campos que conviene no dejar para después son **`madurez`** y **`factibilidad`**: agregar una columna a un modelo que ya tiene datos y vistas siempre cuesta más que preverla. María José dejó esa evaluación explícitamente pendiente, y el catálogo es el lugar natural donde vive.
 
 ### El contrato técnico, cuando existe
 
-Dos campos más, opcionales. Un nodo que no los trae muestra el bloque «Pendiente» correspondiente en su ficha. Hoy solo `division-territorial` los tiene.
+Dos campos más, opcionales. Un nodo que no los trae muestra el bloque «Pendiente» correspondiente en su ficha.
 
 | Campo | Tipo | Nota |
 |---|---|---|
-| `espec` | objeto | `{ archivo, formato, validador, registrada, origen, acceso }` |
+| `espec` | objeto | `{ archivo?, formato, validador, registrada, origen, acceso }` — `archivo` es opcional |
 | `pruebas` | texto | Estado del ambiente de pruebas |
 
-**No hay un campo `operaciones`, y es deliberado.** `espec.archivo` apunta a la especificación legible por máquina del nodo, y la ficha la lee y la renderiza cada vez que se abre. Las operaciones, sus parámetros, sus códigos de respuesta y sus ejemplos salen del archivo; el catálogo no guarda una copia. La decisión está en [`adr-2026-09-estandar-legible-por-maquina.md`](adr-2026-09-estandar-legible-por-maquina.md).
+**Hay estándar ≠ hay servicio alcanzable.** La ficha separa ambos: un nodo puede declarar contrato (formato, origen, acceso) sin que el servicio esté expuesto. Solo `division-territorial` tiene hoy `espec.archivo` local y servicio existente (en red SEM). `sgm-core` y `adquisiciones` declaran metadato de contrato sin archivo local: sus OpenAPI viven en el corpus SGM y no se copian aquí.
+
+**No hay un campo `operaciones`, y es deliberado.** Cuando hay `espec.archivo`, la ficha lo lee y lo renderiza. Cuando solo hay metadato, no se transcriben operaciones. La decisión está en [`adr-2026-09-estandar-legible-por-maquina.md`](adr-2026-09-estandar-legible-por-maquina.md).
 
 En el modelo Django, `espec` es un documento versionado —cada versión se registra, ninguna se corrige— y **se versiona aparte de la ficha**: el contrato puede cambiar sin que cambie la descripción del nodo, y al revés.
 
-Las especificaciones registradas viven en [`prototipos/estandares/`](../prototipos/estandares/). El renderizador es [`prototipos/assets/openapi.js`](../prototipos/assets/openapi.js), y [`js-yaml.min.js`](../prototipos/assets/js-yaml.min.js) viene junto para no depender de la red.
+Las especificaciones registradas localmente viven en [`prototipos/estandares/`](../prototipos/estandares/). El renderizador es [`prototipos/assets/openapi.js`](../prototipos/assets/openapi.js), y [`js-yaml.min.js`](../prototipos/assets/js-yaml.min.js) viene junto para no depender de la red. Límite de la maqueta: solo resuelve `$ref` internos (`#/…`); no ensambla specs seccionadas en varios archivos.
 
-**Una consecuencia práctica:** la ficha de un nodo con especificación **no funciona abriendo el archivo con doble clic**, porque el navegador no permite que una página local lea otro archivo del disco. La página lo explica cuando ocurre. Para verla hay que servir la carpeta.
+**Una consecuencia práctica:** la ficha de un nodo con `espec.archivo` **no funciona abriendo el archivo con doble clic**, porque el navegador no permite que una página local lea otro archivo del disco. La página lo explica cuando ocurre. Para verla hay que servir la carpeta.
 
 ## Datos
 
-Nueve de los diez nodos vienen del mapeo de interoperabilidad del Juzgado de Policía Local, enviado por María José Besa el 8 de septiembre de 2026 tras la reunión con el JPL de Lo Barnechea. Algunos de esa lista los agregó Allison Díaz. Todos están declarados a nivel **deseable**; la evaluación de complejidad y factibilidad está pendiente y el catálogo lo muestra explícitamente.
+El catálogo ya no es solo el mapeo JPL. Incluye:
+
+1. **Ámbito SGM:** [`sgm-core`](../prototipos/nodo.html?id=sgm-core) (clase plataforma, obligatorio) y [`adquisiciones`](../prototipos/nodo.html?id=adquisiciones) (primer módulo de negocio). Origen: corpus `sgm-nueva-arquitectura`. Algunos nodos son **consumo** (el municipio consulta), no solo entrega.
+2. **División Político-Administrativa:** prototipo SEM con OpenAPI local.
+3. **Nueve nodos del mapeo JPL** (tras retirar cuatro que corresponden a PISEE), en **deseable**.
+
+Toda API del catálogo se alcanza por la [Plataforma de Control](plataforma-control.md).
 
 ### Cuatro nodos del mapeo que no están en el catálogo
 
@@ -77,9 +88,7 @@ Se retiran del catálogo, no del levantamiento: siguen siendo intercambios reale
 
 **Queda pendiente verificar si PISEE alcanza hoy a los municipios en la práctica**, no solo en la ley. Si no los alcanza, la decisión habría que revisarla.
 
-El décimo, **División Político-Administrativa**, no viene del mapeo. Es un prototipo levantado sobre el repositorio `utilitarios` del equipo SEM de SUBDERE: una API Flask de regiones, provincias y comunas que ya opera dentro de esa infraestructura, con especificación OpenAPI 3.0.3. Está en el catálogo para mostrar cómo se ve una ficha cuando el estándar existe, y es el único que llena los tres bloques que en los demás dicen «Pendiente».
-
-Que su ficha publique el estándar no significa que el nodo esté disponible: el servicio responde solo dentro de la red de SEM y no tiene nivel de servicio comprometido. La ficha lo dice explícitamente en su nota.
+Que la ficha de división territorial publique el estándar no significa que el nodo esté disponible: el servicio responde solo dentro de la red de SEM y no tiene nivel de servicio comprometido. La ficha lo dice explícitamente en su nota. Lo mismo vale, al revés, para Adquisiciones y el core: hay contrato declarado, no hay servicio expuesto.
 
 ## Para el QA
 

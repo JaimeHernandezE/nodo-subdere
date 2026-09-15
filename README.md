@@ -1,4 +1,4 @@
-# Nodo SUBDERE
+﻿# Nodo SUBDERE
 
 Repositorio del Nodo SUBDERE: el punto único por el que un municipio entrega información a las instituciones que se la piden, y recibe constancia de lo entregado.
 
@@ -21,6 +21,9 @@ Cuando entren el backend y el frontend, la maqueta se queda en `prototipos/` y e
 
 | Documento | Qué contiene |
 |---|---|
+| [`docs/plataforma-control.md`](docs/plataforma-control.md) | **Propuesta.** Plataforma Institucional de Gestión de APIs (Plataforma de Control): base técnica licitables; control, logs y casos de uso |
+| [`docs/flujo_2.md`](docs/flujo_2.md) | Diagrama de producción de la Plataforma de Control (zonas de red) |
+| [`docs/flujo_1.md`](docs/flujo_1.md) | Diagrama de demo de la Plataforma de Control (un servidor) |
 | [`docs/adr-2026-09-estandar-legible-por-maquina.md`](docs/adr-2026-09-estandar-legible-por-maquina.md) | **Decisión.** El estándar de cada nodo se publica como especificación legible por máquina; el catálogo la renderiza y no la transcribe |
 | [`docs/maqueta.md`](docs/maqueta.md) | Las páginas de la maqueta, el modelo de datos del catálogo y las preguntas para el QA |
 | [`docs/nodo-lp-precedente.md`](docs/nodo-lp-precedente.md) | El Nodo Laboral y Previsional de la Subsecretaría de Previsión Social, en operación desde noviembre de 2025: qué se copia, qué no, y qué advertencias deja |
@@ -40,7 +43,7 @@ La maqueta se publica en **GitHub Pages** al hacer push a `main` (workflow [`.gi
 
 ```bash
 git add .
-git commit -m "Maqueta del sitio del Nodo SUBDERE"
+git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Maqueta del sitio del Nodo SUBDERE"
 git push origin main
 ```
 
@@ -57,9 +60,9 @@ git push origin main
 
 Maqueta para revisión, septiembre de 2026. Nada de lo que muestra está comprometido institucionalmente.
 
-Nueve de los diez nodos del catálogo vienen del mapeo de interoperabilidad del Juzgado de Policía Local y están declarados a nivel **deseable**: la evaluación de complejidad y factibilidad está pendiente, y el catálogo lo muestra en vez de esconderlo.
+El catálogo mezcla: (1) nueve nodos del mapeo JPL en **deseable**; (2) división político-administrativa, con OpenAPI local y servicio en red SEM; (3) ámbito **SGM** — core de plataforma (obligatorio) y Adquisiciones (primer módulo de negocio), con contrato declarado y sin servicio expuesto.
 
-El décimo —división político-administrativa— es un prototipo levantado sobre el repositorio `utilitarios` del equipo SEM, y el único con estándar publicado en su ficha. Está ahí para mostrar a qué debería llegar cada uno de los demás.
+Toda API del catálogo se alcanza por la [Plataforma de Control](docs/plataforma-control.md).
 
 El mapeo traía trece nodos: cuatro se retiraron por ser consultas a otros órganos del Estado, que corresponden a PISEE y no a este catálogo. El motivo está en [`docs/maqueta.md`](docs/maqueta.md).
 
