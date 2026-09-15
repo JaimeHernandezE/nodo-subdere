@@ -21,15 +21,16 @@ Cuando entren el backend y el frontend, la maqueta se queda en `prototipos/` y e
 
 | Documento | Qué contiene |
 |---|---|
+| [`docs/adr-2026-09-estandar-legible-por-maquina.md`](docs/adr-2026-09-estandar-legible-por-maquina.md) | **Decisión.** El estándar de cada nodo se publica como especificación legible por máquina; el catálogo la renderiza y no la transcribe |
 | [`docs/maqueta.md`](docs/maqueta.md) | Las páginas de la maqueta, el modelo de datos del catálogo y las preguntas para el QA |
 | [`docs/nodo-lp-precedente.md`](docs/nodo-lp-precedente.md) | El Nodo Laboral y Previsional de la Subsecretaría de Previsión Social, en operación desde noviembre de 2025: qué se copia, qué no, y qué advertencias deja |
 
 ## Ver la maqueta sin publicarla
 
-Doble clic en `prototipos/index.html` basta para todo salvo `404.html`, que usa rutas absolutas porque se sirve desde cualquier URL y por eso se ve sin estilos en local. Para verlo tal cual quedará:
+**Conviene servir la carpeta.** El doble clic funciona para casi todo, pero dos cosas no: `404.html` usa rutas absolutas porque se sirve desde cualquier URL, y la ficha de un nodo con especificación necesita leer un archivo del disco, que el navegador bloquea en páginas locales. Ambas se ven bien servidas:
 
 ```bash
-python3 -m http.server 8000 --directory prototipos
+python -m http.server 8000 --directory prototipos
 # http://localhost:8000
 ```
 

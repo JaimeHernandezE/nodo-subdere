@@ -40,16 +40,16 @@
 
   <div class="filtros">
     <button class="chip" data-ambito="todos" aria-pressed="true">Todos</button>
+    <button class="chip" data-ambito="Transversal" aria-pressed="false">Transversal</button>
     <button class="chip" data-ambito="Justicia local" aria-pressed="false">Justicia local</button>
     <button class="chip" data-ambito="Pagos" aria-pressed="false">Pagos</button>
     <button class="chip" data-ambito="Identidad" aria-pressed="false">Identidad</button>
     <button class="chip" data-ambito="Municipal" aria-pressed="false">Municipal</button>
-    <button class="chip" data-ambito="Transversal" aria-pressed="false">Transversal</button>
     <input class="buscador" id="q" type="search" placeholder="Buscar por nombre o institución…" aria-label="Buscar nodos">
   </div>
   <p class="conteo" id="conteo"></p>
 
-  <div class="grid-nodos" id="grid"></div>
+  <div id="grid"></div>
 </div></section>
 
 <section class="gris"><div class="wrap">
@@ -61,7 +61,7 @@
     <tr><th>Estado</th><th>Qué significa</th></tr>
     <tr><td><span class="tag tag-mad">Deseable</span></td><td>Está identificado como necesario, sin evaluación de factibilidad ni compromiso institucional.</td></tr>
     <tr><td><span class="tag">En evaluación</span></td><td>Se está estimando su complejidad técnica y la disposición de la contraparte.</td></tr>
-    <tr><td><span class="tag">En desarrollo</span></td><td>Hay definición técnica y trabajo en curso, pero todavía no opera como nodo.</td></tr>
+    <tr><td><span class="tag tag-dev">En desarrollo</span></td><td>Hay definición técnica y trabajo en curso, pero todavía no opera como nodo.</td></tr>
     <tr><td><span class="tag">Operativo</span></td><td>El estándar está publicado y hay municipios usándolo.</td></tr>
   </table>
 </div></section>
@@ -105,11 +105,15 @@
     var mas = n.instituciones.length > 2
       ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
     return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
-      + '<div class="cab"><h3>'+esc(n.nombre)+'</h3>'
-      + '<span class="tag tag-mad">'+esc(n.madurez)+'</span></div>'
+      + '<div class="cab"><h4>'+esc(n.nombre)+'</h4>'
+      + '<span class="'+(n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad')+'">'+esc(n.madurez)+'</span></div>'
       + '<p class="func">'+esc(n.funcion)+'</p>'
       + '<div class="meta"><span class="tag tag-ambito">'+esc(n.ambito)+'</span>'
       + inst + mas + '</div></a>';
+  }
+
+  function slugAmb(a){
+    return String(a).toLowerCase().replace(/\s+/g, '-');
   }
 
   function pinta(){
@@ -122,9 +126,21 @@
         || n.instituciones.join(' ').toLowerCase().indexOf(texto) > -1;
       return okAmb && okTxt;
     });
-    grid.innerHTML = lista.length
-      ? lista.map(tarjeta).join('')
-      : '<p class="pendiente">Ningún nodo coincide con esa búsqueda. Puede que el catálogo todavía no lo incluya — la primera carga viene del mapeo del Juzgado de Policía Local.</p>';
+    if (!lista.length) {
+      grid.innerHTML = '<p class="pendiente">Ningún nodo coincide con esa búsqueda. Puede que el catálogo todavía no lo incluya — la primera carga viene del mapeo del Juzgado de Policía Local.</p>';
+    } else {
+      var ambitos = filtro === 'todos' ? AMBITOS : [filtro];
+      grid.innerHTML = ambitos.map(function(amb){
+        var grupo = lista.filter(function(n){ return n.ambito === amb; });
+        if (!grupo.length) return '';
+        var n = grupo.length === 1 ? '1 nodo' : grupo.length + ' nodos';
+        return '<div class="grupo-cat" aria-labelledby="cat-'+esc(slugAmb(amb))+'">'
+          + '<h3 class="grupo-cat__tit" id="cat-'+esc(slugAmb(amb))+'">'+esc(amb)
+          + ' <span class="grupo-cat__n">'+n+'</span></h3>'
+          + '<div class="grid-nodos">'+grupo.map(tarjeta).join('')+'</div>'
+          + '</div>';
+      }).join('');
+    }
     conteo.textContent = lista.length === NODOS.length
       ? NODOS.length + ' nodos en el catálogo'
       : lista.length + ' de ' + NODOS.length + ' nodos';

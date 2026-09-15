@@ -33,7 +33,7 @@ https://jaimehernandeze.github.io/nodo-subdere/
 Doble clic en `index.html` basta para todo salvo `404.html`, que usa rutas absolutas porque se sirve desde cualquier URL. Para verlo tal cual quedará:
 
 ```bash
-python3 -m http.server 8000 --directory prototipos
+python -m http.server 8000 --directory prototipos
 # http://localhost:8000
 ```
 

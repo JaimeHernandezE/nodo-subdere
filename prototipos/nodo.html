@@ -42,6 +42,8 @@
   <div>Datos semilla: mapeo de nodos del JPL, septiembre de 2026</div>
 </div></footer>
 
+<script src="assets/js-yaml.min.js"></script>
+<script src="assets/openapi.js"></script>
 <script src="assets/data.js"></script>
 <script>
 (function(){
@@ -60,33 +62,31 @@
 
   document.title = n.nombre + ' · Nodo SUBDERE';
   document.getElementById('miga').textContent = '/ ' + n.nombre;
-  document.getElementById('avisoFicha').textContent = n.estandar
+  document.getElementById('avisoFicha').textContent = n.espec
     ? 'Este nodo se levanta sobre un servicio que ya existe, así que su estándar es real. Lo que no está comprometido es su disponibilidad como nodo.'
     : 'Ficha de ejemplo. El estándar técnico y las operaciones de este nodo todavía no están definidos.';
 
-  var nota = n.nota
-    ? '<div class="aviso"><p>' + esc(n.nota) + '</p></div>' : '';
-
-  // Los tres bloques del contrato técnico. Si el nodo no los trae, queda el pendiente.
   function pendiente(txt){ return '<div class="pendiente">' + txt + '</div>'; }
 
-  var estandar = n.estandar
-    ? '<p>' + esc(n.estandar.resumen) + '</p>'
-      + '<dl class="contrato">'
-      + '<dt>Formato</dt><dd>' + esc(n.estandar.formato) + '</dd>'
-      + '<dt>Versión</dt><dd>' + esc(n.estandar.version) + '</dd>'
-      + '<dt>Ruta base</dt><dd><code>' + esc(n.estandar.base) + '</code></dd>'
-      + '<dt>Acceso</dt><dd>' + esc(n.estandar.autenticacion) + '</dd>'
+  var nota = n.nota ? '<div class="aviso"><p>' + esc(n.nota) + '</p></div>' : '';
+
+  // El estándar no se transcribe: se declara de dónde viene y se renderiza el archivo.
+  // Ver docs/adr-2026-09-estandar-legible-por-maquina.md
+  var estandar = n.espec
+    ? '<dl class="contrato">'
+      + '<dt>Formato</dt><dd>' + esc(n.espec.formato)
+        + ' · <a href="' + esc(n.espec.validador) + '" rel="noopener">esquema del formato</a></dd>'
+      + '<dt>Archivo</dt><dd><a href="' + esc(n.espec.archivo) + '" rel="noopener"><code>'
+        + esc(n.espec.archivo.split('/').pop()) + '</code></a></dd>'
+      + '<dt>Registrada</dt><dd>' + esc(n.espec.registrada) + '</dd>'
+      + '<dt>Acceso</dt><dd>' + esc(n.espec.acceso) + '</dd>'
       + '</dl>'
+      + '<div class="aviso aviso-neutro"><p>' + esc(n.espec.origen) + '</p></div>'
     : pendiente('Pendiente. Acá va el contrato técnico del nodo: qué datos se intercambian, en qué formato, con qué operaciones y con qué versión. Se publica antes de que exista implementación, y se versiona aparte de esta ficha.');
 
-  var operaciones = n.operaciones && n.operaciones.length
-    ? '<div class="tabla-ancha"><table><tr><th>Operación</th><th>Qué devuelve</th></tr>'
-      + n.operaciones.map(function(o){
-          return '<tr><td><code>' + esc(o.metodo) + ' ' + esc(o.ruta) + '</code></td>'
-               + '<td>' + esc(o.que) + '</td></tr>';
-        }).join('')
-      + '</table></div>'
+  var operaciones = n.espec
+    ? '<p class="lead-op">Lo que sigue se lee del archivo de la especificación cada vez que se abre esta página. El catálogo no guarda una copia de las operaciones.</p>'
+      + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>'
     : pendiente('Pendiente. Las primeras operaciones candidatas son de consulta y validación, no transaccionales.');
 
   var pruebas = n.pruebas
@@ -109,7 +109,7 @@
     + '</div>'
 
     + '<aside class="panel"><dl>'
-    + '<dt>Estado de madurez</dt><dd><span class="tag tag-mad">' + esc(n.madurez) + '</span></dd>'
+    + '<dt>Estado de madurez</dt><dd><span class="' + (n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad') + '">' + esc(n.madurez) + '</span></dd>'
     + '<dt>Factibilidad</dt><dd>' + esc(n.factibilidad) + '</dd>'
     + '<dt>Tipo de intercambio</dt><dd>' + esc(n.intercambio) + '</dd>'
     + '<dt>Instituciones involucradas</dt><dd><ul>'
@@ -118,6 +118,22 @@
     + '<dt>Origen</dt><dd>' + esc(n.origen) + '</dd>'
     + '<dt>Última revisión</dt><dd>8 de septiembre de 2026</dd>'
     + '</dl></aside></div></div>';
+
+  if (!n.espec) return;
+
+  var destino = document.getElementById('ops');
+  fetch(n.espec.archivo)
+    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(function(txt){ destino.innerHTML = OpenAPI.render(jsyaml.load(txt)); })
+    .catch(function(e){
+      destino.innerHTML = '<div class="pendiente">'
+        + 'No se pudo leer la especificación (' + esc(e.message) + ').<br><br>'
+        + 'Si abriste la página con doble clic, es esperable: el navegador no deja que un '
+        + 'archivo local lea otro archivo del disco. Sirve la carpeta para verlo '
+        + '(<code>python -m http.server</code>) o abre '
+        + '<a href="' + esc(n.espec.archivo) + '">la especificación</a> directamente.'
+        + '</div>';
+    });
 })();
 </script>
 </body>

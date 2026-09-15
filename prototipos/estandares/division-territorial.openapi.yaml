@@ -1,0 +1,396 @@
+openapi: 3.0.3
+info:
+  title: Geo API (Chile)
+  version: 1.0.0
+  description: |
+    API de consulta para Regiones, Provincias y Comunas (CUT 2018).
+servers:
+  - url: /gescod/api/v1
+    description: Base path producción
+
+tags:
+  - name: Health
+  - name: Comunas
+  - name: Provincias
+  - name: Regiones
+
+paths:
+  /healthz:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /readyz:
+    get:
+      tags: [Health]
+      summary: Verifica conexión a DB y cuenta comunas
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comunas_count:
+                    type: integer
+                    example: 346
+                  db_ok:
+                    type: boolean
+                    example: true
+  /comunas:
+    get:
+      tags: [Comunas]
+      summary: Lista todas las comunas
+      responses:
+        "200":
+          description: Lista de comunas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComunaSummary"
+
+  /comunas/{comuna_id}/full:
+    get:
+      tags: [Comunas]
+      summary: Detalle de comuna con su provincia y región
+      parameters:
+        - in: path
+          name: comuna_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detalle de comuna
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComunaFull"
+        "404":
+          description: No encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /provincias:
+    get:
+      tags: [Provincias]
+      summary: Lista todas las provincias
+      responses:
+        "200":
+          description: Lista de provincias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProvinciaSummary"
+
+  /provincias/{provincia_id}:
+    get:
+      tags: [Provincias]
+      summary: Detalle de provincia (incluye región)
+      parameters:
+        - in: path
+          name: provincia_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detalle de provincia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvinciaDetail"
+        "404":
+          description: No encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /provincias/{provincia_id}/comunas:
+    get:
+      tags: [Provincias]
+      summary: Lista comunas de una provincia
+      parameters:
+        - in: path
+          name: provincia_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Comunas de la provincia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvinciaComunasResponse"
+        "404":
+          description: No encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /regiones:
+    get:
+      tags: [Regiones]
+      summary: Lista todas las regiones
+      responses:
+        "200":
+          description: Lista de regiones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegionSummary"
+
+  /regiones/{region_id}/:
+    get:
+      tags: [Regiones]
+      summary: Datos básicos de una región
+      parameters:
+        - in: path
+          name: region_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Región
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionDetail"
+        "404":
+          description: No encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /regiones/{region_id}/provincias:
+    get:
+      tags: [Regiones]
+      summary: Lista provincias de una región
+      parameters:
+        - in: path
+          name: region_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Provincias de la región
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionProvinciasResponse"
+        "404":
+          description: No encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /regiones/{region_id}/comunas:
+    get:
+      tags: [Regiones]
+      summary: Lista comunas de una región (incluye provincia de cada comuna)
+      parameters:
+        - in: path
+          name: region_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Comunas de la región
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionComunasResponse"
+        "404":
+          description: No encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    RegionSummary:
+      type: object
+      properties:
+        region_id:
+          type: integer
+          example: 7
+        nombre:
+          type: string
+          example: Maule
+      required: [region_id, nombre]
+
+    RegionDetail:
+      type: object
+      properties:
+        region_id:
+          type: integer
+          example: 7
+        nombre:
+          type: string
+          example: Maule
+        abreviatura:
+          type: string
+          example: MAULE
+      required: [region_id, nombre]
+
+    ProvinciaSummary:
+      type: object
+      properties:
+        provincia_id:
+          type: integer
+          example: 71
+        nombre:
+          type: string
+          example: Talca
+      required: [provincia_id, nombre]
+
+    ProvinciaDetail:
+      type: object
+      properties:
+        provincia_id:
+          type: integer
+          example: 71
+        provincia:
+          type: string
+          example: Talca
+        region:
+          type: object
+          properties:
+            region_id:
+              type: integer
+              example: 7
+            nombre:
+              type: string
+              example: Maule
+            abreviatura:
+              type: string
+              example: MAULE
+          required: [region_id, nombre]
+      required: [provincia_id, provincia, region]
+
+    ComunaSummary:
+      type: object
+      properties:
+        comuna_id:
+          type: integer
+          example: 7101
+        nombre:
+          type: string
+          example: Talca
+      required: [comuna_id, nombre]
+
+    ComunaFull:
+      type: object
+      properties:
+        comuna_id:
+          type: integer
+          example: 7101
+        comuna:
+          type: string
+          example: Talca
+        provincia:
+          type: string
+          example: Talca
+        region:
+          type: string
+          example: Maule
+      required: [comuna_id, comuna, provincia, region]
+
+    RegionProvinciasResponse:
+      type: object
+      properties:
+        region_id:
+          type: integer
+          example: 7
+        region:
+          type: string
+          example: Maule
+        provincias:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProvinciaSummary"
+      required: [region_id, region, provincias]
+
+    ProvinciaComunasResponse:
+      type: object
+      properties:
+        provincia_id:
+          type: integer
+          example: 71
+        provincia:
+          type: string
+          example: Talca
+        comunas:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComunaSummary"
+      required: [provincia_id, provincia, comunas]
+
+    RegionComunasResponse:
+      type: object
+      properties:
+        region_id:
+          type: integer
+          example: 7
+        region:
+          type: string
+          example: Maule
+        comunas:
+          type: array
+          items:
+            type: object
+            properties:
+              comuna_id:
+                type: integer
+                example: 7101
+              nombre:
+                type: string
+                example: Talca
+              provincia:
+                type: object
+                properties:
+                  provincia_id:
+                    type: integer
+                    example: 71
+                  nombre:
+                    type: string
+                    example: Talca
+                required: [provincia_id, nombre]
+            required: [comuna_id, nombre, provincia]
+      required: [region_id, region, comunas]

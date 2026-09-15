@@ -11,10 +11,13 @@
    Este archivo es la maqueta del modelo de datos del catálogo. Cada campo de aquí
    debería existir como campo del modelo en Django.
 
-   Campos opcionales, presentes solo cuando el nodo ya tiene contrato técnico:
-     estandar    { formato, version, base, autenticacion, resumen }
-     operaciones [ { metodo, ruta, que } ]
-     pruebas     texto
+   Campos opcionales, presentes solo cuando el nodo ya tiene contrato publicado:
+     espec    { archivo, formato, validador, registrada, origen, acceso }
+     pruebas  texto
+
+   `espec.archivo` apunta a la especificación legible por máquina del nodo. La ficha
+   la lee y la renderiza: no hay operaciones transcritas en este archivo, a propósito.
+   Ver docs/adr-2026-09-estandar-legible-por-maquina.md.
 
    Cuando faltan, la ficha muestra el bloque «Pendiente» correspondiente. */
 
@@ -31,26 +34,14 @@ const NODOS = [
     factibilidad: "Alta",
     origen: "Repositorio «utilitarios», equipo SEM de SUBDERE",
     nota: "Es el único nodo del catálogo con implementación existente, y por eso el único cuya ficha publica un estándar en vez de un pendiente. Hoy opera dentro de la infraestructura de SEM y todavía no está expuesto como nodo: no hay acceso desde fuera de esa red ni nivel de servicio comprometido. Lo que se publica acá es su contrato técnico, no una promesa de disponibilidad.",
-    estandar: {
+    espec: {
+      archivo: "estandares/division-territorial.openapi.yaml",
       formato: "OpenAPI 3.0.3",
-      version: "1.0.0",
-      base: "/gescod/api/v1",
-      autenticacion: "Sin credencial. Los datos son públicos y de solo lectura, así que este nodo pertenece al plano abierto: se construye y se prueba contra él sin convenio.",
-      resumen: "Tres recursos anidados —región, provincia y comuna— identificados por su código único territorial, según la división vigente. Las respuestas son JSON en UTF-8 y ninguna operación modifica datos."
+      validador: "https://spec.openapis.org/oas/v3.0.3",
+      registrada: "15 de septiembre de 2026",
+      origen: "Publicada por el equipo SEM en el repositorio «utilitarios». Este archivo es una copia sin modificar; el catálogo no lo edita.",
+      acceso: "Sin credencial. Los datos son públicos y de solo lectura, así que este nodo pertenece al plano abierto: se construye y se prueba contra él sin convenio."
     },
-    operaciones: [
-      { metodo: "GET", ruta: "/regiones", que: "Lista todas las regiones" },
-      { metodo: "GET", ruta: "/regiones/{id}", que: "Datos de una región" },
-      { metodo: "GET", ruta: "/regiones/{id}/provincias", que: "Provincias de una región" },
-      { metodo: "GET", ruta: "/regiones/{id}/comunas", que: "Comunas de una región, con su provincia" },
-      { metodo: "GET", ruta: "/provincias", que: "Lista todas las provincias" },
-      { metodo: "GET", ruta: "/provincias/{id}", que: "Provincia con su región" },
-      { metodo: "GET", ruta: "/provincias/{id}/comunas", que: "Comunas de una provincia" },
-      { metodo: "GET", ruta: "/comunas", que: "Lista todas las comunas" },
-      { metodo: "GET", ruta: "/comunas/{id}/full", que: "Comuna con su provincia y su región" },
-      { metodo: "GET", ruta: "/healthz", que: "Estado del servicio" },
-      { metodo: "GET", ruta: "/readyz", que: "Estado de la conexión a la base de datos" }
-    ],
     pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin convenio y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro."
   },
   {
@@ -224,4 +215,4 @@ const NODOS = [
   }
 ];
 
-const AMBITOS = ["Justicia local", "Pagos", "Identidad", "Municipal", "Transversal"];
+const AMBITOS = ["Transversal", "Justicia local", "Pagos", "Identidad", "Municipal"];
