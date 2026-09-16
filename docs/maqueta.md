@@ -110,7 +110,7 @@ Deliberadamente **no** va en un recuadro de advertencia: un bloque amarillo ensu
 grep -rn 'class="alt"' prototipos/
 ```
 
-Hoy hay una, en el hero de la portada: la versión que parte por el problema en vez de por la propuesta.
+Hoy no hay ninguna. La del hero de la portada —la que parte por el problema— quedó como texto de la página el 16 de septiembre de 2026.
 
 ## Para el QA
 

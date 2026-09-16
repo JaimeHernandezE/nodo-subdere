@@ -117,9 +117,9 @@ const NODOS = [
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "15 de septiembre de 2026",
       origen: "La publicó el equipo SEM de SUBDERE. Este archivo es una copia exacta, sin ningún cambio: el catálogo no la edita.",
-      acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin firmar nada."
+      acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin aceptar términos y condiciones."
     },
-    pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin convenio y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro.",
+    pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin el Uso de Términos y Condiciones y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro.",
     descargables: [
       { archivo: "division-territorial-operaciones.pdf", que: "Listado de ejemplo de las consultas: regiones, provincias y comunas, y qué devuelve cada una." },
       { archivo: "division-territorial.openapi.yaml", que: "Contrato de ejemplo de esas consultas. Es la copia del servicio de SEM, no un archivo nuevo." }
