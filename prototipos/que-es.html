@@ -38,7 +38,7 @@
   <h2>Cómo funciona el nodo</h2>
   <p class="lead">El municipio hace dos cosas con el resto del Estado: <strong>entregar</strong> información que le piden, y <strong>preguntar</strong> por información que necesita. Hoy cada una de esas dos cosas se hace de una manera distinta con cada institución. El nodo las junta en una sola.</p>
   <p class="lead">Para cada intercambio, el nodo publica de antemano <strong>qué se entrega y en qué forma</strong>. Eso es lo que llamamos el estándar, y está escrito de manera que un programa pueda leerlo, no solo una persona.</p>
-  <p class="lead"><strong>El nodo conecta sistemas, no personas.</strong> No tiene pantallas donde un funcionario suba una planilla: las plataformas que reciben información municipal ya tienen sus propios formularios y el nodo no los repite. Quien conversa con el nodo es el sistema del municipio.</p>
+  <p class="lead"><strong>El nodo conecta sistemas.</strong> No tiene pantallas donde un funcionario suba una planilla, las plataformas que reciben información municipal ya tienen sus propios formularios, el nodo solo las sirve.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
@@ -63,13 +63,13 @@
       <p>Qué se envió, cuándo, a quién, y contra qué versión de la regla se revisó. Se puede consultar después, no es un mensaje que aparece y se pierde.</p>
     </div>
   </div>
-  <p class="lead" style="margin-top:22px">Ese es el camino cuando el municipio <strong>entrega</strong>. Cuando en cambio <strong>pregunta</strong> —el código de una comuna, el estado de una compra— no hay nada que autorizar: el sistema pregunta y el nodo responde, y queda registrado quién preguntó qué.</p>
+  <p class="lead" style="margin-top:22px">Ese es el camino cuando el municipio <strong>entrega</strong>. Cuando en cambio <strong>pregunta</strong>, por ejemplo el código de una comuna o el estado de una compra, no hay nada que autorizar: el sistema pregunta y el nodo responde.</p>
 </div></section>
 
 <section><div class="wrap">
   <p class="eyebrow">Hasta dónde llega</p>
   <h2>Qué alcanza a revisar el nodo, y qué no</h2>
-  <p class="lead">No todas las instituciones publican sus reglas, y no hay por qué exigírselo. Entonces el nodo ayuda distinto según cada caso, y lo dice de frente en cada entrega en vez de dar a entender que revisó más de lo que revisó.</p>
+  <p class="lead">No todas las instituciones publican sus reglas. Entonces el nodo ayuda distinto según cada caso, e indica explícitamente qué revisó y qué no.</p>
   <table>
     <tr><th>Qué tanto ayuda</th><th>Qué hace</th><th>Cuándo pasa</th></tr>
     <tr><td><strong>Revisa con las reglas de quien recibe</strong></td><td>Antes de enviar, compara el informe con lo que esa institución publicó que espera.</td><td>Cuando la institución publicó sus reglas.</td></tr>
@@ -82,8 +82,8 @@
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Por dónde pasa todo</p>
-  <h2>Una sola puerta, y queda registro de quién entró</h2>
-  <p class="lead">Ningún sistema habla directamente con los servicios del nodo. Todos pasan por la misma puerta, que comprueba quién llama y deja constancia. Sin esa puerta y ese registro, publicar un servicio no es tener un nodo. <strong>Esto todavía no está construido:</strong> es el diseño que se propone.</p>
+  <h2>Una sola puerta con registro de quien entró</h2>
+  <p class="lead">Todos los sistemas pasan por la misma puerta, que comprueba quién llama y deja registro. <strong>Esto todavía no está construido:</strong> es el diseño que se propone.</p>
 
   <div class="flujo" role="img" aria-label="El sistema del municipio pide un permiso de entrada, llama a la puerta con ese permiso, la puerta comprueba y deja pasar al servicio, y queda registro">
     <div class="flujo__caja"><strong>El sistema del municipio</strong><span>Entrega o pregunta</span></div>
@@ -92,13 +92,14 @@
     <div class="flujo__flecha" aria-hidden="true">→</div>
     <div class="flujo__caja"><strong>La puerta</strong><span>Comprueba quién es y qué puede pedir</span></div>
     <div class="flujo__flecha" aria-hidden="true">→</div>
-    <div class="flujo__caja"><strong>El servicio</strong><span>Responde o recibe</span></div>
+    <div class="flujo__caja"><strong>El servicio (nodo del catálogo)</strong><span>Responde o recibe</span></div>
     <div class="flujo__flecha" aria-hidden="true">→</div>
     <div class="flujo__caja"><strong>Queda registro</strong><span>Quién pidió qué, y cuándo</span></div>
   </div>
 
-  <p class="lead" style="margin-top:20px">Dos cosas que conviene notar. La primera: <strong>nadie tiene atajos.</strong> La pantalla del propio SGM entra por esta misma puerta, igual que el sistema de cualquier municipio o de cualquier proveedor. De hecho <strong>el SGM va a ser el primero en usar el nodo</strong>: SUBDERE cumple su propio estándar antes de pedírselo a nadie. La segunda: el permiso de entrada es temporal y se pide cada vez, así que revocarle el acceso a alguien es inmediato y no depende de avisarle a nadie.</p>
-  <p class="lead">Esta puerta no decide nada del contenido. No sabe si un informe está bien: eso lo revisa cada servicio con sus reglas. Solo se ocupa de quién entra, cuánto puede pedir y que quede anotado.</p>
+  <p class="lead" style="margin-top:20px">Tres cosas que conviene notar. La primera: <strong>nadie tiene atajos.</strong> Cualquier sistema municipal entra por esta misma puerta. De hecho <strong>el SGM (Sistema de Gestión Municipal) desarrollado por SUBDERE va a ser el primero en usar el nodo</strong>: SUBDERE cumple su propio estándar antes de pedírselo a nadie.</p>
+  <p class="lead">La segunda: <strong>el permiso de entrada es temporal</strong> y se pide cada vez, así que revocarle el acceso a alguien es inmediato. Seguridad ante todo.</p>
+  <p class="lead">La tercera: <strong>esta puerta no decide nada del contenido.</strong> No sabe si un informe está bien: eso lo revisa cada servicio con sus reglas. Solo se ocupa de quién entra, cuánto puede pedir y que quede anotado.</p>
 </div></section>
 
 <section><div class="wrap">
@@ -121,14 +122,14 @@
   <p class="lead">Una sola cosa: un sistema que cumpla lo publicado. De ahí en adelante da lo mismo de dónde venga ese sistema.</p>
   <div class="cols-2">
     <div class="card">
-      <div class="num">A</div>
+      <div class="num">Municipio A</div>
       <h3>Si su sistema ya lo cumple</h3>
       <p>El sistema conversa con el nodo y el funcionario sigue trabajando en la pantalla de siempre. Para trabajar con datos reales hacen falta el convenio y la credencial.</p>
     </div>
     <div class="card">
-      <div class="num">B</div>
+      <div class="num">Municipio B</div>
       <h3>Si todavía no lo cumple</h3>
-      <p>Lo publicado es público y cualquiera puede construir contra ello. El municipio no tiene que hacer nada técnico: se lo pide a su proveedor, y su proveedor puede hacerlo sin pedirle permiso a nadie.</p>
+      <p>Lo publicado es público y cualquiera puede construir contra ello. El municipio se lo pide a su proveedor, y su proveedor diseña en base al estándar de este catálogo.</p>
     </div>
   </div>
   <div class="aviso"><p>El nodo <b>no recibe planillas subidas a mano</b>. Las plataformas que hoy reciben información municipal ya tienen sus propios formularios y van a seguir funcionando; el nodo no los reemplaza ni los repite.</p></div>
