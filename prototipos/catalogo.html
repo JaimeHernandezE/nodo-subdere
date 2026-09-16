@@ -36,7 +36,7 @@
 <section style="padding-bottom:18px"><div class="wrap">
   <p class="eyebrow">Catálogo</p>
   <h2>Los nodos publicados</h2>
-  <p class="lead">Cada nodo es un intercambio en el que participa el municipio: con una institución del Estado, con otro municipio o entre sus propias unidades. En algunos el municipio entrega información; en otros pregunta por ella. Unos pocos están siempre y no se eligen, porque los demás dependen de ellos. La ficha de cada uno dice qué entrega, con quién conversa y en qué estado está.</p>
+  <p class="lead">Cada nodo es un intercambio en el que participa el municipio: con una institución del Estado, con otro municipio o entre sus propias unidades. En algunos el municipio entrega información; en otros pregunta por ella. La ficha de cada uno dice qué entrega, con quién conversa y en qué estado está.</p>
 
   <div class="filtros">
     <button class="chip" data-ambito="todos" aria-pressed="true">Todos</button>
@@ -55,7 +55,7 @@
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Cómo leer el estado</p>
   <h2>Casi todo está por hacerse, y el catálogo lo dice</h2>
-  <p class="lead">No es un descuido: es el estado real del trabajo. Los nueve nodos que salieron del juzgado están solo identificados, sin evaluar. <a href="nodo.html?id=division-territorial">División territorial</a> es el único que además tiene un servicio funcionando, aunque por ahora solo dentro de SUBDERE. <a href="nodo.html?id=sgm-core">La base común del SGM</a> y <a href="nodo.html?id=adquisiciones">Adquisiciones</a> ya publicaron qué entregan, pero todavía no se pueden usar desde fuera.</p>
+  <p class="lead">Los nueve nodos que salieron del juzgado están solo identificados, sin evaluar. <a href="nodo.html?id=division-territorial">División territorial</a> es el único que además tiene un servicio funcionando, aunque por ahora solo dentro de SUBDERE. <a href="nodo.html?id=sgm-core">La base común del SGM</a> y <a href="nodo.html?id=adquisiciones">Adquisiciones</a> ya publicaron qué entregan, pero todavía no se pueden usar desde fuera.</p>
   <p class="lead">Dos de la lista van marcados como <b>base</b>: la base común del SGM y los estándares de Gobierno Digital. Eso significa que no son algo que el municipio decida activar — están siempre, porque los demás se apoyan en ellos.</p>
   <table>
     <tr><th>Estado</th><th>Qué quiere decir</th></tr>
@@ -105,7 +105,7 @@
     var mas = n.instituciones.length > 2
       ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
     var claseTag = (n.clase === 'plataforma')
-      ? '<span class="tag tag-plataforma">Plataforma</span>' : '';
+      ? '<span class="tag tag-plataforma">Base</span>' : '';
     return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
       + '<div class="cab"><h4>'+esc(n.nombre)+'</h4>'
       + '<span class="'+(n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad')+'">'+esc(n.madurez)+'</span></div>'
