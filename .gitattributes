@@ -1,0 +1,22 @@
+# Finales de línea
+#
+# Se guardan siempre en LF dentro del repositorio y se escriben en LF
+# en el disco, sea cual sea el sistema operativo. Sin esto, un editor
+# de Windows puede reescribir un archivo entero a CRLF y git lo muestra
+# como cientos de líneas cambiadas sin que haya un solo cambio real.
+#
+# Importa especialmente para las especificaciones publicadas en
+# estandares/: son copias byte a byte de un original ajeno y deben
+# seguir siéndolo.
+* text=auto eol=lf
+
+# Binarios: git no debe tocarlos ni intentar normalizarlos.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary
+*.woff  binary
+*.woff2 binary
