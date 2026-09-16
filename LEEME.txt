@@ -1,0 +1,40 @@
+ARCHIVOS MODIFICADOS — Nodo SUBDERE
+Sesión del 15-16 de septiembre de 2026
+
+Copia esta carpeta sobre la raíz del repositorio, respetando la
+estructura. Son once archivos.
+
+  .gitattributes                                       <- NUEVO
+  docs/maqueta.md
+  prototipos/index.html
+  prototipos/que-es.html
+  prototipos/catalogo.html
+  prototipos/participar.html
+  prototipos/comentarios.html
+  prototipos/nodo.html
+  prototipos/assets/data.js
+  prototipos/assets/styles.css
+  prototipos/estandares/division-territorial.openapi.yaml
+
+QUÉ NO COPIAR
+No están acá, a propósito, siete archivos que aparecían como
+modificados pero cuyo contenido no cambió — solo los finales de línea:
+
+  .github/workflows/pages-prototipos.yml
+  README.md
+  docs/README.md
+  docs/flujo_1.md
+  docs/flujo_2.md
+  docs/plataforma-control.md
+  prototipos/README.md
+
+Con el .gitattributes puesto, git los normaliza solo. Si aparecen como
+modificados después de copiarlo, se descartan sin problema:
+
+  git checkout -- <archivo>
+
+SOBRE EL OPENAPI
+prototipos/estandares/division-territorial.openapi.yaml va incluido
+solo porque su versión en el PC había quedado con finales de línea de
+Windows. El contenido es idéntico al original del equipo SEM, y así
+debe quedar: es una copia byte a byte de un archivo ajeno.

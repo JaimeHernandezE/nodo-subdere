@@ -35,6 +35,14 @@ a:hover{text-decoration:underline}
 .hero h1{font-size:38px;line-height:1.2;margin:0 0 18px;max-width:20ch}
 .hero p{font-size:17px;color:var(--navy-t);max-width:62ch;margin:0 0 12px}
 .hero .acciones{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+
+/* ---------- alternativas en discusión ----------
+   Redacción que el equipo todavía está conversando. Va entre paréntesis
+   y en cursiva, sin recuadro, para no leerse como una advertencia.
+   TODAS se retiran antes de publicar: buscar la clase .alt. */
+.alt{font-style:italic;font-size:15px;line-height:1.5;margin:18px 0 0;max-width:62ch;
+     padding-left:14px;border-left:2px solid var(--hair);color:var(--muted)}
+.hero .alt{color:var(--navy-l);border-left-color:var(--navy-2);font-size:15.5px}
 .btn{display:inline-block;padding:11px 20px;border-radius:6px;font-size:14px;font-weight:600;border:1.5px solid transparent}
 .btn-p{background:var(--amb);color:#fff}
 .btn-p:hover{background:var(--amb-d);text-decoration:none}

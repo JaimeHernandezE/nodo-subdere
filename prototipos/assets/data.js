@@ -8,7 +8,7 @@
    «utilitarios» del equipo SEM, y el único con implementación existente.
 
    Dos nodos más, ámbito SGM, se agregaron el 15 de septiembre de 2026:
-     sgm-core        — core de plataforma (clase plataforma, no se elige por módulo)
+     sgm-core        — la base común del SGM (clase plataforma: está siempre, no se elige)
      adquisiciones   — primer módulo de negocio con OpenAPI de piloto
 
    Este archivo es la maqueta del modelo de datos del catálogo. Cada campo de aquí
@@ -31,23 +31,23 @@
 const NODOS = [
   {
     id: "sgm-core",
-    nombre: "Core de plataforma SGM",
+    nombre: "Base común del SGM",
     ambito: "SGM",
     clase: "plataforma",
-    funcion: "Identidad, tenants, roles, parámetros, auditoría, documentos y adaptadores que todo módulo SGM necesita.",
-    descripcion: "No es un módulo de negocio ni se elige por módulo: es la condición de cualquier módulo SGM. Cubre autenticación federada (Clave Única), autorización RBAC, gestión de tenants, parámetros normativos, auditoría de actos, notificaciones, documentos (DocumentRef), Mercado Público, FirmaGob y DocDigital. Un municipio que consume solo Adquisiciones igual consume este nodo. Distinto de la Plataforma de Control (el frente de acceso del catálogo) y de los Estándares de Gobierno Digital (restricción SGD, no API de SUBDERE).",
+    funcion: "Lo que todo módulo del SGM necesita por debajo: quién es quién, qué puede hacer cada uno, y el registro de lo que se hizo.",
+    descripcion: "No es un módulo que el municipio decida usar: es lo que está debajo de todos. Se ocupa de entrar con Clave Única, de saber qué puede hacer cada funcionario, de mantener separados los datos de cada municipio, de guardar los parámetros que fija la norma, de dejar registro de cada acto y de conectar con Mercado Público, la firma electrónica y los documentos. Un municipio que use solamente Adquisiciones igual está usando esto. No hay que confundirlo con la puerta de entrada del nodo, que es otra cosa: esta es la base del sistema, aquella controla quién llama.",
     instituciones: ["SUBDERE — SGM", "Municipios", "Proveedores de sistemas de gestión municipal"],
     intercambio: "Transversal",
     madurez: "En desarrollo",
     factibilidad: "Alta",
-    origen: "Corpus SGM — plataforma-core.md y plataforma/contracts.md",
-    nota: "Clase plataforma: no se elige. Quien consume cualquier módulo SGM consume este. El contrato funcional está en borrador; la OpenAPI del core todavía no está ensamblada (pendiente X-48). Publicar el contrato no es exponer el servicio.",
+    origen: "Documentación de arquitectura del SGM",
+    nota: "Está siempre: no es algo que se active. Quien use cualquier módulo del SGM está usando esto. Lo que entrega está descrito en borrador, todavía no en su forma final, y el servicio no corre en ninguna parte. Publicar la descripción no significa que se pueda usar.",
     espec: {
-      formato: "Contrato funcional (OpenAPI del core pendiente)",
+      formato: "Descripción funcional; la versión técnica final está pendiente",
       validador: "https://spec.openapis.org/oas/v3.1.0",
       registrada: "15 de septiembre de 2026",
-      origen: "Vista funcional en el repositorio sgm-nueva-arquitectura: sgm-docs/plataforma/contracts.md y sgm-docs/arquitectura/especificacion/plataforma-core.md. El catálogo no edita esos archivos. La OpenAPI ensamblada del core aún no existe (X-48).",
-      acceso: "Dos planos: personas (Clave Única) y sistemas (OAuth 2.0 client credentials). Toda llamada pasa por la Plataforma de Control."
+      origen: "Está descrito en la documentación de arquitectura del SGM, dentro del repositorio del proyecto. El catálogo no guarda una copia.",
+      acceso: "Dos caminos: las personas entran con Clave Única y los sistemas con una credencial propia. Los dos pasan por la misma puerta."
     },
     pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md en el corpus de licitación)."
   },
@@ -56,20 +56,20 @@ const NODOS = [
     nombre: "Adquisiciones",
     ambito: "SGM",
     clase: "intercambio",
-    funcion: "Ciclo de compras públicas municipales, desde la SOLPED hasta el pago, en las modalidades de la Ley 19.886.",
-    descripcion: "Primer módulo de negocio del SGM publicado como nodo del catálogo. Expone el contrato HTTP del ciclo de compras (Compra Ágil como piloto; Convenio Marco, Licitación Pública y Trato Directo en la misma especificación). El frontend de SGM y un municipio en consumo por módulo usan el mismo OpenAPI a través de la Plataforma de Control. Depende del core de plataforma y de contratos de proveedor hacia Presupuestos y Contabilidad: «solo Adquisiciones» no es un módulo suelto.",
+    funcion: "Todo el ciclo de una compra municipal, desde que alguien la pide hasta que se paga.",
+    descripcion: "Es el primer módulo del SGM que entra al catálogo. Cubre las modalidades de compra de la Ley 19.886 —Compra Ágil primero, y después Convenio Marco, Licitación Pública y Trato Directo—, todas descritas en el mismo lugar. La pantalla del propio SGM y el sistema de un municipio piden exactamente lo mismo y entran por la misma puerta: nadie tiene un camino privilegiado. Eso sí, «solo Adquisiciones» no viene solo: se apoya en la base común y necesita saber si hay presupuesto y cómo se contabiliza.",
     instituciones: ["SUBDERE — SGM", "Municipios", "Proveedores de sistemas de gestión municipal", "ChileCompra / Mercado Público"],
     intercambio: "El municipio consulta",
     madurez: "En desarrollo",
     factibilidad: "Alta",
-    origen: "Corpus SGM — modulos/adquisiciones (OpenAPI 3.1 de piloto)",
-    nota: "Publicar el contrato no es exponer el servicio: la especificación existe; el servicio todavía no corre. Depende del nodo Core de plataforma SGM y de proveedores de disponibilidad presupuestaria y contabilidad. La OpenAPI vive seccionada en sgm-docs; el catálogo no la copia ni la transcribe.",
+    origen: "Documentación del módulo de Adquisiciones del SGM",
+    nota: "Ya está escrito qué entrega, pero el servicio todavía no corre en ninguna parte. Depende de la base común del SGM y de que existan presupuestos y contabilidad. La descripción vive en la documentación del SGM, repartida en varios archivos; el catálogo no la copia, a propósito.",
     espec: {
-      formato: "OpenAPI 3.1",
+      formato: "OpenAPI 3.1 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.1.0",
       registrada: "15 de septiembre de 2026",
-      origen: "Punto de entrada en el repositorio sgm-nueva-arquitectura: sgm-docs/modulos/adquisiciones/openapi/adquisiciones.openapi.yaml. Spec seccionada con $ref a archivos hermanos; el catálogo no la copia. El renderizador de la maqueta solo resuelve punteros internos, así que acá se declara el metadato sin ensamblar el archivo.",
-      acceso: "Dos planos: personas (Clave Única, frontend SGM) y sistemas (OAuth 2.0 client credentials, consumo por módulo). Toda llamada pasa por la Plataforma de Control."
+      origen: "Está descrito en la documentación del módulo de Adquisiciones, repartido en varios archivos dentro del repositorio del proyecto. El catálogo no guarda una copia.",
+      acceso: "Dos caminos: las personas entran con Clave Única desde la pantalla del SGM, y los sistemas con una credencial propia. Los dos pasan por la misma puerta, sin atajos."
     },
     pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción."
   },
@@ -78,21 +78,21 @@ const NODOS = [
     nombre: "División Político-Administrativa",
     ambito: "Transversal",
     clase: "intercambio",
-    funcion: "Consulta de regiones, provincias y comunas con su código oficial, para que todos los sistemas nombren el territorio igual.",
-    descripcion: "Casi cualquier intercambio entre un municipio y una institución empieza por establecer de qué comuna se habla. Si cada sistema mantiene su propia lista —con sus abreviaturas, sus códigos y sus nombres escritos a su manera—, los datos no cruzan aunque el formato sea correcto. Este nodo entrega la división político-administrativa vigente con su código único territorial, y conviene que sea el primero precisamente porque casi todos los demás dependen de él.",
+    funcion: "Regiones, provincias y comunas con su código oficial, para que todos los sistemas llamen igual a cada lugar.",
+    descripcion: "Casi cualquier intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se está hablando. Si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien. Este nodo entrega la lista oficial vigente, con el código que le corresponde a cada lugar. Conviene que sea el primero justamente porque casi todos los demás lo necesitan.",
     instituciones: ["SUBDERE — SEM", "Municipios", "Proveedores de sistemas de gestión municipal"],
     intercambio: "El municipio consulta",
     madurez: "En desarrollo",
     factibilidad: "Alta",
-    origen: "Repositorio «utilitarios», equipo SEM de SUBDERE",
-    nota: "Es el único nodo del catálogo con implementación existente. Hoy opera dentro de la infraestructura de SEM y todavía no está expuesto como nodo: no hay acceso desde fuera de esa red ni nivel de servicio comprometido. Lo que se publica acá es su contrato técnico, no una promesa de disponibilidad.",
+    origen: "Un servicio que ya construyó el equipo SEM de SUBDERE",
+    nota: "Es el único del catálogo que además de estar escrito ya funciona. Pero funciona solo dentro de la red de SUBDERE: desde fuera todavía no se puede usar, y nadie se ha comprometido a mantenerlo andando. Lo que se publica acá es qué entrega, no una promesa de que esté disponible.",
     espec: {
       archivo: "estandares/division-territorial.openapi.yaml",
-      formato: "OpenAPI 3.0.3",
+      formato: "OpenAPI 3.0.3 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "15 de septiembre de 2026",
-      origen: "Publicada por el equipo SEM en el repositorio «utilitarios». Este archivo es una copia sin modificar; el catálogo no lo edita.",
-      acceso: "Sin credencial. Los datos son públicos y de solo lectura, así que este nodo pertenece al plano abierto: se construye y se prueba contra él sin convenio."
+      origen: "La publicó el equipo SEM de SUBDERE. Este archivo es una copia exacta, sin ningún cambio: el catálogo no la edita.",
+      acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin firmar nada."
     },
     pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin convenio y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro."
   },
@@ -116,7 +116,7 @@ const NODOS = [
     ambito: "Juzgado de Policía Local",
     clase: "intercambio",
     funcion: "Carpeta digital por ROL, con documentos firmados e identificador único nacional.",
-    descripcion: "Establece un identificador numérico único a nivel nacional, con formato conocido y trazable, que permite seguir una causa a lo largo de su recorrido y entre instituciones. Sin un identificador común, cada institución vuelve a nombrar el mismo expediente a su manera.",
+    descripcion: "Le da a cada causa un número único en todo el país, con un formato conocido, para poder seguirla a lo largo de su recorrido y entre instituciones. Sin ese número común, cada institución vuelve a bautizar el mismo expediente a su manera y después nadie sabe que son el mismo.",
     instituciones: ["Poder Judicial", "Corte Suprema"],
     intercambio: "Bidireccional",
     madurez: "Deseable",
@@ -164,7 +164,7 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
-    nota: "Condición de los demás más que nodo propio: lo que aquí se defina restringe a todo el resto del catálogo. Clase plataforma: no se elige por módulo."
+    nota: "Más que un nodo propio, es una condición de todos los demás: lo que se decida acá limita al resto del catálogo. Está siempre; no es algo que se active."
   },
   {
     id: "correos",

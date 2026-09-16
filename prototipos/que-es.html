@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Qué es el nodo · Nodo SUBDERE</title>
-<meta name="description" content="La Plataforma de Control: cómo opera el nodo, el esquema de acceso, sandbox con datos sintéticos y convenio para operar con municipalidades.">
+<meta name="description" content="Cómo funciona el nodo: un ejemplo concreto, qué alcanza a revisar, por dónde pasa todo y qué hace falta para usarlo.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nodo SUBDERE">
 <meta property="og:title" content="Qué es el nodo · Nodo SUBDERE">
-<meta property="og:description" content="La Plataforma de Control: esquema de acceso, sandbox con datos sintéticos y convenio para operar con municipalidades.">
+<meta property="og:description" content="Cómo funciona el nodo: un ejemplo concreto, qué alcanza a revisar, por dónde pasa todo y qué hace falta para usarlo.">
 <meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/que-es.html">
 <meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -35,110 +35,103 @@
 
 <section><div class="wrap">
   <p class="eyebrow">Descripción general</p>
-  <h2>Un contrato técnico publicado, y el componente que lo opera</h2>
-  <p class="lead">El Nodo SUBDERE publica el contrato técnico de cada intercambio y opera la puerta por la que pasa el tráfico: la Plataforma de Control. Por algunos nodos el municipio <strong>entrega</strong> información una sola vez, sabe antes de enviar si está correcta y queda con constancia. Por otros <strong>consulta</strong> un servicio —un código de comuna, un expediente de compra, la identidad de plataforma— con el mismo contrato público.</p>
-  <p class="lead">Cuando entrega, no reemplaza a la plataforma destinataria: mantiene un adaptador por cada una y les entrega en el formato que hoy usan.</p>
-  <p class="lead"><strong>Es una conexión entre sistemas.</strong> El nodo no tiene pantallas para que un funcionario cargue planillas: las plataformas que reciben ya tienen sus propios canales de carga y el nodo no los duplica. Quien conversa con el nodo es el sistema de gestión del municipio —o el frontend del SGM, que entra por la misma puerta—, y lo hace contra un contrato técnico publicado.</p>
+  <h2>Cómo funciona el nodo</h2>
+  <p class="lead">El municipio hace dos cosas con el resto del Estado: <strong>entregar</strong> información que le piden, y <strong>preguntar</strong> por información que necesita. Hoy cada una de esas dos cosas se hace de una manera distinta con cada institución. El nodo las junta en una sola.</p>
+  <p class="lead">Para cada intercambio, el nodo publica de antemano <strong>qué se entrega y en qué forma</strong>. Eso es lo que llamamos el estándar, y está escrito de manera que un programa pueda leerlo, no solo una persona.</p>
+  <p class="lead"><strong>El nodo conecta sistemas, no personas.</strong> No tiene pantallas donde un funcionario suba una planilla: las plataformas que reciben información municipal ya tienen sus propios formularios y el nodo no los repite. Quien conversa con el nodo es el sistema del municipio.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
-  <p class="eyebrow">Plataforma de Control</p>
-  <h2>La puerta de todas las APIs</h2>
-  <p class="lead">La <strong>Plataforma de Control</strong> es la capa de acceso, identidad de llamada y registro. No es un nodo del catálogo: es el frente por el que se llega a todos. Sin ella, publicar una API no constituye nodo. Lo que sigue es el <strong>diseño previsto</strong>; todavía no está desplegado.</p>
-
-  <div class="flujo" role="img" aria-label="Flujo: sistema municipal pide token a Identidad, llama a la Puerta única con el token, la puerta reenvía a la API del nodo y queda registro">
-    <div class="flujo__caja"><strong>Sistema municipal</strong><span>Cliente que consume o entrega</span></div>
-    <div class="flujo__flecha" aria-hidden="true">→</div>
-    <div class="flujo__caja"><strong>Identidad</strong><span>Emite el token de acceso</span></div>
-    <div class="flujo__flecha" aria-hidden="true">→</div>
-    <div class="flujo__caja"><strong>Puerta única</strong><span>Valida token, permisos y límites</span></div>
-    <div class="flujo__flecha" aria-hidden="true">→</div>
-    <div class="flujo__caja"><strong>API del nodo</strong><span>El servicio del catálogo</span></div>
-    <div class="flujo__flecha" aria-hidden="true">→</div>
-    <div class="flujo__caja"><strong>Registro</strong><span>Logs y constancia de la llamada</span></div>
-  </div>
-
-  <ol class="pasos">
-    <li>El sistema del municipio pide un token a la identidad de la plataforma.</li>
-    <li>Recibe un token de acceso.</li>
-    <li>Llama a la API publicada usando ese token.</li>
-    <li>La puerta valida el token, los permisos y los límites, y reenvía al servicio del nodo.</li>
-    <li>La respuesta vuelve por el mismo camino; queda registro de la llamada.</li>
-  </ol>
-
-  <h3 style="margin-top:32px;color:var(--navy)">Probar no es lo mismo que operar</h3>
-  <p class="lead">El diseño distingue dos planos. El contrato de la API es el mismo; cambian los datos y la credencial.</p>
-  <table>
-    <tr><th></th><th>Pruebas (sandbox)</th><th>Operación</th></tr>
-    <tr><td><strong>Quién</strong></td><td>Cualquiera que construya contra el estándar</td><td>Municipio (o el sistema que él autorice) con convenio</td></tr>
-    <tr><td><strong>Datos</strong></td><td>Sintéticos; sin datos reales de municipios</td><td>Datos del municipio autorizado</td></tr>
-    <tr><td><strong>Convenio</strong></td><td>No hace falta</td><td>Convenio con SUBDERE</td></tr>
-    <tr><td><strong>Credencial</strong></td><td>De prueba / abierta según el nodo</td><td>Identificador de cliente emitido a partir del convenio</td></tr>
-  </table>
-  <div class="aviso"><p><b>Diseño previsto.</b> Cada endpoint publicado tendrá un ambiente de pruebas (sandbox) con el mismo contrato que producción y datos sintéticos, para construir sin convenio. Para operar con una municipalidad hace falta un <strong>convenio con SUBDERE</strong>. Ese convenio habilita un <strong>identificador de cliente</strong> (credencial de sistema) con el que el municipio —o su proveedor autorizado— obtiene tokens y usa la Plataforma de Control. Sin ese identificador no hay operación sobre datos reales. Hoy ningún sandbox está desplegado; el catálogo lo declara ficha por ficha.</p></div>
-</div></section>
-
-<section><div class="wrap">
-  <p class="eyebrow">Cómo funciona</p>
-  <h2>Un ejemplo concreto</h2>
-  <p class="lead">Dos municipios tienen que entregar el mismo reporte a fin de mes. Uno usa un sistema que desarrolló su propia unidad de informática; el otro compró el suyo a un proveedor. Desde la validación en adelante, el camino es idéntico para los dos: <strong>el nodo no distingue quién construyó el sistema, solo si cumple el estándar publicado.</strong></p>
+  <p class="eyebrow">Un ejemplo</p>
+  <h2>Dos municipios entregan el mismo informe</h2>
+  <p class="lead">Los dos tienen que entregar el mismo reporte a fin de mes. Uno usa un sistema que armó su propia unidad de informática; el otro se lo compró a un proveedor. Desde ahí en adelante el camino es idéntico: <strong>al nodo no le importa quién hizo el sistema, solo que cumpla lo que está publicado.</strong></p>
   <div class="cols-2">
     <div class="card">
       <h3>Antes de que empiece nada</h3>
-      <p>El destinatario publica en el nodo la plantilla del reporte y sus reglas, con número de versión. El nodo no inventa la regla: la guarda y la aplica. Si el destinatario cambia lo que pide, publica una versión nueva.</p>
+      <p>Quien recibe el informe publica en el nodo cómo lo quiere y qué reglas aplica, con un número de versión. El nodo no inventa la regla: la guarda y la aplica. Si mañana piden algo distinto, publican una versión nueva y se sabe cuál rige.</p>
     </div>
     <div class="card">
-      <h3>Validar es gratis y no envía</h3>
-      <p>El sistema del municipio valida cuantas veces quiera y muestra las observaciones en la misma pantalla donde el funcionario trabaja. Nada sale del municipio en este paso.</p>
+      <h3>Revisar no cuesta nada</h3>
+      <p>El sistema del municipio puede revisar su informe las veces que quiera, y los errores aparecen en la misma pantalla donde el funcionario está trabajando. En este paso no sale nada del municipio.</p>
     </div>
     <div class="card">
-      <h3>Enviar es otro acto</h3>
-      <p>Recién cuando el informe está limpio, el funcionario responsable autoriza el envío. El reporte sigue siendo un acto del municipio.</p>
+      <h3>Enviar es otra cosa</h3>
+      <p>Recién cuando el informe está limpio, el funcionario responsable autoriza el envío. Entregar sigue siendo una decisión del municipio, no algo que ocurre solo.</p>
     </div>
     <div class="card">
-      <h3>Y queda constancia</h3>
-      <p>Qué salió, cuándo, a dónde, y contra qué versión de la regla se validó. Consultable después, no un aviso que aparece y se va.</p>
+      <h3>Y queda comprobante</h3>
+      <p>Qué se envió, cuándo, a quién, y contra qué versión de la regla se revisó. Se puede consultar después, no es un mensaje que aparece y se pierde.</p>
     </div>
   </div>
-  <p class="lead" style="margin-top:22px">Ese camino es el de la <strong>entrega</strong>. Cuando el municipio <strong>consulta</strong> —por ejemplo la <a href="nodo.html?id=division-territorial">división territorial</a> o <a href="nodo.html?id=adquisiciones">Adquisiciones</a>— no hay reporte que autorizar: el sistema pide, la Plataforma de Control valida la llamada y deja traza, y el nodo responde. El frontend del SGM hace exactamente eso: es un consumidor más, sin canal interno.</p>
-</div></section>
-
-<section class="gris"><div class="wrap">
-  <p class="eyebrow">Alcance de la validación</p>
-  <h2>Lo que el nodo puede revisar, y lo que no</h2>
-  <p class="lead">No todos los destinatarios publican sus reglas, y no hay razón para exigírselo. Por eso el servicio se declara por destinatario y el municipio ve exactamente qué se hizo con su información.</p>
-  <table>
-    <tr><th>Nivel</th><th>Qué hace el nodo</th><th>Cuándo aplica</th></tr>
-    <tr><td><strong>Valida con reglas del destinatario</strong></td><td>Revisa antes de enviar contra la plantilla publicada y versionada.</td><td>Cuando el destinatario publica sus reglas.</td></tr>
-    <tr><td><strong>Valida con reglas de norma pública</strong></td><td>Aplica las reglas que están en la norma, codificadas y mantenidas al día.</td><td>Cuando el requisito es público aunque el destinatario no publique nada.</td></tr>
-    <tr><td><strong>Formatea y entrega</strong></td><td>Da el formato que el destino consume, entrega y devuelve el comprobante y las observaciones que lleguen.</td><td>El piso. El municipio deja de preparar varios formatos a mano.</td></tr>
-    <tr><td><strong>Genera el archivo</strong></td><td>Produce el documento y se lo devuelve al municipio.</td><td>Cuando el municipio publica por su cuenta y no hay destinatario que convenir.</td></tr>
-  </table>
-  <div class="aviso"><p>Prometer validación donde no la hay sería la forma más rápida de perder la confianza que este servicio necesita. Por eso cada entrega dice qué se revisó y qué no.</p></div>
+  <p class="lead" style="margin-top:22px">Ese es el camino cuando el municipio <strong>entrega</strong>. Cuando en cambio <strong>pregunta</strong> —el código de una comuna, el estado de una compra— no hay nada que autorizar: el sistema pregunta y el nodo responde, y queda registrado quién preguntó qué.</p>
 </div></section>
 
 <section><div class="wrap">
+  <p class="eyebrow">Hasta dónde llega</p>
+  <h2>Qué alcanza a revisar el nodo, y qué no</h2>
+  <p class="lead">No todas las instituciones publican sus reglas, y no hay por qué exigírselo. Entonces el nodo ayuda distinto según cada caso, y lo dice de frente en cada entrega en vez de dar a entender que revisó más de lo que revisó.</p>
+  <table>
+    <tr><th>Qué tanto ayuda</th><th>Qué hace</th><th>Cuándo pasa</th></tr>
+    <tr><td><strong>Revisa con las reglas de quien recibe</strong></td><td>Antes de enviar, compara el informe con lo que esa institución publicó que espera.</td><td>Cuando la institución publicó sus reglas.</td></tr>
+    <tr><td><strong>Revisa con las reglas de la norma</strong></td><td>Aplica lo que dice la norma, escrito como regla y mantenido al día.</td><td>Cuando la exigencia es pública aunque la institución no publique nada.</td></tr>
+    <tr><td><strong>Le da el formato y lo entrega</strong></td><td>Arma el informe como esa institución lo acepta, lo entrega, y devuelve el comprobante y las observaciones que lleguen.</td><td>Siempre, como mínimo. El municipio deja de preparar varios formatos a mano.</td></tr>
+    <tr><td><strong>Prepara el documento</strong></td><td>Lo produce y se lo devuelve al municipio para que lo publique él.</td><td>Cuando el municipio publica por su cuenta y no hay con quién convenir nada.</td></tr>
+  </table>
+  <div class="aviso"><p>Decir que se revisó algo que no se revisó sería la forma más rápida de que nadie vuelva a confiar en esto. Por eso cada entrega dice qué se miró y qué no.</p></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">Por dónde pasa todo</p>
+  <h2>Una sola puerta, y queda registro de quién entró</h2>
+  <p class="lead">Ningún sistema habla directamente con los servicios del nodo. Todos pasan por la misma puerta, que comprueba quién llama y deja constancia. Sin esa puerta y ese registro, publicar un servicio no es tener un nodo. <strong>Esto todavía no está construido:</strong> es el diseño que se propone.</p>
+
+  <div class="flujo" role="img" aria-label="El sistema del municipio pide un permiso de entrada, llama a la puerta con ese permiso, la puerta comprueba y deja pasar al servicio, y queda registro">
+    <div class="flujo__caja"><strong>El sistema del municipio</strong><span>Entrega o pregunta</span></div>
+    <div class="flujo__flecha" aria-hidden="true">→</div>
+    <div class="flujo__caja"><strong>Pide un permiso</strong><span>Con la credencial del municipio</span></div>
+    <div class="flujo__flecha" aria-hidden="true">→</div>
+    <div class="flujo__caja"><strong>La puerta</strong><span>Comprueba quién es y qué puede pedir</span></div>
+    <div class="flujo__flecha" aria-hidden="true">→</div>
+    <div class="flujo__caja"><strong>El servicio</strong><span>Responde o recibe</span></div>
+    <div class="flujo__flecha" aria-hidden="true">→</div>
+    <div class="flujo__caja"><strong>Queda registro</strong><span>Quién pidió qué, y cuándo</span></div>
+  </div>
+
+  <p class="lead" style="margin-top:20px">Dos cosas que conviene notar. La primera: <strong>nadie tiene atajos.</strong> La pantalla del propio SGM entra por esta misma puerta, igual que el sistema de cualquier municipio o de cualquier proveedor. La segunda: el permiso de entrada es temporal y se pide cada vez, así que revocarle el acceso a alguien es inmediato y no depende de avisarle a nadie.</p>
+  <p class="lead">Esta puerta no decide nada del contenido. No sabe si un informe está bien: eso lo revisa cada servicio con sus reglas. Solo se ocupa de quién entra, cuánto puede pedir y que quede anotado.</p>
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">Probar y operar</p>
+  <h2>Practicar con datos inventados no es lo mismo que trabajar con datos reales</h2>
+  <p class="lead">Son dos situaciones distintas y conviene no mezclarlas. Lo que el servicio promete entregar es idéntico en las dos; lo que cambia son los datos y el permiso que hace falta.</p>
+  <table>
+    <tr><th></th><th>Para practicar</th><th>Para trabajar de verdad</th></tr>
+    <tr><td><strong>Quién</strong></td><td>Cualquiera que esté construyendo un sistema</td><td>El municipio, o el sistema que él autorice</td></tr>
+    <tr><td><strong>Con qué datos</strong></td><td>Datos inventados; ninguno de un municipio real</td><td>Los datos del municipio que autorizó</td></tr>
+    <tr><td><strong>¿Hace falta convenio?</strong></td><td>No</td><td>Sí, con SUBDERE</td></tr>
+    <tr><td><strong>Permiso</strong></td><td>Abierto o de prueba, según el servicio</td><td>Una credencial a nombre del municipio, que sale del convenio</td></tr>
+  </table>
+  <div class="aviso"><p><b>Todavía no existe.</b> La idea es que cada servicio publicado tenga su zona de práctica —un <em>sandbox</em>— con datos inventados, para que cualquiera pueda construir sin pedir permiso ni firmar nada. Para trabajar con datos de un municipio sí hace falta un convenio con SUBDERE, que es lo que habilita la credencial. Hoy no hay ninguna zona de práctica funcionando; cada ficha del catálogo dice en qué estado está.</p></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
   <p class="eyebrow">Qué necesita cada municipio</p>
   <h2>Qué hace falta para usar el nodo</h2>
-  <p class="lead">Para <strong>implementar</strong> bastan el estándar y el sandbox (diseño previsto). Para <strong>operar</strong> con datos reales hacen falta el convenio con SUBDERE y el identificador de cliente. De ahí en adelante no importa de dónde venga el sistema.</p>
-  <div class="cols-3">
+  <p class="lead">Una sola cosa: un sistema que cumpla lo publicado. De ahí en adelante da lo mismo de dónde venga ese sistema.</p>
+  <div class="cols-2">
     <div class="card">
       <div class="num">A</div>
-      <h3>Con un sistema que ya implementa el estándar</h3>
-      <p>El sistema conversa con la Plataforma de Control. El funcionario trabaja en su pantalla de siempre. Para datos reales: convenio e identificador de cliente.</p>
+      <h3>Si su sistema ya lo cumple</h3>
+      <p>El sistema conversa con el nodo y el funcionario sigue trabajando en la pantalla de siempre. Para trabajar con datos reales hacen falta el convenio y la credencial.</p>
     </div>
     <div class="card">
       <div class="num">B</div>
-      <h3>Con un sistema que todavía no lo implementa</h3>
-      <p>El estándar es público. El diseño prevé sandbox con datos sintéticos para que el proveedor construya sin convenio. Operar con el municipio exige el convenio de ese municipio con SUBDERE.</p>
-    </div>
-    <div class="card">
-      <div class="num">C</div>
-      <h3>Sin ningún sistema</h3>
-      <p>El nodo conecta sistemas, así que no es la respuesta para este caso. La respuesta es el <strong>SGM</strong>: código abierto, sin costo de licencia. El SGM es además el primer consumidor previsto de la Plataforma de Control.</p>
+      <h3>Si todavía no lo cumple</h3>
+      <p>Lo publicado es público y cualquiera puede construir contra ello. El municipio no tiene que hacer nada técnico: se lo pide a su proveedor, y su proveedor puede hacerlo sin pedirle permiso a nadie.</p>
     </div>
   </div>
-  <div class="aviso"><p>El nodo <b>no recibe planillas cargadas a mano</b>. Las plataformas que reciben información municipal ya tienen sus propios canales de carga y seguirán funcionando; el nodo no los reemplaza ni los duplica.</p></div>
+  <div class="aviso"><p>El nodo <b>no recibe planillas subidas a mano</b>. Las plataformas que hoy reciben información municipal ya tienen sus propios formularios y van a seguir funcionando; el nodo no los reemplaza ni los repite.</p></div>
 </div></section>
 
 <footer><div class="wrap">

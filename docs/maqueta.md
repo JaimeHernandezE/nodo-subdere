@@ -90,6 +90,24 @@ Se retiran del catálogo, no del levantamiento: siguen siendo intercambios reale
 
 Que la ficha de división territorial publique el estándar no significa que el nodo esté disponible: el servicio responde solo dentro de la red de SEM y no tiene nivel de servicio comprometido. La ficha lo dice explícitamente en su nota. Lo mismo vale, al revés, para Adquisiciones y el core: hay contrato declarado, no hay servicio expuesto.
 
+## Redacciones alternativas en discusión
+
+El sitio está pensado como **definitivo y público**, pero en esta etapa se usa para conversarlo con el equipo. Cuando hay una redacción que todavía no está zanjada, la alternativa va **en la propia página**, entre paréntesis y en cursiva, con la clase `alt`:
+
+```html
+<p class="alt">(Versión alternativa en discusión: «…»)</p>
+```
+
+Deliberadamente **no** va en un recuadro de advertencia: un bloque amarillo ensucia la percepción de la página y hace que el lector lo lea como un problema en vez de como una opción sobre la mesa.
+
+**Todas se retiran antes de publicar.** Para encontrarlas:
+
+```bash
+grep -rn 'class="alt"' prototipos/
+```
+
+Hoy hay una, en el hero de la portada: la versión que parte por el problema en vez de por la propuesta.
+
 ## Para el QA
 
 Tres preguntas que conviene hacer junto con el enlace, porque son las que definen lo que sigue:
