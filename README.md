@@ -60,10 +60,10 @@ git push origin main
 
 Maqueta para revisión, septiembre de 2026. Nada de lo que muestra está comprometido institucionalmente.
 
-El catálogo mezcla: (1) nueve nodos del mapeo JPL en **deseable**; (2) división político-administrativa, con OpenAPI local y servicio en red SEM; (3) ámbito **SGM** — core de plataforma (obligatorio) y Adquisiciones (primer módulo de negocio), con contrato declarado y sin servicio expuesto.
+El catálogo mezcla: (1) ocho nodos del mapeo JPL en **deseable**; (2) división político-administrativa, con OpenAPI local y servicio en red SEM; (3) ámbito **SGM** — core de plataforma (obligatorio) y Adquisiciones (primer módulo de negocio), con contrato declarado y sin servicio expuesto.
 
 Toda API del catálogo se alcanza por la [Plataforma de Control](docs/plataforma-control.md).
 
-El mapeo traía trece nodos: cuatro se retiraron por ser consultas a otros órganos del Estado, que corresponden a PISEE y no a este catálogo. El motivo está en [`docs/maqueta.md`](docs/maqueta.md).
+El mapeo traía trece nodos: cuatro se retiraron por ser consultas a otros órganos del Estado (PISEE) y uno —Estándares de Gobierno Digital— por ser condición de capa, no un intercambio. El motivo está en [`docs/maqueta.md`](docs/maqueta.md).
 
 Comentarios a jaime.hernandez@subdere.gov.cl — División de Políticas y Estudios, SUBDERE.

@@ -45,7 +45,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 | `origen` | texto | De dónde salió el nodo, para poder auditar el catálogo |
 | `nota` | texto | Advertencia destacada en la ficha, opcional |
 
-**`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: el core SGM y los Estándares de Gobierno Digital. Sin ese campo, el core se leería como un módulo más.
+**`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: hoy, el core SGM. Sin ese campo, el core se leería como un módulo más.
 
 Los dos campos que conviene no dejar para después son **`madurez`** y **`factibilidad`**: agregar una columna a un modelo que ya tiene datos y vistas siempre cuesta más que preverla. María José dejó esa evaluación explícitamente pendiente, y el catálogo es el lugar natural donde vive.
 
@@ -74,11 +74,11 @@ El catálogo ya no es solo el mapeo JPL. Incluye:
 
 1. **Ámbito SGM:** [`sgm-core`](../prototipos/nodo.html?id=sgm-core) (clase plataforma, obligatorio) y [`adquisiciones`](../prototipos/nodo.html?id=adquisiciones) (primer módulo de negocio). Origen: corpus `sgm-nueva-arquitectura`. Algunos nodos son **consumo** (el municipio consulta), no solo entrega.
 2. **División Político-Administrativa:** prototipo SEM con OpenAPI local.
-3. **Nueve nodos del mapeo JPL** (tras retirar cuatro que corresponden a PISEE), en **deseable**.
+3. **Ocho nodos del mapeo JPL** (tras retirar cuatro que corresponden a PISEE y uno por ser condición de capa), en **deseable**.
 
 Toda API del catálogo se alcanza por la [Plataforma de Control](plataforma-control.md).
 
-### Cuatro nodos del mapeo que no están en el catálogo
+### Nodos del mapeo que no están en el catálogo
 
 El mapeo traía trece. Cuatro se retiraron el 15 de septiembre de 2026: **Registro Civil, Transportes, Obras Públicas (multas TAG) y Carabineros y Gendarmería**.
 
@@ -87,6 +87,8 @@ Los cuatro son consultas del municipio a otro órgano de la Administración del 
 Se retiran del catálogo, no del levantamiento: siguen siendo intercambios reales que el juzgado necesita. Lo que cambia es quién los provee.
 
 **Queda pendiente verificar si PISEE alcanza hoy a los municipios en la práctica**, no solo en la ley. Si no los alcanza, la decisión habría que revisarla.
+
+El 16 de septiembre de 2026 se retiró también **Estándares de Gobierno Digital**. El mapeo lo traía como nodo; en la maqueta era clase `plataforma`. No se publica porque es condición de capa —Clave Única, FirmaGob, la plataforma de interoperabilidad del Estado—, no un intercambio que el municipio active. Sigue siendo restricción sobre el resto; no es ficha del catálogo.
 
 Que la ficha de división territorial publique el estándar no significa que el nodo esté disponible: el servicio responde solo dentro de la red de SEM y no tiene nivel de servicio comprometido. La ficha lo dice explícitamente en su nota. Lo mismo vale, al revés, para Adquisiciones y el core: hay contrato declarado, no hay servicio expuesto.
 

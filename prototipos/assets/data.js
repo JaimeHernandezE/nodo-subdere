@@ -11,6 +11,9 @@
      sgm-core        — la base común del SGM (clase plataforma: está siempre, no se elige)
      adquisiciones   — primer módulo de negocio con OpenAPI de piloto
 
+   Estándares de Gobierno Digital (nodos-gobierno) se retiró el 16 de septiembre
+   de 2026: es condición de capa, no un intercambio. Ver docs/maqueta.md.
+
    Este archivo es la maqueta del modelo de datos del catálogo. Cada campo de aquí
    debería existir como campo del modelo en Django.
 
@@ -151,20 +154,6 @@ const NODOS = [
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
     nota: "Es el segundo nodo que apunta de vuelta al propio municipio: la DOM es un módulo municipal más, no una institución externa."
-  },
-  {
-    id: "nodos-gobierno",
-    nombre: "Estándares de Gobierno Digital",
-    ambito: "Transversal",
-    clase: "plataforma",
-    funcion: "Clave Única, FirmaGob y la plataforma de interoperabilidad del Estado.",
-    descripcion: "No es un intercambio de datos sino el conjunto de estándares de transformación digital sobre los que se apoyan los demás: autenticación, firma electrónica, y el canal por el que el Estado conversa consigo mismo.",
-    instituciones: ["Secretaría de Gobierno Digital"],
-    intercambio: "Transversal",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: "Más que un nodo propio, es una condición de todos los demás: lo que se decida acá limita al resto del catálogo. Está siempre; no es algo que se active."
   },
   {
     id: "correos",
