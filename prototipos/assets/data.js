@@ -9,7 +9,7 @@
 
    Dos nodos más, ámbito SGM, se agregaron el 15 de septiembre de 2026:
      sgm-core        — la base común del SGM (clase plataforma: está siempre, no se elige)
-     adquisiciones   — primer módulo de negocio con OpenAPI de piloto
+     adquisiciones   — primer módulo de negocio; instantánea OpenAPI 0.1.0 en estandares/
 
    Estándares de Gobierno Digital (nodos-gobierno) se retiró el 16 de septiembre
    de 2026: es condición de capa, no un intercambio. Ver docs/maqueta.md.
@@ -22,10 +22,15 @@
               plataforma = condición de otros; no se elige por módulo
 
    Campos opcionales, presentes solo cuando el nodo ya tiene contrato publicado:
-     espec    { archivo?, formato, validador, registrada, origen, acceso }
+     espec    { archivo?, formato, validador, registrada, origen, acceso, expuesto? }
      pruebas  texto
 
+   descargables  lista de { archivo, que } — solo demostración; no son archivos reales
+   dependencias lista de { nombre, id? } — qué hay que tener implementado antes.
+                id apunta a otra ficha del catálogo; si falta, todavía no está publicado
+
    `espec.archivo` es opcional. Si existe, la ficha lo lee y lo renderiza.
+   `espec.expuesto` distingue contrato registrado de servicio alcanzable.
    Si solo hay metadato (formato, origen, acceso), la ficha lo muestra sin
    transcribir operaciones. Ver docs/adr-2026-09-estandar-legible-por-maquina.md.
 
@@ -52,7 +57,11 @@ const NODOS = [
       origen: "Está descrito en la documentación de arquitectura del SGM, dentro del repositorio del proyecto. El catálogo no guarda una copia.",
       acceso: "Dos caminos: las personas entran con Clave Única y los sistemas con una credencial propia. Los dos pasan por la misma puerta."
     },
-    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md en el corpus de licitación)."
+    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md en el corpus de licitación).",
+    descargables: [
+      { archivo: "sgm-base-comun-operaciones.pdf", que: "Listado de ejemplo de lo que cubre la base: quién entra, qué puede hacer cada uno y qué queda registrado." },
+      { archivo: "sgm-base-comun.openapi.yaml", que: "Contrato de ejemplo, en el formato que lee una máquina. No es el servicio." }
+    ]
   },
   {
     id: "adquisiciones",
@@ -66,15 +75,27 @@ const NODOS = [
     madurez: "En desarrollo",
     factibilidad: "Alta",
     origen: "Documentación del módulo de Adquisiciones del SGM",
-    nota: "Ya está escrito qué entrega, pero el servicio todavía no corre en ninguna parte. Depende de la base común del SGM y de que existan presupuestos y contabilidad. La descripción vive en la documentación del SGM, repartida en varios archivos; el catálogo no la copia, a propósito.",
+    nota: "Hay un contrato registrado (instantánea 0.1.0, 16 de septiembre de 2026). El servicio todavía no está expuesto. El corpus vivo sigue en la documentación del SGM; este archivo es una instantánea para poder leerlo aquí.",
+    dependencias: [
+      { nombre: "Base común del SGM", id: "sgm-core" },
+      { nombre: "Presupuestos" },
+      { nombre: "Contabilidad" }
+    ],
     espec: {
+      archivo: "estandares/adquisiciones.openapi.yaml",
       formato: "OpenAPI 3.1 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.1.0",
-      registrada: "15 de septiembre de 2026",
-      origen: "Está descrito en la documentación del módulo de Adquisiciones, repartido en varios archivos dentro del repositorio del proyecto. El catálogo no guarda una copia.",
+      registrada: "16 de septiembre de 2026",
+      expuesto: false,
+      origen: "Instantánea ensamblada del contrato seccionado del módulo de Adquisiciones (versión 0.1.0). La fuente viva está en sgm-docs/modulos/adquisiciones/openapi/adquisiciones.openapi.yaml, en el repositorio del SGM. Si ese contrato cambia, hay que volver a ensamblar esta copia: el catálogo no la edita.",
       acceso: "Dos caminos: las personas entran con Clave Única desde la pantalla del SGM, y los sistemas con una credencial propia. Los dos pasan por la misma puerta, sin atajos."
     },
-    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción."
+    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción.",
+    descargables: [
+      { archivo: "adquisiciones-operaciones.pdf", que: "Listado de ejemplo de todas las operaciones: método, ruta y para qué sirve cada una, agrupadas por submódulo." },
+      { archivo: "adquisiciones.openapi.yaml", que: "El contrato técnico de ejemplo, el mismo que la ficha muestra más arriba. Sirve para construir contra él, no para leerlo seguido." },
+      { archivo: "adquisiciones-casos-de-practica.md", que: "Casos de ejemplo con datos inventados, para practicar antes de usar datos de un municipio." }
+    ]
   },
   {
     id: "division-territorial",
@@ -91,13 +112,18 @@ const NODOS = [
     nota: "Es el único del catálogo que además de estar escrito ya funciona. Pero funciona solo dentro de la red de SUBDERE: desde fuera todavía no se puede usar, y nadie se ha comprometido a mantenerlo andando. Lo que se publica acá es qué entrega, no una promesa de que esté disponible.",
     espec: {
       archivo: "estandares/division-territorial.openapi.yaml",
+      expuesto: true,
       formato: "OpenAPI 3.0.3 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "15 de septiembre de 2026",
       origen: "La publicó el equipo SEM de SUBDERE. Este archivo es una copia exacta, sin ningún cambio: el catálogo no la edita.",
       acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin firmar nada."
     },
-    pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin convenio y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro."
+    pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin convenio y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro.",
+    descargables: [
+      { archivo: "division-territorial-operaciones.pdf", que: "Listado de ejemplo de las consultas: regiones, provincias y comunas, y qué devuelve cada una." },
+      { archivo: "division-territorial.openapi.yaml", que: "Contrato de ejemplo de esas consultas. Es la copia del servicio de SEM, no un archivo nuevo." }
+    ]
   },
   {
     id: "pagos-tesoreria",
@@ -111,7 +137,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
-    nota: "Desemboca en la contabilidad del sistema de gestión municipal: es uno de los dos nodos que apuntan de vuelta al propio SGM."
+    nota: "Desemboca en la contabilidad del sistema de gestión municipal: es uno de los dos nodos que apuntan de vuelta al propio SGM.",
+    descargables: [
+      { archivo: "pagos-tesoreria-operaciones.pdf", que: "Listado de ejemplo de cómo viajan la multa y su estado de pago hacia la contabilidad del municipio." },
+      { archivo: "pagos-tesoreria.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   },
   {
     id: "indice-expedientes",
@@ -125,7 +155,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
-    nota: ""
+    nota: "",
+    descargables: [
+      { archivo: "indice-expedientes-operaciones.pdf", que: "Listado de ejemplo de cómo se identifica y se consulta una causa por su número único." },
+      { archivo: "indice-expedientes.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   },
   {
     id: "notificador-electronico",
@@ -139,7 +173,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
-    nota: "Su factibilidad no es técnica: depende de que se apruebe la norma que lo habilita."
+    nota: "Su factibilidad no es técnica: depende de que se apruebe la norma que lo habilita.",
+    descargables: [
+      { archivo: "notificador-electronico-operaciones.pdf", que: "Listado de ejemplo de cómo se notifica al domicilio digital, con firma del Estado." },
+      { archivo: "notificador-electronico.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   },
   {
     id: "dom",
@@ -153,7 +191,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
-    nota: "Es el segundo nodo que apunta de vuelta al propio municipio: la DOM es un módulo municipal más, no una institución externa."
+    nota: "Es el segundo nodo que apunta de vuelta al propio municipio: la DOM es un módulo municipal más, no una institución externa.",
+    descargables: [
+      { archivo: "dom-operaciones.pdf", que: "Listado de ejemplo de las consultas de recepción final, emplazamiento y permisos de edificación." },
+      { archivo: "dom.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   },
   {
     id: "correos",
@@ -167,7 +209,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Mapeo JPL",
-    nota: ""
+    nota: "",
+    descargables: [
+      { archivo: "correos-operaciones.pdf", que: "Listado de ejemplo de cómo se envían los archivos para cartas certificadas." },
+      { archivo: "correos.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   },
   {
     id: "inspeccion-municipal",
@@ -181,7 +227,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Agregado por Allison Díaz",
-    nota: ""
+    nota: "",
+    descargables: [
+      { archivo: "inspeccion-municipal-operaciones.pdf", que: "Listado de ejemplo de cómo ingresan al tribunal las infracciones que cursa la inspección." },
+      { archivo: "inspeccion-municipal.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   },
   {
     id: "direcciones-municipales",
@@ -195,7 +245,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Agregado por Allison Díaz",
-    nota: ""
+    nota: "",
+    descargables: [
+      { archivo: "direcciones-municipales-operaciones.pdf", que: "Listado de ejemplo de cómo otras direcciones remiten infracciones, canalizadas por la inspección." },
+      { archivo: "direcciones-municipales.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   },
   {
     id: "entre-juzgados",
@@ -209,7 +263,11 @@ const NODOS = [
     madurez: "Deseable",
     factibilidad: "Por evaluar",
     origen: "Agregado por Allison Díaz",
-    nota: ""
+    nota: "",
+    descargables: [
+      { archivo: "entre-juzgados-operaciones.pdf", que: "Listado de ejemplo de cómo se tramitan exhortos y diligencias entre tribunales." },
+      { archivo: "entre-juzgados.openapi.yaml", que: "Contrato de ejemplo. Todavía no está escrito de verdad." }
+    ]
   }
 ];
 

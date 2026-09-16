@@ -6,8 +6,9 @@
 # como cientos de líneas cambiadas sin que haya un solo cambio real.
 #
 # Importa especialmente para las especificaciones publicadas en
-# estandares/: son copias byte a byte de un original ajeno y deben
-# seguir siéndolo.
+# estandares/. División territorial es copia byte a byte de un original
+# ajeno y debe seguir siéndolo. Adquisiciones es una instantánea
+# ensamblada, no el contrato vivo: no se edita a mano.
 * text=auto eol=lf
 
 # Binarios: git no debe tocarlos ni intentar normalizarlos.

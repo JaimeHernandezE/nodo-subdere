@@ -63,12 +63,16 @@
   document.title = n.nombre + ' · Nodo SUBDERE';
   document.getElementById('miga').textContent = '/ ' + n.nombre;
 
-  // Hay estándar ≠ hay servicio alcanzable. Solo división-territorial tiene ambos hoy.
+  // Hay contrato registrado ≠ hay servicio expuesto. Solo división-territorial tiene ambos hoy.
   var tieneArchivo = !!(n.espec && n.espec.archivo);
   var tieneEspec = !!n.espec;
-  if (tieneArchivo) {
+  var expuesto = !!(n.espec && n.espec.expuesto);
+  if (tieneArchivo && expuesto) {
     document.getElementById('avisoFicha').textContent =
       'Este nodo ya dice qué entrega, y además hay un servicio funcionando detrás. Lo que todavía no está comprometido es que se pueda usar desde fuera.';
+  } else if (tieneArchivo) {
+    document.getElementById('avisoFicha').textContent =
+      'Este nodo ya tiene contrato registrado. Es un borrador: el servicio no está expuesto y todavía no se puede practicar.';
   } else if (tieneEspec) {
     document.getElementById('avisoFicha').textContent =
       'Este nodo ya dice qué entrega y en qué forma. Eso no significa que se pueda usar todavía, ni que exista dónde practicar.';
@@ -108,8 +112,11 @@
   }
 
   var operaciones;
-  if (tieneArchivo) {
-    operaciones = '<p class="lead-op">Lo que sigue se lee del archivo original cada vez que se abre esta página. El catálogo no guarda una copia, así que no puede quedar desactualizado.</p>'
+  if (tieneArchivo && expuesto) {
+    operaciones = '<p class="lead-op">Lo que sigue se lee del archivo registrado cada vez que se abre esta página. El catálogo no transcribe las operaciones a mano.</p>'
+      + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
+  } else if (tieneArchivo) {
+    operaciones = '<p class="lead-op">Lo que sigue se lee de la instantánea registrada. El contrato vivo sigue en el corpus del SGM: si cambia, hay que volver a ensamblar esta copia. El catálogo no la edita.</p>'
       + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
   } else if (tieneEspec) {
     operaciones = pendiente('El catálogo no copia a mano lo que se le puede pedir a un nodo: lo lee del archivo. Ese archivo todavía no está acá, así que por ahora hay que ir al origen, que está indicado más arriba.');
@@ -120,6 +127,31 @@
   var pruebas = n.pruebas
     ? '<p>' + esc(n.pruebas) + '</p>'
     : pendiente('Todavía no existe. La idea es que cualquiera pueda practicar acá con datos inventados, sin firmar nada, antes de pedir acceso de verdad.');
+
+  var listaDep = n.dependencias || [];
+  var dependencias = '<h2>Depende de</h2>'
+    + (listaDep.length
+      ? '<p>Hay que tenerlos implementados antes de usar este nodo.</p><ul class="deps">'
+        + listaDep.map(function(d){
+            var nombre = d.id
+              ? '<a href="nodo.html?id=' + esc(d.id) + '">' + esc(d.nombre) + '</a>'
+              : esc(d.nombre);
+            var falta = d.id ? '' : '<span>Todavía no está en el catálogo.</span>';
+            return '<li>' + nombre + falta + '</li>';
+          }).join('')
+        + '</ul>'
+      : '<p>No declara dependencias de otros módulos.</p>');
+
+  var listaDesc = n.descargables || [];
+  var descargables = '<aside class="panel">'
+    + '<p class="panel-tit">Descargables</p>'
+    + '<p class="nota-ej"><strong>Son de ejemplo.</strong> Ninguno se descarga todavía.</p>'
+    + (listaDesc.length
+      ? '<ul class="descargas">' + listaDesc.map(function(d){
+          return '<li><code>' + esc(d.archivo) + '</code><span>' + esc(d.que) + '</span></li>';
+        }).join('') + '</ul>'
+      : '<p class="nota-ej">Este nodo todavía no tiene archivos de ejemplo.</p>')
+    + '</aside>';
 
   cont.innerHTML =
     '<div class="wrap"><div class="ficha-cab">'
@@ -133,11 +165,12 @@
     + '<h2>Para qué sirve</h2><p>' + esc(n.descripcion) + '</p>'
     + nota
     + '<h2>Qué entrega, y en qué forma</h2>' + estandar
+    + dependencias
     + '<h2>Qué se le puede pedir</h2>' + operaciones
     + '<h2>Dónde practicar</h2>' + pruebas
     + '</div>'
 
-    + '<aside class="panel"><dl>'
+    + '<div class="ficha-lado"><aside class="panel"><dl>'
     + '<dt>Tipo</dt><dd>' + (clase === 'plataforma'
         ? 'Base — está siempre, no se elige'
         : 'Intercambio — el municipio entrega o pregunta') + '</dd>'
@@ -149,7 +182,9 @@
     + '</ul></dd>'
     + '<dt>De dónde salió</dt><dd>' + esc(n.origen) + '</dd>'
     + '<dt>Revisado por última vez</dt><dd>15 de septiembre de 2026</dd>'
-    + '</dl></aside></div></div>';
+    + '</dl></aside>'
+    + descargables
+    + '</div></div></div>';
 
   if (!tieneArchivo) return;
 

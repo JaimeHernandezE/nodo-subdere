@@ -110,6 +110,9 @@ p{color:var(--body)}
 .panel dd{margin:5px 0 0;font-size:14.5px;color:var(--ink)}
 .panel ul{margin:5px 0 0;padding-left:18px;font-size:14.5px;color:var(--ink)}
 .panel li{margin-bottom:3px}
+.ficha-lado{display:flex;flex-direction:column;gap:16px}
+.panel-tit{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0}
+.nota-ej{font-size:13px;color:var(--muted);margin:8px 0 0}
 .aviso{background:var(--amb-bg);border-left:3px solid var(--amb);padding:14px 18px;border-radius:0 6px 6px 0;margin:22px 0}
 .aviso p{margin:0;font-size:14.5px;color:var(--amb-md)}
 .pendiente{border:1px dashed var(--line);border-radius:8px;padding:18px;color:var(--muted);font-size:14px;background:#fff}
@@ -124,6 +127,13 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:
 
 /* ---------- especificación renderizada ---------- */
 .lead-op{font-size:14px;color:var(--muted);margin:0 0 16px;max-width:70ch}
+.deps{list-style:none;margin:4px 0 0;padding:0;max-width:70ch}
+.deps li{padding:10px 0;border-top:1px solid var(--hair);font-size:15.5px;color:var(--ink)}
+.deps li span{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
+.descargas{list-style:none;margin:12px 0 0;padding:0}
+.descargas li{display:grid;gap:4px;padding:10px 0;border-top:1px solid var(--line-l)}
+.descargas code{white-space:normal;background:#fff}
+.descargas span{font-size:13px;color:var(--body);line-height:1.4}
 .sin-params{font-size:14px;color:var(--muted);margin:8px 0 0}
 .aviso-neutro{background:var(--grey);border-left-color:var(--line)}
 .aviso-neutro p{color:var(--body)}
