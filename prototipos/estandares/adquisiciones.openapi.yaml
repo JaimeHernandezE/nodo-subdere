@@ -1,0 +1,3583 @@
+# Instantánea ensamblada el 16 de septiembre de 2026 a partir del contrato seccionado
+# del corpus SGM (versión 0.1.0). No es la fuente viva: si el corpus cambia, hay
+# que volver a ensamblar. Solo se resolvieron $ref y se entrecomilló un escalar
+# que el ensamblador no podía leer.
+openapi: 3.1.0
+info:
+  title: SGM Adquisiciones API
+  version: 0.1.0
+  description: Contrato técnico del módulo Adquisiciones (piloto Compra Ágil). Vista funcional en `../contracts.md`. Rutas seccionadas por proceso transversal o modalidad; ensambladas aquí como punto de entrada único.
+servers:
+  - url: https://api.sgm.example/v1
+    description: |
+      Base URL de producción. Prefijo de tenant en ruta pendiente de resolver multitenancy (**[PENDIENTE P-03]**).
+tags:
+  - name: expediente
+    description: Consultas del expediente y recursos asociados (solo lectura).
+  - name: solped
+    description: Solicitud de pedido (SOLPED) y trámite presupuestario.
+  - name: modalidad-compra
+    description: Ratificación de modalidad y vinculación con Mercado Público.
+  - name: resolucion-compra-ca
+    description: Resolución de compra — Compra Ágil.
+  - name: resolucion-compra-cm
+    description: Resolución de compra — Convenio Marco.
+  - name: resolucion-compra-lp
+    description: Resolución de compra — Licitación Pública.
+  - name: resolucion-compra-td
+    description: Resolución de compra — Trato Directo (rutas reutilizadas; ver fragmento 4-trato-directo).
+  - name: recepcion-conforme
+    description: Recepción conforme de bienes y servicios.
+  - name: pago
+    description: Cruce de 3 vías, devengado, decreto y ejecución de pago.
+paths:
+  /procurement-cases:
+    get:
+      operationId: listProcurementCases
+      tags:
+        - expediente
+      summary: Listar expedientes de compra
+      description: |
+        Consulta paginada de expedientes. Solo lectura; sin efectos colaterales. Requiere scope `adquisiciones:read` (personas) o `adquisiciones.read` (M2M). Sub-paso 0.1 (`procesos-transversales/0-consulta-expedientes.md`). UI del listado: `page_size` = 50; encabezados ordenan con `sort` + `order`.
+      x-subpasos:
+        - '0.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - name: page_size
+          in: query
+          description: |
+            Tamaño de página. En UI del listado 0.1 se usa 50 (máximo de pantalla; tope de plataforma 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: sort
+          in: query
+          description: |
+            Campo de orden del listado (encabezados de columna). Valores: folio, created_at, title, requesting_department, procurement_type, current_step, amount (`amount` = awarded_amount si existe; si no, requested_amount; `current_step` = current_step_id).
+          schema:
+            type: string
+            enum:
+              - folio
+              - created_at
+              - title
+              - requesting_department
+              - procurement_type
+              - current_step
+              - amount
+        - $ref: '#/components/parameters/Order'
+        - name: q
+          in: query
+          description: |
+            Búsqueda libre en folio, título y etiqueta de modalidad (`procurement_type`).
+          schema:
+            type: string
+        - name: procurement_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/ProcurementType'
+        - name: status
+          in: query
+          description: |
+            Filtro por estado del expediente (En curso / Cerrado / Anulado / Desierto). En UI 0.1 es un select; no se muestra como columna (la grilla muestra Paso).
+          schema:
+            $ref: '#/components/schemas/ProcurementCaseStatus'
+        - name: requesting_department_id
+          in: query
+          description: |
+            Filtra por departamento solicitante (incluye unidades hijas del departamento). Ignorado o rechazado si el rol fuerza scope de unidad (`adq.solicitante`, `adq.aprobador_unidad`).
+          schema:
+            type: string
+        - name: requesting_unit_id
+          in: query
+          schema:
+            type: string
+        - name: folio
+          in: query
+          schema:
+            type: string
+        - name: awaiting_my_action
+          in: query
+          description: |
+            Si es true, limita a expedientes que esperan acción del actor autenticado (por firmar / aprobar). Las pendientes detalladas por usuario se listan en la bandeja del sistema transversal de notificaciones (musts §9; plataforma/notificaciones).
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Colección paginada de expedientes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProcurementCaseSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /procurement-cases/{case_id}:
+    get:
+      operationId: getProcurementCase
+      tags:
+        - expediente
+      summary: Obtener detalle de expediente
+      description: |
+        Vista de expediente con paso actual resumido. Sub-paso 0.1 (navegación desde listado).
+      x-subpasos:
+        - '0.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/CaseId'
+      responses:
+        '200':
+          description: Detalle del expediente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcurementCaseDetail'
+              examples:
+                ProcurementCaseAgile:
+                  $ref: '#/components/examples/ProcurementCaseAgile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Expediente no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: PROCUREMENT_CASE_NOT_FOUND
+                field: case_id
+                rule: El expediente no existe en el tenant del token
+                severity: blocking
+  /procurement-cases/{case_id}/steps:
+    get:
+      operationId: listProcurementCaseSteps
+      tags:
+        - expediente
+      summary: Listar pasos del expediente
+      description: Timeline de pasos ordenados por `step_number`.
+      x-subpasos: []
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/CaseId'
+      responses:
+        '200':
+          description: Pasos del expediente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CaseStep'
+              examples:
+                ProcurementCaseStepsAgile:
+                  $ref: '#/components/examples/ProcurementCaseStepsAgile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Expediente no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: PROCUREMENT_CASE_NOT_FOUND
+                field: case_id
+                rule: El expediente no existe en el tenant del token
+                severity: blocking
+  /purchase-requests/{id}:
+    get:
+      operationId: getPurchaseRequest
+      tags:
+        - expediente
+      summary: Obtener detalle de SOLPED
+      description: SOLPED con sus líneas de detalle.
+      x-subpasos: []
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Detalle de SOLPED con líneas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseRequestWithLines'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: SOLPED no encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: PURCHASE_REQUEST_NOT_FOUND
+                field: id
+                rule: La solicitud de pedido no existe
+                severity: blocking
+  /purchase-orders/{id}:
+    get:
+      operationId: getPurchaseOrder
+      tags:
+        - expediente
+      summary: Obtener detalle de orden de compra
+      description: Detalle de una OC.
+      x-subpasos: []
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Detalle de orden de compra.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Orden de compra no encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: PURCHASE_ORDER_NOT_FOUND
+                field: id
+                rule: La orden de compra no existe
+                severity: blocking
+  /purchase-requests/{id}/submit:
+    post:
+      operationId: submitPurchaseRequest
+      tags:
+        - solped
+      summary: Enviar SOLPED a aprobación
+      description: |
+        Transiciona SOLPED completa a `pending_approval`. Exige campos obligatorios y resolución fundada si `purchase_modality = direct_procurement`. Ante varias reglas fallidas responde ValidationErrorResponse.
+      x-subpasos:
+        - '1.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: SOLPED enviada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          description: Una o más reglas de validación bloqueantes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                submitMultipleRequired:
+                  summary: Campos obligatorios faltantes al enviar a aprobación
+                  value:
+                    error_code: VALIDATION_FAILED
+                    rule: La solicitud no cumple una o más reglas de validación
+                    severity: blocking
+                    issues:
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: requesting_unit
+                        rule: El campo Unidad solicitante es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: destination_unit
+                        rule: El campo Unidad de destino es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: title
+                        rule: El campo Título es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: description
+                        rule: El campo Descripción es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: justification
+                        rule: El campo Justificación es obligatorio.
+                        severity: blocking
+                foundedResolution:
+                  summary: Trato directo sin resolución fundada
+                  value:
+                    error_code: VALIDATION_FAILED
+                    rule: La solicitud no cumple una o más reglas de validación
+                    severity: blocking
+                    issues:
+                      - error_code: FOUNDED_RESOLUTION_REQUIRED
+                        field: founded_resolution_attachment
+                        rule: Trato directo requiere resolución fundada adjunta.
+                        severity: blocking
+  /purchase-requests/{id}/approve:
+    post:
+      operationId: approvePurchaseRequest
+      tags:
+        - solped
+      summary: Aprobar SOLPED
+      description: |
+        Aprueba la SOLPED con firma electrónica válida. Emite evento `PurchaseRequestApproved`.
+      x-subpasos:
+        - '1.2'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalDecisionRequest'
+      responses:
+        '200':
+          description: SOLPED aprobada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                signatureRequired:
+                  value:
+                    error_code: SIGNATURE_REQUIRED
+                    rule: Se requiere firma electrónica válida (FirmaGob)
+                    severity: blocking
+                unauthorizedApprover:
+                  value:
+                    error_code: UNAUTHORIZED_APPROVER
+                    rule: Solo el aprobador de jefatura de la unidad solicitante puede aprobar
+                    severity: blocking
+  /purchase-requests/{id}/reject:
+    post:
+      operationId: rejectPurchaseRequest
+      tags:
+        - solped
+      summary: Rechazar SOLPED
+      description: |
+        Rechaza la SOLPED; `comments` obligatorio. Con `disposition = return_to_draft` (default) retorna a `draft` (editable en 1.1). Con `disposition = cancel` cierra el expediente (`ProcurementCase.status = cancelled`) sin corrección.
+      x-subpasos:
+        - '1.2'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectionDecisionRequest'
+      responses:
+        '200':
+          description: |
+            SOLPED rechazada. Si `disposition = return_to_draft`, estado `draft`; si `disposition = cancel`, expediente cancelado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /purchase-requests/{id}/budget-verification:
+    post:
+      operationId: verifyBudgetAvailability
+      tags:
+        - solped
+      summary: Clasificar y verificar disponibilidad presupuestaria
+      description: |
+        Sub-paso 1.3 — clasificación DAF (cuenta × nodo hoja) y verificación de saldo (D-6). Prefill desde propuesta SOLPED; invoca `listManagementNodes` y `checkBudgetAvailability` (par `management_node_id` + `budget_line_id`). Persiste `imputation_diverged` si resuelto ≠ propuesto.
+      x-subpasos:
+        - '1.3'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetVerificationRequest'
+      responses:
+        '200':
+          description: Verificación registrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetAvailabilityPreview'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                budgetUnavailable:
+                  $ref: '#/components/examples/BudgetUnavailableError'
+                invalidStatus:
+                  value:
+                    error_code: INVALID_STATUS
+                    rule: La SOLPED debe estar en estado pending_finance
+                    severity: blocking
+  /purchase-requests/{id}/budget-financing-request:
+    post:
+      operationId: requestBudgetFinancing
+      tags:
+        - solped
+      summary: Solicitar financiamiento presupuestario
+      description: |
+        Paso optativo (1.4). Emite evento `BudgetFinancingRequested`; no avanza el ciclo principal hasta resolución externa.
+      x-subpasos:
+        - '1.4'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - justification
+              properties:
+                justification:
+                  type: string
+      responses:
+        '202':
+          description: Solicitud de financiamiento registrada.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /purchase-requests/{id}/budget-availability-certificate:
+    post:
+      operationId: issueBudgetAvailabilityCertificate
+      tags:
+        - solped
+      summary: Emitir certificado de disponibilidad presupuestaria
+      description: |
+        Emite CDP firmado (modo electrónico o escaneado) sobre la imputación ya
+        resuelta en 1.3 (`management_node_id` + `budget_line_id`). No reclasifica.
+        Revalida saldo con `checkBudgetAvailability`. Emite `BudgetAvailabilityCertificateIssued`.
+      x-subpasos:
+        - '1.5'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueBudgetCertificateRequest'
+      responses:
+        '201':
+          description: CDP emitido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetAvailabilityCertificate'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                verificationRequired:
+                  value:
+                    error_code: VERIFICATION_REQUIRED
+                    rule: Debe existir verificación confirmada en sub-paso 1.3
+                    severity: blocking
+                segregation:
+                  value:
+                    error_code: SEGREGATION_OF_DUTIES_VIOLATION
+                    rule: El verificador no puede ser el firmante del CDP
+                    severity: blocking
+                budgetUnavailable:
+                  $ref: '#/components/examples/BudgetUnavailableError'
+                signatureRequired:
+                  value:
+                    error_code: SIGNATURE_REQUIRED
+                    rule: Se requiere firma electrónica válida (FirmaGob)
+                    severity: blocking
+                scannedInvalid:
+                  value:
+                    error_code: SCANNED_CDP_INVALID
+                    rule: El adjunto escaneado del CDP no es válido
+                    severity: blocking
+  /purchase-requests/{id}/budget-availability-certificate/scanned:
+    post:
+      operationId: registerScannedBudgetAvailabilityCertificate
+      tags:
+        - solped
+      summary: Registrar CDP escaneado
+      description: |
+        Modo degradado de emisión de CDP (1.5). Fija `signature_mode = scanned`.
+      x-subpasos:
+        - '1.5'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterScannedBudgetCertificateRequest'
+      responses:
+        '201':
+          description: CDP escaneado registrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetAvailabilityCertificate'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                budgetUnavailable:
+                  $ref: '#/components/examples/BudgetUnavailableError'
+                scannedInvalid:
+                  value:
+                    error_code: SCANNED_CDP_INVALID
+                    rule: El adjunto escaneado del CDP no es válido
+                    severity: blocking
+  /purchase-requests/{id}/budget-pre-commitment:
+    post:
+      operationId: createBudgetPreCommitment
+      tags:
+        - solped
+      summary: Crear preobligación presupuestaria
+      description: |
+        Registra preobligación tras CDP vigente (1.6). Emite evento `BudgetPreCommitmentCreated`.
+      x-subpasos:
+        - '1.6'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetPreCommitmentRequest'
+      responses:
+        '201':
+          description: Preobligación creada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetPreCommitment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PurchaseRequestNotFound'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                cdpRequired:
+                  value:
+                    error_code: CDP_REQUIRED
+                    rule: Se requiere CDP vigente
+                    severity: blocking
+                budgetUnavailable:
+                  $ref: '#/components/examples/BudgetUnavailableError'
+                invalidStatus:
+                  value:
+                    error_code: INVALID_STATUS
+                    rule: La SOLPED debe estar en estado pending_finance
+                    severity: blocking
+  /management-nodes:
+    get:
+      operationId: listManagementNodes
+      tags:
+        - solped
+      summary: Listar nodos de gestión (eje Área › … › Actividad)
+      description: |
+        Catálogo cacheado desde Presupuestos (D-5). Usado en 1.1 como propuesta opcional y en 1.3 para clasificación obligatoria. No filtrar por unidad destino en 1.1 (P-23).
+      x-subpasos:
+        - '1.1'
+        - '1.3'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: fiscal_year
+          in: query
+          schema:
+            type: integer
+        - name: leaves_only
+          in: query
+          description: Si true, solo nodos hoja imputables (default en UI de imputación).
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Nodos del ejercicio.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ManagementNodeSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /budget-lines/{id}/preview-availability:
+    get:
+      operationId: previewBudgetAvailability
+      tags:
+        - solped
+      summary: Autoconsulta informativa de saldo
+      description: |
+        Consulta informativa de disponibilidad presupuestaria. No persiste ni afecta el estado de la SOLPED. Requiere RBAC de consulta sobre la línea.
+      x-subpasos:
+        - '1.1'
+        - '1.2'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador de imputación presupuestaria.
+        - name: fiscal_year
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: amount
+          in: query
+          description: Monto estimado de la SOLPED (opcional).
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Proyección de saldo disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetAvailabilityPreview'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /procurement-cases/{id}/modality:
+    post:
+      operationId: confirmProcurementModality
+      tags:
+        - modalidad-compra
+      summary: Confirmar modalidad de compra
+      description: |
+        Ratifica o selecciona modalidad (gateway V1–V8). Instancia pasos del expediente. Emite evento `ProcurementModalityConfirmed`.
+      x-subpasos:
+        - '2.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador del expediente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmProcurementModalityRequest'
+      responses:
+        '200':
+          description: Modalidad confirmada e instancia de pasos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmProcurementModalityResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ProcurementCaseNotFound'
+        '422':
+          description: Regla(s) de negocio violada(s). Una sola regla → ErrorResponse; varias → ValidationErrorResponse.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                modalityAmountExceeded:
+                  value:
+                    error_code: MODALITY_AMOUNT_EXCEEDED
+                    field: selected_modality
+                    rule: 'Compra Ágil no procede: el monto estimado supera el umbral en UTM vigente.'
+                    severity: blocking
+                frameworkFirst:
+                  value:
+                    error_code: FRAMEWORK_AGREEMENT_FIRST_OPTION
+                    field: catalog_bypass_justification
+                    rule: Existe cobertura en Convenio Marco; se exige justificación para elegir otra modalidad.
+                    severity: blocking
+                directCause:
+                  value:
+                    error_code: DIRECT_PROCUREMENT_CAUSE_REQUIRED
+                    field: direct_procurement_cause
+                    rule: Trato Directo requiere causal legal y resolución fundada.
+                    severity: blocking
+                alreadyConfirmed:
+                  value:
+                    error_code: MODALITY_ALREADY_CONFIRMED
+                    rule: La modalidad ya está confirmada en este expediente.
+                    severity: blocking
+                utmUnavailable:
+                  value:
+                    error_code: UTM_VALUE_UNAVAILABLE
+                    rule: No hay valor UTM vigente para evaluar umbrales.
+                    severity: blocking
+                gatewayMultiple:
+                  summary: Varias reglas bloqueantes del gateway (ValidationErrorResponse)
+                  value:
+                    error_code: VALIDATION_FAILED
+                    rule: La solicitud no cumple una o más reglas de validación
+                    severity: blocking
+                    issues:
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: selected_modality
+                        rule: El campo Modalidad de compra es obligatorio.
+                        severity: blocking
+                      - error_code: FRAMEWORK_AGREEMENT_FIRST_OPTION
+                        field: catalog_bypass_justification
+                        rule: Existe cobertura en Convenio Marco; se exige justificación para elegir otra modalidad.
+                        severity: blocking
+  /modality-decisions/{id}/approve:
+    post:
+      operationId: approveModalityDecision
+      tags:
+        - modalidad-compra
+      summary: Aprobar decisión de modalidad
+      description: |
+        Aprobación condicionada a `requires_jefatura_approval` (**[PENDIENTE P-38]**). Emite evento `ProcurementModalityApproved`.
+      x-subpasos:
+        - '2.2'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comments:
+                  type: string
+      responses:
+        '200':
+          description: Aprobación registrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModalityDecisionApproval'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: SIGNATURE_REQUIRED
+                rule: Se requiere firma electrónica válida (FirmaGob)
+                severity: blocking
+  /modality-decisions/{id}/reject:
+    post:
+      operationId: rejectModalityDecision
+      tags:
+        - modalidad-compra
+      summary: Rechazar decisión de modalidad
+      description: |
+        Rechaza la decisión; anula pasos de 2.1 con auditoría y retorna a 2.1. `comments` obligatorio.
+      x-subpasos:
+        - '2.2'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectionDecisionRequest'
+      responses:
+        '200':
+          description: Decisión rechazada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModalityDecision'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /procurement-cases/{id}/mp-link:
+    post:
+      operationId: linkMpProcess
+      tags:
+        - modalidad-compra
+      summary: Vincular proceso de Mercado Público
+      description: |
+        Vincula código MP al expediente. Emite evento `MpProcessLinked`.
+      x-subpasos:
+        - '2.3'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mp_process_id
+              properties:
+                mp_process_id:
+                  type: string
+                  example: 4021-33-COT26
+      responses:
+        '200':
+          description: Proceso MP vinculado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcurementCase'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ProcurementCaseNotFound'
+        '422':
+          description: Regla(s) de negocio violada(s). Una sola regla → ErrorResponse; varias → ValidationErrorResponse.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                mpNotFound:
+                  value:
+                    error_code: MP_PROCESS_NOT_FOUND
+                    field: mp_process_id
+                    rule: El proceso MP no existe o el código es inválido.
+                    severity: blocking
+                organismMismatch:
+                  value:
+                    error_code: MP_PROCESS_ORGANISM_MISMATCH
+                    field: mp_process_id
+                    rule: El organismo comprador del proceso MP no coincide con el municipio.
+                    severity: blocking
+                typeMismatch:
+                  value:
+                    error_code: MP_PROCESS_TYPE_MISMATCH
+                    field: mp_process_id
+                    rule: El tipo de proceso MP no coincide con la modalidad confirmada.
+                    severity: blocking
+                alreadyLinked:
+                  value:
+                    error_code: MP_PROCESS_ALREADY_LINKED
+                    field: mp_process_id
+                    rule: El código MP ya está vinculado a otro expediente.
+                    severity: blocking
+                linkMultiple:
+                  summary: Varias reglas de vinculación (ValidationErrorResponse)
+                  value:
+                    error_code: VALIDATION_FAILED
+                    rule: La solicitud no cumple una o más reglas de validación
+                    severity: blocking
+                    issues:
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: mp_process_id
+                        rule: El campo Código / ID de proceso MP es obligatorio.
+                        severity: blocking
+                      - error_code: MP_PROCESS_NOT_FOUND
+                        field: mp_process_id
+                        rule: El proceso MP no existe o el código es inválido.
+                        severity: blocking
+  /purchase-orders/{id}/sync-accepted:
+    post:
+      operationId: syncPurchaseOrderAccepted
+      tags:
+        - resolucion-compra-ca
+      summary: Sincronizar OC aceptada y comprometer presupuesto
+      description: |
+        Confirma aceptación de OC en MP y compromete presupuesto (3.4). Emite eventos `PurchaseOrderAccepted` y `BudgetCommitmentCreated`.
+      x-subpasos:
+        - '3.4'
+        - '3.14'
+        - '3.7'
+        - '3.3'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: OC sincronizada y compromiso registrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncPurchaseOrderAcceptedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Orden de compra no encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: PURCHASE_ORDER_NOT_FOUND
+                field: id
+                rule: La orden de compra no existe
+                severity: blocking
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                budgetUnavailable:
+                  $ref: '#/components/examples/BudgetUnavailableError'
+  /procurement-cases/{id}/release-pre-commitment:
+    post:
+      operationId: releasePreCommitment
+      tags:
+        - resolucion-compra-ca
+      summary: Liberar preobligación por proceso fallido
+      description: |
+        Libera preobligación cuando el proceso CA falla o queda desierto (3.6). Emite evento `ProcurementProcessFailed`.
+      x-subpasos:
+        - '3.6'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Preobligación liberada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcurementCase'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ProcurementCaseNotFound'
+        '422':
+          description: Error del proveedor presupuestario.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: BUDGET_PROVIDER_UNAVAILABLE
+                rule: El proveedor de presupuesto no está disponible
+                severity: blocking
+  /procurement-cases/{id}/oc-rejection-decision:
+    post:
+      operationId: recordPurchaseOrderRejectionDecision
+      tags:
+        - resolucion-compra-cm
+      summary: Registrar decisión tras rechazo de OC
+      description: |
+        Decisión del gestor tras lectura de OC rechazada (CM §3.8; también TD §3.4 con enum distinto — P-69). Emite `PurchaseOrderRejected` al recibir la lectura; la decisión no emite evento nuevo.
+      x-subpasos:
+        - '3.8'
+        - 3.4-td
+      x-emits:
+        - PurchaseOrderRejected
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - decision
+              properties:
+                decision:
+                  type: string
+                  enum:
+                    - next_provider
+                    - republish
+                    - restart_modality
+                    - cancel
+                  description: CM usa next_provider|republish; TD propuesto restart_modality|cancel (P-69)
+            examples:
+              cmNext:
+                value:
+                  decision: next_provider
+              tdCancel:
+                value:
+                  decision: cancel
+      responses:
+        '200':
+          description: Decisión registrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcurementCase'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ProcurementCaseNotFound'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                noAlternative:
+                  value:
+                    error_code: NO_ALTERNATIVE_PROVIDER_AVAILABLE
+                    field: decision
+                    rule: No hay proveedor alternativo en catálogo para emitir la siguiente OC.
+                    severity: blocking
+                budgetProvider:
+                  value:
+                    error_code: BUDGET_PROVIDER_UNAVAILABLE
+                    rule: El proveedor de presupuesto no está disponible.
+                    severity: blocking
+  /procurement-cases/{id}/tender-bases:
+    post:
+      operationId: createTenderBases
+      tags:
+        - resolucion-compra-lp
+      summary: Crear o actualizar borrador de bases
+      x-subpasos:
+        - '3.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Bases guardadas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validación de bases.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                criteriaWeights:
+                  value:
+                    error_code: VALIDATION_FAILED
+                    issues:
+                      - error_code: CRITERIA_WEIGHTS_INVALID
+                        field: criteria
+                        rule: La suma de ponderaciones de criterios debe ser 100%.
+                        severity: blocking
+  /tender-bases/{id}/submit-legal-review:
+    post:
+      operationId: submitBasesForLegalReview
+      tags:
+        - resolucion-compra-lp
+      summary: Enviar bases a revisión jurídica
+      x-subpasos:
+        - '3.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Enviado a revisión.
+        '422':
+          description: Estado inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: INVALID_STATUS
+                field: status
+                rule: Solo se pueden enviar a revisión bases en estado borrador.
+                severity: blocking
+  /tender-bases/{id}/legal-review:
+    post:
+      operationId: recordLegalReview
+      tags:
+        - resolucion-compra-lp
+      summary: Registrar revisión jurídica de bases
+      x-subpasos:
+        - '3.2'
+      x-emits:
+        - LegalReviewCompleted
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Revisión registrada.
+  /tender-bases/{id}/approve:
+    post:
+      operationId: approveTenderBases
+      tags:
+        - resolucion-compra-lp
+      summary: Aprobar bases (acto administrativo)
+      x-subpasos:
+        - '3.3'
+      x-emits:
+        - AdministrativeActSigned
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Bases aprobadas y firmadas.
+  /administrative-acts/{id}/comptroller-submission:
+    post:
+      operationId: submitToComptroller
+      tags:
+        - resolucion-compra-lp
+      summary: Registrar envío a Contraloría
+      description: Reutilizado en TD §3.1 (Resolución Fundada).
+      x-subpasos:
+        - '3.4'
+        - '3.11'
+        - 3.1-td
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Envío registrado.
+        '422':
+          description: Campo obligatorio faltante.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: MISSING_REQUIRED_FIELD
+                field: submitted_at
+                rule: El campo Fecha de envío es obligatorio.
+                severity: blocking
+  /comptroller-reviews/{id}/outcome:
+    post:
+      operationId: recordComptrollerOutcome
+      tags:
+        - resolucion-compra-lp
+      summary: Registrar resultado de Contraloría
+      x-subpasos:
+        - '3.4'
+        - '3.11'
+        - 3.1-td
+      x-emits:
+        - ComptrollerReviewRecorded
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Resultado registrado.
+  /procurement-cases/{id}/clarifications:
+    post:
+      operationId: recordClarification
+      tags:
+        - resolucion-compra-lp
+      summary: Registrar aclaración a las bases
+      x-subpasos:
+        - '3.6'
+      x-emits:
+        - ClarificationRecorded
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Aclaración registrada.
+  /procurement-cases/{id}/evaluation-committee:
+    post:
+      operationId: designateEvaluationCommittee
+      tags:
+        - resolucion-compra-lp
+      summary: Designar comisión evaluadora
+      x-subpasos:
+        - '3.9'
+      x-emits:
+        - EvaluationCommitteeDesignated
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Comisión designada.
+        '422':
+          description: Conflicto / declaración faltante.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: CONFLICT_DECLARATION_REQUIRED
+                field: members[].conflict_declaration_ref
+                rule: Cada integrante debe declarar conflictos de interés.
+                severity: blocking
+  /evaluation-committees/{id}/offers:
+    post:
+      operationId: recordOfferAdmissibility
+      tags:
+        - resolucion-compra-lp
+      summary: Registrar admisibilidad de ofertas
+      x-subpasos:
+        - '3.9'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Admisibilidad registrada.
+  /evaluation-committees/{id}/scores:
+    post:
+      operationId: recordEvaluationScores
+      tags:
+        - resolucion-compra-lp
+      summary: Registrar puntajes de evaluación
+      x-subpasos:
+        - '3.9'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Puntajes registrados.
+        '422':
+          description: Puntajes inconsistentes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: SCORES_INCONSISTENT_WITH_CRITERIA
+                field: scores
+                rule: Los puntajes no cuadran con los pesos de los criterios.
+                severity: blocking
+  /evaluation-committees/{id}/report/sign:
+    post:
+      operationId: signEvaluationReport
+      tags:
+        - resolucion-compra-lp
+      summary: Firmar acta de evaluación
+      x-subpasos:
+        - '3.9'
+      x-emits:
+        - EvaluationCompleted
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Acta firmada.
+  /procurement-cases/{id}/award-resolution:
+    post:
+      operationId: issueAwardResolution
+      tags:
+        - resolucion-compra-lp
+      summary: Emitir resolución de adjudicación
+      x-subpasos:
+        - '3.10'
+      x-emits:
+        - AwardResolutionIssued
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Resolución emitida.
+  /procurement-cases/{id}/contract:
+    post:
+      operationId: draftContract
+      tags:
+        - resolucion-compra-lp
+      summary: Crear borrador de contrato
+      x-subpasos:
+        - '3.13'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Borrador creado.
+  /contracts/{id}/sign:
+    post:
+      operationId: signContract
+      tags:
+        - resolucion-compra-lp
+      summary: Firmar contrato
+      x-subpasos:
+        - '3.13'
+      x-emits:
+        - ContractSigned
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Contrato firmado.
+  /purchase-orders/{id}/goods-receipts:
+    post:
+      operationId: registerReceipt
+      tags:
+        - recepcion-conforme
+      summary: Registrar recepción de bienes o servicios
+      description: Registra recepción parcial o total (4.1).
+      x-subpasos:
+        - '4.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterReceiptRequest'
+      responses:
+        '201':
+          description: Recepción registrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoodsReceipt'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Orden de compra no encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: PURCHASE_ORDER_NOT_FOUND
+                field: id
+                rule: La orden de compra no existe
+                severity: blocking
+        '422':
+          description: Regla(s) de negocio violada(s). Una sola regla → ErrorResponse; varias → ValidationErrorResponse.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                receiptExceeds:
+                  value:
+                    error_code: RECEIPT_EXCEEDS_ORDER
+                    field: lines[0].quantity_received
+                    rule: La cantidad recibida supera la cantidad pendiente de la línea de OC.
+                    severity: blocking
+                receiptMultiple:
+                  summary: Campos obligatorios faltantes (ValidationErrorResponse)
+                  value:
+                    error_code: VALIDATION_FAILED
+                    rule: La solicitud no cumple una o más reglas de validación
+                    severity: blocking
+                    issues:
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: received_date
+                        rule: El campo Fecha de recepción es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: lines
+                        rule: Debe registrarse al menos una línea de recepción.
+                        severity: blocking
+  /goods-receipts/{id}/confirm:
+    post:
+      operationId: confirmReceipt
+      tags:
+        - recepcion-conforme
+      summary: Confirmar recepción conforme
+      description: |
+        Confirma o rechaza la recepción (4.2). Emite eventos `GoodsReceiptConfirmed` o `ReceiptRejected`.
+      x-subpasos:
+        - '4.2'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador de la recepción.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmReceiptRequest'
+      responses:
+        '200':
+          description: Recepción confirmada o rechazada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoodsReceipt'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                segregation:
+                  value:
+                    error_code: SEGREGATION_OF_DUTIES_VIOLATION
+                    rule: El confirmante no puede ser el aprobador de la compra
+                    severity: blocking
+                missingAttachments:
+                  value:
+                    error_code: MISSING_REQUIRED_ATTACHMENTS
+                    rule: Faltan adjuntos obligatorios (factura, guía de despacho)
+                    severity: blocking
+                signatureRequired:
+                  value:
+                    error_code: SIGNATURE_REQUIRED
+                    rule: Se requiere firma electrónica válida
+                    severity: blocking
+  /goods-receipt-lines/{id}/inventory-entry:
+    post:
+      operationId: registerInventoryEntry
+      tags:
+        - recepcion-conforme
+      summary: Registrar ingreso a inventario
+      description: |
+        Dependencia externa de inventario (4.3). Alcance pendiente (**[PENDIENTE P-44]**).
+      x-subpasos:
+        - '4.3'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador de línea de recepción.
+      responses:
+        '202':
+          description: Ingreso a inventario solicitado al proveedor externo.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /goods-receipts/{id}/accrual:
+    post:
+      operationId: recordAccrual
+      tags:
+        - recepcion-conforme
+      summary: Registrar devengado desde recepción conforme
+      description: |
+        Devengado asíncrono tras conformidad de recepción (4.4). Emite evento `AccrualRecorded`.
+      x-subpasos:
+        - '4.4'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador de la recepción.
+      responses:
+        '202':
+          description: Devengado en proceso de registro.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accrual'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: ACCRUAL_EXCEEDS_COMMITMENT
+                rule: El monto devengado excede el compromiso presupuestario
+                severity: blocking
+  /purchase-orders/{id}/three-way-match:
+    post:
+      operationId: performThreeWayMatch
+      tags:
+        - pago
+      summary: Ejecutar cruce de 3 vías
+      description: |
+        Cruza OC, recepción conforme y factura SII (5.1). Emite evento `ThreeWayMatchCompleted`.
+      x-subpasos:
+        - '5.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '201':
+          description: Cruce de 3 vías ejecutado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreeWayMatch'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Orden de compra no encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: PURCHASE_ORDER_NOT_FOUND
+                field: id
+                rule: La orden de compra no existe
+                severity: blocking
+        '422':
+          description: Regla(s) de negocio violada(s). Una sola regla → ErrorResponse; varias → ValidationErrorResponse.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                goodsReceiptRequired:
+                  value:
+                    error_code: GOODS_RECEIPT_REQUIRED
+                    field: goods_receipt_id
+                    rule: Se requiere recepción conforme para el cruce de 3 vías.
+                    severity: blocking
+                invoiceUnavailable:
+                  value:
+                    error_code: INVOICE_PROVIDER_UNAVAILABLE
+                    rule: El proveedor de facturas / SII no está disponible.
+                    severity: blocking
+                matchDiscrepancy:
+                  value:
+                    error_code: MATCH_DISCREPANCY
+                    rule: Hay discrepancia entre OC, recepción y factura.
+                    severity: blocking
+                matchMultiple:
+                  summary: Varias reglas del cruce (ValidationErrorResponse)
+                  value:
+                    error_code: VALIDATION_FAILED
+                    rule: La solicitud no cumple una o más reglas de validación
+                    severity: blocking
+                    issues:
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: invoice_number
+                        rule: El campo Número de factura es obligatorio.
+                        severity: blocking
+                      - error_code: GOODS_RECEIPT_REQUIRED
+                        field: goods_receipt_id
+                        rule: Se requiere recepción conforme para el cruce de 3 vías.
+                        severity: blocking
+  /three-way-matches/{id}/accrual:
+    post:
+      operationId: registerAccrual
+      tags:
+        - pago
+      summary: Registrar devengado desde cruce de 3 vías
+      description: |
+        Registra devengado tras match exitoso (5.2). Requiere `match_status = matched`. Emite evento `AccrualRegistered`.
+      x-subpasos:
+        - '5.2'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador del cruce de 3 vías.
+      responses:
+        '201':
+          description: Devengado registrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accrual'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                threeWayMatchRequired:
+                  value:
+                    error_code: THREE_WAY_MATCH_REQUIRED
+                    rule: El cruce de 3 vías debe estar en estado matched
+                    severity: blocking
+                accountingUnavailable:
+                  value:
+                    error_code: ACCOUNTING_PROVIDER_UNAVAILABLE
+                    rule: El proveedor de contabilidad no está disponible
+                    severity: blocking
+  /accruals/{id}/payment-decree:
+    post:
+      operationId: issuePaymentDecree
+      tags:
+        - pago
+      summary: Emitir decreto de pago
+      description: |
+        Emite decreto de pago sobre devengado (5.3). Emite evento `PaymentDecreeIssued`.
+      x-subpasos:
+        - '5.3'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador del devengado.
+      responses:
+        '201':
+          description: Decreto de pago emitido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentDecree'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error_code: SIGNATURE_REQUIRED
+                rule: Se requiere firma electrónica válida (FirmaGob)
+                severity: blocking
+  /payment-decrees/{id}/execute:
+    post:
+      operationId: executePayment
+      tags:
+        - pago
+      summary: Ejecutar pago
+      description: |
+        Ejecuta el pago en Tesorería (5.4). Requiere idempotencia. Emite evento `PaymentCompleted`.
+      x-subpasos:
+        - '5.4'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identificador del decreto de pago.
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Pago ejecutado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '422':
+          description: Regla de negocio violada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                treasuryUnavailable:
+                  value:
+                    error_code: TREASURY_PROVIDER_UNAVAILABLE
+                    rule: El proveedor de tesorería no está disponible
+                    severity: blocking
+                paymentRejected:
+                  value:
+                    error_code: PAYMENT_REJECTED
+                    rule: El pago fue rechazado por tesorería
+                    severity: blocking
+  /purchase-requests:
+    get:
+      operationId: listPurchaseRequests
+      tags:
+        - expediente
+      summary: Listar solicitudes de pedido
+      description: Consulta paginada de SOLPED.
+      x-subpasos: []
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Order'
+        - name: procurement_case_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Colección paginada de SOLPED.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPurchaseRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      operationId: createPurchaseRequest
+      tags:
+        - solped
+      summary: Crear solicitud de pedido
+      description: |
+        Registra una SOLPED en estado borrador. Valida campos obligatorios, cantidades, referencia de precio y resolución fundada si aplica.
+      x-subpasos:
+        - '1.1'
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePurchaseRequestRequest'
+      responses:
+        '201':
+          description: SOLPED creada en estado borrador.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseRequest'
+              examples:
+                CreatePurchaseRequestSuccess:
+                  $ref: '#/components/examples/CreatePurchaseRequestSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Regla(s) de negocio violada(s). Una sola regla → ErrorResponse; varias → ValidationErrorResponse.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                missingFields:
+                  value:
+                    error_code: MISSING_REQUIRED_FIELD
+                    field: title
+                    rule: El campo Título es obligatorio.
+                    severity: blocking
+                invalidQuantity:
+                  value:
+                    error_code: INVALID_QUANTITY
+                    field: lines[0].quantity
+                    rule: La cantidad debe ser mayor a cero.
+                    severity: blocking
+                priceReference:
+                  value:
+                    error_code: PRICE_REFERENCE_UNAVAILABLE
+                    field: lines[0].price_source
+                    rule: No hay referencia de precio disponible para la línea.
+                    severity: blocking
+                priceDeviation:
+                  value:
+                    error_code: PRICE_DEVIATION_EXCEEDED
+                    field: lines[0].unit_price
+                    rule: La desviación de precio excede la tolerancia permitida.
+                    severity: blocking
+                foundedResolution:
+                  value:
+                    error_code: FOUNDED_RESOLUTION_REQUIRED
+                    field: founded_resolution_attachment
+                    rule: Trato directo requiere resolución fundada adjunta.
+                    severity: blocking
+                multipleRequired:
+                  summary: Varias reglas bloqueantes (ValidationErrorResponse)
+                  value:
+                    error_code: VALIDATION_FAILED
+                    rule: La solicitud no cumple una o más reglas de validación
+                    severity: blocking
+                    issues:
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: requesting_unit
+                        rule: El campo Unidad solicitante es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: destination_unit
+                        rule: El campo Unidad de destino es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: title
+                        rule: El campo Título es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: description
+                        rule: El campo Descripción es obligatorio.
+                        severity: blocking
+                      - error_code: MISSING_REQUIRED_FIELD
+                        field: justification
+                        rule: El campo Justificación es obligatorio.
+                        severity: blocking
+  /purchase-orders:
+    get:
+      operationId: listPurchaseOrders
+      tags:
+        - expediente
+      summary: Listar órdenes de compra
+      description: Consulta paginada de órdenes de compra.
+      x-subpasos: []
+      security:
+        - bearerPersonas: []
+        - bearerM2M: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Order'
+        - name: procurement_case_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Colección paginada de órdenes de compra.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  securitySchemes:
+    bearerPersonas:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Plano personas (Clave Única). P-02 pendiente.
+    bearerM2M:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Plano sistemas M2M (OAuth2 client credentials). P-02 pendiente.
+  parameters:
+    CaseId:
+      name: case_id
+      in: path
+      required: true
+      schema:
+        type: string
+        example: ADQ-2026-00123
+      description: Identificador del expediente (= folio `ADQ-AAAA-NNNNN`).
+    ResourceId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Order:
+      name: order
+      in: query
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Sort:
+      name: sort
+      in: query
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: No autenticado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: UNAUTHENTICATED
+            rule: Token de autenticación inválido o ausente
+            severity: blocking
+    Forbidden:
+      description: Sin permisos suficientes.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: FORBIDDEN
+            rule: El token no tiene scope suficiente para esta operación
+            severity: blocking
+    UnprocessableEntity:
+      description: Regla de negocio violada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ProcurementCaseNotFound:
+      description: Expediente no encontrado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: PROCUREMENT_CASE_NOT_FOUND
+            field: id
+            rule: El expediente no existe en el tenant del token
+            severity: blocking
+    PurchaseRequestNotFound:
+      description: SOLPED no encontrada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: PURCHASE_REQUEST_NOT_FOUND
+            field: id
+            rule: La solicitud de pedido no existe
+            severity: blocking
+  schemas:
+    ProcurementType:
+      type: string
+      enum:
+        - agile_purchase
+        - framework_agreement
+        - public_tender
+        - direct_procurement
+    ProcurementCaseStatus:
+      type: string
+      enum:
+        - in_progress
+        - completed
+        - cancelled
+        - deserted
+    CaseStepStatus:
+      type: string
+      enum:
+        - pending
+        - in_progress
+        - completed
+        - omitted
+    PurchaseRequestStatus:
+      type: string
+      enum:
+        - draft
+        - pending_approval
+        - pending_finance
+        - quoting_in_progress
+        - quote_void
+    PurchaseModality:
+      type: string
+      enum:
+        - agile_purchase
+        - framework_agreement
+        - public_tender
+        - direct_procurement
+    DocumentCurrency:
+      type: string
+      enum:
+        - CLP
+        - UF
+        - UTM
+        - USD
+      default: CLP
+      description: |
+        Moneda del documento SOLPED. Todas las líneas se expresan en ella; no se mezclan monedas en una misma solicitud. Default CLP.
+    LineTaxCode:
+      type: string
+      enum:
+        - iva_19
+        - exempt
+        - other
+      default: iva_19
+      description: |
+        Código de impuesto por línea. El precio unitario es siempre neto; el sistema calcula el impuesto. Permite mezclar afectas y exentas. Catálogo ampliable (retenciones, tasas especiales) — pendiente.
+    PurchaseRequestAttachmentType:
+      type: string
+      enum:
+        - quote
+        - product_reference_photo
+        - technical_sheet
+        - other
+      description: |
+        Cotización, foto referencial del producto, ficha técnica u otro antecedente de respaldo de la SOLPED.
+    SignatureMode:
+      type: string
+      enum:
+        - electronic
+        - scanned
+    ReceiptType:
+      type: string
+      enum:
+        - physical_good
+        - service
+    GoodsReceiptStatus:
+      type: string
+      enum:
+        - draft
+        - confirmed
+        - rejected
+        - partially_rejected
+    MatchStatus:
+      type: string
+      enum:
+        - matched
+        - discrepancy
+    PaymentStatus:
+      type: string
+      enum:
+        - pending
+        - completed
+        - failed
+    ProcurementCase:
+      type: object
+      required:
+        - id
+        - folio
+        - title
+        - requesting_unit_id
+        - destination_unit_id
+        - status
+        - current_step_id
+        - created_at
+      properties:
+        id:
+          type: string
+          example: ADQ-2026-00123
+        folio:
+          type: string
+          example: ADQ-2026-00123
+        title:
+          type: string
+          description: Título corto del expediente (copia de PurchaseRequest.title)
+        requesting_unit_id:
+          type: string
+          description: Unidad que tramita (RoleAssignment del actor)
+        destination_unit_id:
+          type: string
+          description: Unidad beneficiaria de la compra (base de listado/alcance de unidad)
+        procurement_type:
+          $ref: '#/components/schemas/ProcurementType'
+        status:
+          $ref: '#/components/schemas/ProcurementCaseStatus'
+        current_step_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        mp_process_id:
+          type: string
+          nullable: true
+        mp_linked_at:
+          type: string
+          format: date-time
+          nullable: true
+        mp_process_type:
+          type: string
+          nullable: true
+    ProcurementCaseSummary:
+      type: object
+      required:
+        - id
+        - folio
+        - title
+        - status
+        - requesting_unit_id
+        - destination_unit_id
+        - created_at
+      properties:
+        id:
+          type: string
+        folio:
+          type: string
+        title:
+          type: string
+          description: Título corto del expediente (listado / cabecera)
+        procurement_type:
+          $ref: '#/components/schemas/ProcurementType'
+        status:
+          $ref: '#/components/schemas/ProcurementCaseStatus'
+        current_step_id:
+          type: string
+          nullable: true
+          description: Identificador del sub-paso actual (ej. 2.1)
+          example: '2.1'
+        current_step_name:
+          type: string
+          nullable: true
+          description: Nombre del sub-paso actual
+          example: Ratificación o selección de modalidad
+        current_stage_label:
+          type: string
+          nullable: true
+          description: |
+            Etiqueta de la etapa (ej. Modalidad de Compra). La columna Paso del listado combina `{n} — {current_stage_label} / {current_step_id} {current_step_name}`.
+          example: Modalidad de Compra
+        requesting_unit_id:
+          type: string
+        destination_unit_id:
+          type: string
+          description: Unidad beneficiaria — columna Departamento / filtro de alcance unidad
+        created_at:
+          type: string
+          format: date-time
+        requested_amount:
+          type: number
+          description: |
+            Total bruto solicitado (CLP): suma de líneas de PurchaseRequest / BudgetPreCommitment.estimated_amount. Ausente si aún no hay SOLPED con monto.
+          nullable: true
+        awarded_amount:
+          type: number
+          description: |
+            Monto adjudicado/contratado (CLP) cuando existe PurchaseOrder activa (total_amount) o Contract.amount. Ausente antes de adjudicación/OC.
+          nullable: true
+    CaseStepSummary:
+      type: object
+      required:
+        - id
+        - step_number
+        - name
+        - status
+      properties:
+        id:
+          type: string
+        step_number:
+          type: number
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/CaseStepStatus'
+        elapsed_display:
+          type: string
+    ProcurementCaseDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProcurementCase'
+        - type: object
+          required:
+            - current_step
+          properties:
+            current_step:
+              $ref: '#/components/schemas/CaseStepSummary'
+    CaseStep:
+      type: object
+      required:
+        - id
+        - procurement_case_id
+        - step_number
+        - name
+        - status
+      properties:
+        id:
+          type: string
+        procurement_case_id:
+          type: string
+        step_number:
+          type: number
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/CaseStepStatus'
+        responsible_unit_id:
+          type: string
+          nullable: true
+        responsible_role:
+          type: string
+          nullable: true
+        responsible_user_id:
+          type: string
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        elapsed_display:
+          type: string
+          nullable: true
+    PurchaseRequest:
+      type: object
+      required:
+        - id
+        - procurement_case_id
+        - requesting_unit
+        - destination_unit
+        - title
+        - description
+        - justification
+        - requested_date
+        - purchase_modality
+        - currency
+        - status
+      properties:
+        id:
+          type: string
+        procurement_case_id:
+          type: string
+        requesting_unit:
+          type: string
+          description: |
+            Unidad solicitante. Autoasignada por RoleAssignment. Con adq.solicitante = fija a su unidad; con adq.solicitante_daf = modificable en el tenant (catalogo-roles §3.1).
+        destination_unit:
+          type: string
+          description: |
+            Unidad de destino (beneficiaria). Con adq.solicitante = requesting_unit; con adq.solicitante_daf = seleccionable en el tenant (catalogo-roles §3.1).
+        title:
+          type: string
+          description: Resumen corto (una línea). Se copia a ProcurementCase.title al crear el expediente.
+        description:
+          type: string
+          description: Texto largo — qué producto, servicio o conjunto se busca (distinto de justification).
+        justification:
+          type: string
+          description: Motivo / necesidad de la compra (el porqué; distinto de description).
+        requested_date:
+          type: string
+          format: date
+          description: Fecha solicitud — asignada por el sistema al crear (no editable).
+        purchase_modality:
+          $ref: '#/components/schemas/PurchaseModality'
+        founded_resolution_attachment:
+          type: string
+          format: uuid
+          nullable: true
+          description: DocumentRef — subida previa vía core POST /documents (plataforma/contracts.md §2.10)
+        currency:
+          $ref: '#/components/schemas/DocumentCurrency'
+        proposed_management_node_id:
+          type: string
+          nullable: true
+          description: |
+            Nodo de gestión propuesto (hoja; D-5/D-6). Opcional y no vinculante. Catálogo vía listManagementNodes; sin filtro por unidad destino (P-23/P-28).
+        proposed_budget_line_id:
+          type: string
+          nullable: true
+          description: |
+            Cuenta/imputación propuesta (opcional, no vinculante — D-6). Al seleccionar, la UI consulta Presupuestos (getBudgetLine + previewBudgetAvailability) y muestra descripción de la cuenta y saldo (informativo; no sustituye 1.3).
+        proposed_fiscal_year:
+          type: integer
+          nullable: true
+        status:
+          $ref: '#/components/schemas/PurchaseRequestStatus'
+    PurchaseRequestLine:
+      type: object
+      required:
+        - id
+        - purchase_request_id
+        - item_description
+        - quantity
+        - unit_of_measure
+        - unit_price
+        - tax_code
+      properties:
+        id:
+          type: string
+        purchase_request_id:
+          type: string
+        product_code:
+          type: string
+          nullable: true
+          description: |
+            Código de producto (typeahead searchProducts por código o palabra). Opcional hasta definición del catálogo Product [PENDIENTE X-94].
+        item_description:
+          type: string
+        quantity:
+          type: number
+          format: double
+          minimum: 0
+          exclusiveMinimum: true
+        unit_of_measure:
+          type: string
+          description: Código UnitOfMeasure del catálogo de plataforma (listUnitOfMeasures)
+        unit_price:
+          type: number
+          format: double
+          description: Precio unitario neto en la moneda del documento (`PurchaseRequest.currency`)
+        tax_code:
+          $ref: '#/components/schemas/LineTaxCode'
+        price_source:
+          type: string
+          nullable: true
+    PurchaseRequestAttachment:
+      type: object
+      required:
+        - id
+        - purchase_request_id
+        - attachment_type
+        - description
+        - document_ref
+      properties:
+        id:
+          type: string
+        purchase_request_id:
+          type: string
+        attachment_type:
+          $ref: '#/components/schemas/PurchaseRequestAttachmentType'
+        description:
+          type: string
+          description: Qué respalda el archivo (ej. Cotización ACME — resmas)
+        document_ref:
+          type: string
+          format: uuid
+          description: DocumentRef — subida previa vía core POST /documents (plataforma/contracts.md §2.10)
+    PurchaseRequestWithLines:
+      allOf:
+        - $ref: '#/components/schemas/PurchaseRequest'
+        - type: object
+          required:
+            - lines
+          properties:
+            lines:
+              type: array
+              items:
+                $ref: '#/components/schemas/PurchaseRequestLine'
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/PurchaseRequestAttachment'
+              description: Documentos de respaldo opcionales (0..N)
+    CreatePurchaseRequestRequest:
+      type: object
+      required:
+        - title
+        - description
+        - justification
+        - purchase_modality
+        - lines
+      properties:
+        title:
+          type: string
+          description: Resumen corto; se copia a ProcurementCase.title
+        description:
+          type: string
+          description: Texto largo — qué se busca
+        justification:
+          type: string
+          description: Porqué de la compra
+        purchase_modality:
+          $ref: '#/components/schemas/PurchaseModality'
+        founded_resolution_attachment:
+          type: string
+          format: uuid
+          nullable: true
+          description: DocumentRef — subida previa vía core POST /documents (plataforma/contracts.md §2.10)
+        proposed_management_node_id:
+          type: string
+          nullable: true
+          description: |
+            Nodo de gestión propuesto (hoja; D-5/D-6). Opcional y no vinculante (P-28).
+        proposed_budget_line_id:
+          type: string
+          nullable: true
+          description: |
+            Cuenta/imputación propuesta (opcional, no vinculante — D-6). Al seleccionar, la UI consulta Presupuestos (getBudgetLine + previewBudgetAvailability) y muestra descripción de la cuenta y saldo (informativo; no sustituye 1.3).
+        proposed_fiscal_year:
+          type: integer
+          nullable: true
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - item_description
+              - quantity
+              - unit_of_measure
+              - unit_price
+              - tax_code
+            properties:
+              product_code:
+                type: string
+                nullable: true
+                description: Código de producto (typeahead; catálogo pendiente X-94)
+              item_description:
+                type: string
+              quantity:
+                type: number
+                format: double
+                minimum: 0
+                exclusiveMinimum: true
+              unit_of_measure:
+                type: string
+              unit_price:
+                type: number
+                format: double
+                description: Precio unitario neto en la moneda del documento (`currency`)
+              tax_code:
+                $ref: '#/components/schemas/LineTaxCode'
+        currency:
+          $ref: '#/components/schemas/DocumentCurrency'
+        attachments:
+          type: array
+          description: Documentos de respaldo opcionales — cotizaciones, fotos referenciales, fichas técnicas u otros
+          items:
+            type: object
+            required:
+              - attachment_type
+              - description
+              - document_ref
+            properties:
+              attachment_type:
+                $ref: '#/components/schemas/PurchaseRequestAttachmentType'
+              description:
+                type: string
+              document_ref:
+                type: string
+                format: uuid
+                description: DocumentRef — subida previa vía core POST /documents
+    ApprovalDecisionRequest:
+      type: object
+      required:
+        - decision
+      properties:
+        decision:
+          type: string
+          enum:
+            - approved
+        comments:
+          type: string
+    RejectionDecisionRequest:
+      type: object
+      required:
+        - decision
+        - comments
+      properties:
+        decision:
+          type: string
+          enum:
+            - rejected
+        comments:
+          type: string
+        disposition:
+          type: string
+          description: |
+            Solo aplica a rechazo de SOLPED (1.2). `return_to_draft` (default) permite corregir en 1.1; `cancel` cierra el expediente sin corrección.
+          enum:
+            - return_to_draft
+            - cancel
+          default: return_to_draft
+    BudgetAvailabilityPreview:
+      type: object
+      required:
+        - available_balance
+        - committed_by_others
+        - projected_balance
+      properties:
+        available_balance:
+          type: number
+          format: double
+        committed_by_others:
+          type: number
+          format: double
+        projected_balance:
+          type: number
+          format: double
+    ManagementNodeSummary:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - level
+        - path_label
+        - is_leaf
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        level:
+          type: string
+          enum:
+            - PROGRAM
+            - SUBPROGRAM
+            - PROJECT
+            - ACTIVITY
+          description: Nivel tipado del árbol local (D-5); el área BEP es ManagementArea
+        path_label:
+          type: string
+          description: Path derivado Área › … › Actividad
+        is_leaf:
+          type: boolean
+        parent_id:
+          type: string
+          nullable: true
+    BudgetVerificationRequest:
+      type: object
+      required:
+        - management_node_id
+        - budget_line_id
+        - amount
+        - fiscal_year
+        - decision
+      properties:
+        management_node_id:
+          type: string
+          description: Nodo hoja resuelto por DAF en 1.3 (D-5/D-6)
+        budget_line_id:
+          type: string
+          description: Cuenta/imputación resuelta (par cuenta × nodo)
+        amount:
+          type: number
+          format: double
+        fiscal_year:
+          type: integer
+        decision:
+          type: string
+          enum:
+            - confirmed
+            - rejected
+        comments:
+          type: string
+    IssueBudgetCertificateRequest:
+      type: object
+      required:
+        - certified_amount
+        - fiscal_year
+        - signature_mode
+      properties:
+        certified_amount:
+          type: number
+          format: double
+        fiscal_year:
+          type: integer
+        signature_mode:
+          $ref: '#/components/schemas/SignatureMode'
+      description: |
+        La imputación (management_node_id + budget_line_id) se toma de la clasificación/verificación confirmada en 1.3; no se reclasifica en 1.5.
+    RegisterScannedBudgetCertificateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IssueBudgetCertificateRequest'
+        - type: object
+          required:
+            - scanned_certificate_attachment
+          properties:
+            scanned_certificate_attachment:
+              type: string
+              format: uuid
+              description: DocumentRef — subida previa vía core POST /documents (plataforma/contracts.md §2.10)
+    CreateBudgetPreCommitmentRequest:
+      type: object
+      required:
+        - budget_line_id
+        - estimated_amount
+        - fiscal_year
+        - budget_availability_certificate_id
+      properties:
+        budget_line_id:
+          type: string
+        estimated_amount:
+          type: number
+          format: double
+        fiscal_year:
+          type: integer
+        budget_availability_certificate_id:
+          type: string
+    BudgetAvailabilityCertificate:
+      type: object
+      required:
+        - id
+        - procurement_case_id
+        - purchase_request_id
+        - certificate_number
+        - management_node_id
+        - budget_line_id
+        - certified_amount
+        - fiscal_year
+        - status
+        - signature_mode
+        - imputation_diverged
+      properties:
+        id:
+          type: string
+        procurement_case_id:
+          type: string
+        purchase_request_id:
+          type: string
+        certificate_number:
+          type: string
+        management_node_id:
+          type: string
+          description: Nodo hoja resuelto en 1.3 (D-5/D-6)
+        budget_line_id:
+          type: string
+          description: Cuenta resuelta en 1.3
+        certified_amount:
+          type: number
+          format: double
+        fiscal_year:
+          type: integer
+        verified_by:
+          type: string
+          nullable: true
+        signed_by:
+          type: string
+          nullable: true
+        signed_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+        signature_mode:
+          $ref: '#/components/schemas/SignatureMode'
+        proposed_management_node_id:
+          type: string
+          nullable: true
+          description: Copia de la propuesta SOLPED al confirmar 1.3
+        proposed_budget_line_id:
+          type: string
+          nullable: true
+        imputation_diverged:
+          type: boolean
+          description: true si resuelto ≠ propuesto (auditoría; no es error)
+    BudgetPreCommitment:
+      type: object
+      required:
+        - id
+        - procurement_case_id
+        - purchase_request_id
+        - budget_availability_certificate_id
+        - budget_line_id
+        - estimated_amount
+        - fiscal_year
+        - status
+      properties:
+        id:
+          type: string
+        procurement_case_id:
+          type: string
+        purchase_request_id:
+          type: string
+        budget_availability_certificate_id:
+          type: string
+        budget_line_id:
+          type: string
+        estimated_amount:
+          type: number
+          format: double
+        fiscal_year:
+          type: integer
+        status:
+          type: string
+    ConfirmProcurementModalityRequest:
+      type: object
+      required:
+        - selected_modality
+      properties:
+        selected_modality:
+          $ref: '#/components/schemas/ProcurementType'
+        catalog_bypass_justification:
+          type: string
+          nullable: true
+        direct_procurement_cause:
+          type: string
+          nullable: true
+    ConfirmProcurementModalityResponse:
+      type: object
+      required:
+        - modality_decision
+        - steps
+      properties:
+        modality_decision:
+          $ref: '#/components/schemas/ModalityDecision'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseStep'
+    ModalityDecision:
+      type: object
+      required:
+        - id
+        - procurement_case_id
+        - selected_modality
+        - ratified
+        - requires_jefatura_approval
+      properties:
+        id:
+          type: string
+        procurement_case_id:
+          type: string
+        selected_modality:
+          $ref: '#/components/schemas/ProcurementType'
+        ratified:
+          type: boolean
+        requires_jefatura_approval:
+          type: boolean
+        decided_by:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+    ModalityDecisionApproval:
+      type: object
+      required:
+        - id
+        - modality_decision_id
+        - approver_id
+        - decision
+        - decision_date
+      properties:
+        id:
+          type: string
+        modality_decision_id:
+          type: string
+        approver_id:
+          type: string
+        decision:
+          type: string
+          enum:
+            - approved
+            - rejected
+        decision_date:
+          type: string
+          format: date-time
+    AgileQuoteProcess:
+      type: object
+      required:
+        - id
+        - purchase_request_id
+      properties:
+        id:
+          type: string
+        purchase_request_id:
+          type: string
+        deep_link_clicked_at:
+          type: string
+          format: date-time
+          nullable: true
+        mp_quote_id:
+          type: string
+          nullable: true
+    QuotationResult:
+      type: object
+      description: Espejo de selección de oferta — solo creado por sync MP (sin POST de usuario).
+      required:
+        - id
+        - procurement_case_id
+        - selected_provider_rut
+        - selected_provider_name
+        - offered_amount
+        - lowest_price_selected
+        - recorded_at
+      properties:
+        id:
+          type: string
+        procurement_case_id:
+          type: string
+        selected_provider_rut:
+          type: string
+        selected_provider_name:
+          type: string
+        offered_amount:
+          type: number
+          format: double
+        lowest_price_selected:
+          type: boolean
+        recorded_at:
+          type: string
+          format: date-time
+    PurchaseOrder:
+      type: object
+      required:
+        - id
+        - procurement_case_id
+        - purchase_request_id
+        - supplier_rut
+        - total_amount
+        - status
+      properties:
+        id:
+          type: string
+        procurement_case_id:
+          type: string
+        purchase_request_id:
+          type: string
+        mp_oc_id:
+          type: string
+          nullable: true
+        supplier_rut:
+          type: string
+        total_amount:
+          type: number
+          format: double
+        selection_justification:
+          type: string
+          nullable: true
+        status:
+          type: string
+        acceptance_date:
+          type: string
+          format: date
+          nullable: true
+        fulfillment_status:
+          type: string
+          nullable: true
+    BudgetCommitment:
+      type: object
+      required:
+        - id
+        - purchase_order_id
+        - budget_pre_commitment_id
+        - committed_amount
+        - commitment_date
+        - source
+      properties:
+        id:
+          type: string
+        purchase_order_id:
+          type: string
+        budget_pre_commitment_id:
+          type: string
+        committed_amount:
+          type: number
+          format: double
+        commitment_date:
+          type: string
+          format: date
+        source:
+          type: string
+    SyncPurchaseOrderAcceptedResponse:
+      type: object
+      required:
+        - purchase_order
+        - budget_commitment
+      properties:
+        purchase_order:
+          $ref: '#/components/schemas/PurchaseOrder'
+        budget_commitment:
+          $ref: '#/components/schemas/BudgetCommitment'
+    GoodsReceiptLine:
+      type: object
+      required:
+        - id
+        - goods_receipt_id
+        - purchase_order_line_ref
+        - quantity_ordered
+        - quantity_received
+      properties:
+        id:
+          type: string
+        goods_receipt_id:
+          type: string
+        purchase_order_line_ref:
+          type: string
+        quantity_ordered:
+          type: number
+          format: double
+        quantity_received:
+          type: number
+          format: double
+    GoodsReceipt:
+      type: object
+      required:
+        - id
+        - purchase_order_id
+        - received_by
+        - received_date
+        - receipt_type
+        - receiving_unit
+        - status
+      properties:
+        id:
+          type: string
+        purchase_order_id:
+          type: string
+        received_by:
+          type: string
+        received_date:
+          type: string
+          format: date
+        receipt_type:
+          $ref: '#/components/schemas/ReceiptType'
+        receiving_unit:
+          type: string
+        status:
+          $ref: '#/components/schemas/GoodsReceiptStatus'
+        observations:
+          type: string
+          nullable: true
+    RegisterReceiptRequest:
+      type: object
+      required:
+        - receipt_type
+        - receiving_unit
+        - lines
+      properties:
+        receipt_type:
+          $ref: '#/components/schemas/ReceiptType'
+        receiving_unit:
+          type: string
+        observations:
+          type: string
+          nullable: true
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - purchase_order_line_ref
+              - quantity_received
+            properties:
+              purchase_order_line_ref:
+                type: string
+              quantity_received:
+                type: number
+                format: double
+                minimum: 0
+    ConfirmReceiptRequest:
+      type: object
+      required:
+        - decision
+      properties:
+        decision:
+          type: string
+          enum:
+            - confirmed
+            - rejected
+        comments:
+          type: string
+        signature_mode:
+          $ref: '#/components/schemas/SignatureMode'
+    ReceiptRejectionCase:
+      type: object
+      required:
+        - id
+        - goods_receipt_id
+        - resolution_type
+        - resolution_deadline
+      properties:
+        id:
+          type: string
+        goods_receipt_id:
+          type: string
+        resolution_type:
+          type: string
+          enum:
+            - return
+            - replacement
+            - penalty
+            - claim
+        resolution_deadline:
+          type: string
+          format: date
+        resolved_at:
+          type: string
+          format: date
+          nullable: true
+        outcome:
+          type: string
+          nullable: true
+    ThreeWayMatch:
+      type: object
+      required:
+        - id
+        - purchase_order_id
+        - goods_receipt_id
+        - match_status
+        - match_date
+      properties:
+        id:
+          type: string
+        purchase_order_id:
+          type: string
+        goods_receipt_id:
+          type: string
+        invoice_id:
+          type: string
+          nullable: true
+        match_status:
+          $ref: '#/components/schemas/MatchStatus'
+        match_date:
+          type: string
+          format: date
+    Accrual:
+      type: object
+      required:
+        - id
+        - accrual_amount
+        - accrual_date
+      properties:
+        id:
+          type: string
+        three_way_match_id:
+          type: string
+          nullable: true
+        budget_commitment_id:
+          type: string
+          nullable: true
+        accrual_amount:
+          type: number
+          format: double
+        accrual_date:
+          type: string
+          format: date
+    PaymentDecree:
+      type: object
+      required:
+        - id
+        - accrual_id
+        - decree_number
+        - decree_date
+      properties:
+        id:
+          type: string
+        accrual_id:
+          type: string
+        decree_number:
+          type: string
+        decree_date:
+          type: string
+          format: date
+        approver_id:
+          type: string
+          nullable: true
+    Payment:
+      type: object
+      required:
+        - id
+        - payment_decree_id
+        - payment_date
+        - payment_method
+        - payment_status
+      properties:
+        id:
+          type: string
+        payment_decree_id:
+          type: string
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          type: string
+        payment_status:
+          $ref: '#/components/schemas/PaymentStatus'
+    PaginatedProcurementCaseSummary:
+      type: object
+      required:
+        - items
+        - page
+        - page_size
+        - total_items
+        - total_pages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcurementCaseSummary'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+    PaginatedPurchaseRequest:
+      type: object
+      required:
+        - items
+        - page
+        - page_size
+        - total_items
+        - total_pages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseRequest'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+    PaginatedPurchaseOrder:
+      type: object
+      required:
+        - items
+        - page
+        - page_size
+        - total_items
+        - total_pages
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrder'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_items:
+          type: integer
+        total_pages:
+          type: integer
+    Severity:
+      type: string
+      enum:
+        - blocking
+        - advisory
+    ErrorResponse:
+      type: object
+      required:
+        - error_code
+        - rule
+        - severity
+      description: |
+        Error de un solo código (negocio o proveedor). Norma: estandares-api.md §3.1.
+      properties:
+        error_code:
+          type: string
+        field:
+          type: string
+          nullable: true
+        rule:
+          type: string
+        legal_reference:
+          type: string
+          nullable: true
+          description: |
+            Fundamento del error. Obligatorio cuando severity=blocking (musts-arquitectura.md §11; estandares-api.md §3.3). Normativo: cita de ley/decreto/dictamen (se muestra al funcionario). Integridad: prefijo integridad:<motivo> (no se muestra en UI). Prohibido string vacío en blocking.
+        severity:
+          $ref: '#/components/schemas/Severity'
+    ValidationIssue:
+      type: object
+      required:
+        - error_code
+        - rule
+        - severity
+      description: |
+        Una regla de validación fallida (campo o documento). Misma forma que ErrorResponse.
+      properties:
+        error_code:
+          type: string
+        field:
+          type: string
+          nullable: true
+        rule:
+          type: string
+        legal_reference:
+          type: string
+          nullable: true
+          description: |
+            Fundamento del error. Obligatorio cuando severity=blocking (musts-arquitectura.md §11; estandares-api.md §3.3). Normativo: cita de ley/decreto/dictamen (se muestra al funcionario). Integridad: prefijo integridad:<motivo> (no se muestra en UI). Prohibido string vacío en blocking.
+        severity:
+          $ref: '#/components/schemas/Severity'
+    ValidationErrorResponse:
+      type: object
+      required:
+        - error_code
+        - rule
+        - severity
+        - issues
+      description: |
+        Agregado de varias reglas al validar una operación de escritura (submit de formulario). HTTP 422 si algún issue es blocking. Norma: estandares-api.md §3.2.
+      properties:
+        error_code:
+          type: string
+          enum:
+            - VALIDATION_FAILED
+        field:
+          type: string
+          nullable: true
+          description: Omitir o null cuando hay varios campos en issues.
+        rule:
+          type: string
+        legal_reference:
+          type: string
+          nullable: true
+          description: |
+            Fundamento del error. Obligatorio cuando severity=blocking (musts-arquitectura.md §11; estandares-api.md §3.3). Normativo: cita de ley/decreto/dictamen (se muestra al funcionario). Integridad: prefijo integridad:<motivo> (no se muestra en UI). Prohibido string vacío en blocking.
+        severity:
+          $ref: '#/components/schemas/Severity'
+        issues:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ValidationIssue'
+  examples:
+    ProcurementCaseAgile:
+      summary: Expediente Compra Ágil ADQ-2026-00123
+      value:
+        id: ADQ-2026-00123
+        folio: ADQ-2026-00123
+        title: Insumos de oficina — reposición anual
+        requesting_unit_id: unit-solicitante
+        destination_unit_id: unit-solicitante
+        procurement_type: agile_purchase
+        status: in_progress
+        current_step_id: step-3-1
+        created_at: '2026-06-24T09:00:00Z'
+        mp_process_id: 4021-33-COT26
+        mp_linked_at: '2026-06-27T14:30:00Z'
+        mp_process_type: agile_quote
+        current_step:
+          id: step-3-1
+          step_number: 3.1
+          name: Período de cotización
+          status: in_progress
+          elapsed_display: 12 d 4 h
+    ProcurementCaseStepsAgile:
+      summary: Timeline expediente ADQ-2026-00123 (extracto)
+      value:
+        - id: step-1-1
+          procurement_case_id: ADQ-2026-00123
+          step_number: 1.1
+          name: Creación de solicitud
+          status: completed
+          responsible_unit_id: unit-solicitante
+          responsible_role: Usuario
+          responsible_user_id: user-juan-astorga
+          started_at: '2026-06-24T09:00:00Z'
+          completed_at: '2026-06-24T12:00:00Z'
+          elapsed_display: 0 d 3 h
+        - id: step-2-3
+          procurement_case_id: ADQ-2026-00123
+          step_number: 2.3
+          name: Vinculación del proceso en Mercado Público
+          status: completed
+          responsible_unit_id: unit-daf-abastecimiento
+          responsible_role: Usuario
+          responsible_user_id: user-rodrigo-munoz
+          started_at: '2026-06-27T12:00:00Z'
+          completed_at: '2026-06-27T14:30:00Z'
+          elapsed_display: 0 d 2 h
+        - id: step-3-1
+          procurement_case_id: ADQ-2026-00123
+          step_number: 3.1
+          name: Período de cotización
+          status: in_progress
+          responsible_unit_id: unit-daf-abastecimiento
+          responsible_role: Usuario
+          started_at: '2026-06-27T14:30:00Z'
+          elapsed_display: 12 d 4 h
+    CreatePurchaseRequestSuccess:
+      summary: SOLPED creada en borrador
+      value:
+        id: solped-2026-0123
+        procurement_case_id: ADQ-2026-00123
+        requesting_unit: unit-solicitante
+        destination_unit: unit-solicitante
+        title: Insumos de oficina — reposición anual
+        description: |
+          Adquisición de resmas de papel, tóner y útiles de escritorio para la reposición anual de stock de la unidad solicitante.
+        justification: Reposición de stock según plan anual.
+        requested_date: '2026-06-24'
+        purchase_modality: agile_purchase
+        proposed_management_node_id: mn-act-oficina-001
+        proposed_budget_line_id: bl-2210-001
+        proposed_fiscal_year: 2026
+        status: draft
+    BudgetUnavailableError:
+      summary: Sin saldo presupuestario disponible
+      value:
+        error_code: BUDGET_UNAVAILABLE
+        field: budget_line_id
+        rule: La imputación presupuestaria no tiene saldo disponible para el monto solicitado
+        severity: blocking
+    ProcurementCaseLicitacionCompleted:
+      summary: Expediente LP finalizado ADQ-2026-00045
+      value:
+        id: ADQ-2026-00045
+        folio: ADQ-2026-00045
+        title: Servicio de mantención de flota municipal
+        requesting_unit_id: unit-direccion-obras
+        destination_unit_id: unit-direccion-obras
+        procurement_type: public_tender
+        status: completed
+        current_step_id: step-5-4
+        created_at: '2026-03-10T08:00:00Z'
+        mp_process_id: LP-2026-0045
+        mp_linked_at: '2026-03-15T10:00:00Z'
+        mp_process_type: public_tender
+        current_step:
+          id: step-5-4
+          step_number: 5.4
+          name: Ejecución de pago
+          status: completed
+          elapsed_display: 0 d 2 h

@@ -9,7 +9,10 @@
 
    Dos nodos más, ámbito SGM, se agregaron el 15 de septiembre de 2026:
      sgm-core        — la base común del SGM (clase plataforma: está siempre, no se elige)
-     adquisiciones   — primer módulo de negocio con OpenAPI de piloto
+     adquisiciones   — primer módulo de negocio; instantánea OpenAPI 0.1.0 en estandares/
+
+   Estándares de Gobierno Digital (nodos-gobierno) se retiró el 16 de septiembre
+   de 2026: es condición de capa, no un intercambio. Ver docs/maqueta.md.
 
    Este archivo es la maqueta del modelo de datos del catálogo. Cada campo de aquí
    debería existir como campo del modelo en Django.
@@ -22,10 +25,15 @@
               Se usa para lo que está en preparación y todavía no se muestra.
 
    Campos opcionales, presentes solo cuando el nodo ya tiene contrato publicado:
-     espec    { archivo?, formato, validador, registrada, origen, acceso }
+     espec    { archivo?, formato, validador, registrada, origen, acceso, expuesto? }
      pruebas  texto
 
+   descargables  lista de { archivo, que } — solo demostración; no son archivos reales
+   dependencias lista de { nombre, id? } — qué hay que tener implementado antes.
+                id apunta a otra ficha del catálogo; si falta, todavía no está publicado
+
    `espec.archivo` es opcional. Si existe, la ficha lo lee y lo renderiza.
+   `espec.expuesto` distingue contrato registrado de servicio alcanzable.
    Si solo hay metadato (formato, origen, acceso), la ficha lo muestra sin
    transcribir operaciones. Ver docs/adr-2026-09-estandar-legible-por-maquina.md.
 
@@ -53,7 +61,11 @@ const NODOS = [
       origen: "Está descrito en la documentación de arquitectura del SGM, dentro del repositorio del proyecto. El catálogo no guarda una copia.",
       acceso: "Dos caminos: las personas entran con Clave Única y los sistemas con una credencial propia. Los dos pasan por la misma puerta."
     },
-    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md en el corpus de licitación)."
+    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md en el corpus de licitación).",
+    descargables: [
+      { archivo: "sgm-base-comun-operaciones.pdf", que: "Listado de ejemplo de lo que cubre la base: quién entra, qué puede hacer cada uno y qué queda registrado." },
+      { archivo: "sgm-base-comun.openapi.yaml", que: "Contrato de ejemplo, en el formato que lee una máquina. No es el servicio." }
+    ]
   },
   {
     id: "adquisiciones",
@@ -68,15 +80,27 @@ const NODOS = [
     madurez: "En desarrollo",
     factibilidad: "Alta",
     origen: "Documentación del módulo de Adquisiciones del SGM",
-    nota: "Ya está escrito qué entrega, pero el servicio todavía no corre en ninguna parte. Depende de la base común del SGM y de que existan presupuestos y contabilidad. La descripción vive en la documentación del SGM, repartida en varios archivos; el catálogo no la copia, a propósito.",
+    nota: "Ya está escrito qué entrega, pero el servicio todavía no corre en ninguna parte. Lo que se muestra acá es una copia tomada el 16 de septiembre de 2026 (versión 0.1.0) para poder leerla; la descripción vigente sigue en la documentación del SGM.",
+    dependencias: [
+      { nombre: "Base común del SGM", id: "sgm-core" },
+      { nombre: "Presupuestos" },
+      { nombre: "Contabilidad" }
+    ],
     espec: {
+      archivo: "estandares/adquisiciones.openapi.yaml",
       formato: "OpenAPI 3.1 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.1.0",
-      registrada: "15 de septiembre de 2026",
-      origen: "Está descrito en la documentación del módulo de Adquisiciones, repartido en varios archivos dentro del repositorio del proyecto. El catálogo no guarda una copia.",
+      registrada: "16 de septiembre de 2026",
+      expuesto: false,
+      origen: "Copia armada a partir de la descripción del módulo de Adquisiciones (versión 0.1.0), que en la documentación del SGM está repartida en varios archivos. La fuente vigente está en sgm-docs/modulos/adquisiciones/openapi/adquisiciones.openapi.yaml, en el repositorio del SGM. Si esa descripción cambia, hay que volver a armar esta copia: el catálogo no la edita.",
       acceso: "Dos caminos: las personas entran con Clave Única desde la pantalla del SGM, y los sistemas con una credencial propia. Los dos pasan por la misma puerta, sin atajos."
     },
-    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción."
+    pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción.",
+    descargables: [
+      { archivo: "adquisiciones-operaciones.pdf", que: "Listado de ejemplo de todas las operaciones: qué se puede pedir y para qué sirve cada una, agrupadas por parte del módulo." },
+      { archivo: "adquisiciones.openapi.yaml", que: "La descripción técnica de ejemplo, la misma que la ficha muestra más arriba. Sirve para construir contra ella, no para leerla seguido." },
+      { archivo: "adquisiciones-casos-de-practica.md", que: "Casos de ejemplo con datos inventados, para practicar antes de usar datos de un municipio." }
+    ]
   },
   {
     id: "fiscalizacion",
@@ -100,6 +124,7 @@ const NODOS = [
       formato: "OpenAPI 3.0.3 — propuesta de contrato, escrita para esta demostración",
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "27 de septiembre de 2026",
+      expuesto: false,
       origen: "La escribió el equipo del Nodo SUBDERE a partir de una colección de referencia de Servicios Municipales. No es el contrato publicado del servicio: es una propuesta de cómo se vería publicado. Las diferencias respecto de la colección de origen están en la wiki.",
       acceso: "Credencial de corta duración entregada por la puerta de acceso. A diferencia de los códigos territoriales, acá circulan datos de un vehículo y de su titular, así que la consulta queda registrada."
     },
@@ -120,13 +145,18 @@ const NODOS = [
     nota: "Es el único del catálogo que además de estar escrito ya funciona. Pero funciona solo dentro de la red de SUBDERE: desde fuera todavía no se puede usar, y nadie se ha comprometido a mantenerlo andando. Lo que se publica acá es qué entrega, no una promesa de que esté disponible.",
     espec: {
       archivo: "estandares/cut.openapi.yaml",
+      expuesto: true,
       formato: "OpenAPI 3.0.3 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "15 de septiembre de 2026",
       origen: "Especificación de referencia entregada por Juan Helo, septiembre de 2026. Este archivo es una copia exacta, sin ningún cambio: el catálogo no la edita. Las observaciones sobre el contrato están en la wiki, no aquí.",
-      acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin firmar nada."
+      acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin aceptar términos y condiciones."
     },
-    pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin convenio y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro."
+    pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin el Uso de Términos y Condiciones y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro.",
+    descargables: [
+      { archivo: "cut-operaciones.pdf", que: "Listado de ejemplo de las consultas: regiones, provincias y comunas, y qué devuelve cada una." },
+      { archivo: "cut.openapi.yaml", que: "Descripción de ejemplo de esas consultas. Es la copia de la especificación de referencia, no un archivo nuevo." }
+    ]
   },
 ];
 

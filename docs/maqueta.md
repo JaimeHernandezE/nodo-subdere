@@ -21,7 +21,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/participar.html` | Cómo participar y qué está definido y qué no |
 | `prototipos/404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
 | `prototipos/assets/data.js` | **Los datos y el modelo.** Cada campo de aquí debería existir en el modelo Django |
-| `prototipos/estandares/` | Las especificaciones registradas localmente (hoy solo el CUT) |
+| `prototipos/estandares/` | Las especificaciones registradas localmente: copia del CUT, propuesta de permisos de circulación e instantánea ensamblada de Adquisiciones |
 | `prototipos/_to_delete/` | Archivos retirados, a la espera de borrarse del repositorio |
 | `prototipos/assets/nav.js` | Cierra el desplegable de la barra al hacer clic afuera y con Escape. El menú es un `<details>` nativo: funciona sin este archivo |
 | `prototipos/assets/openapi.js` | Renderiza una especificación OpenAPI en la ficha. Nada de lo que se ve ahí está transcrito |
@@ -53,8 +53,10 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 | `origen` | texto | De dónde salió el nodo, para poder auditar el catálogo |
 | `nota` | texto | Advertencia destacada en la ficha, opcional |
 | `oculto` | booleano | `true` = existe en el modelo y no se lista. Ver más abajo |
+| `descargables` | lista | `{ archivo, que }` — solo demostración. Nombres y una línea de contenido. No son archivos reales ni se descargan |
+| `dependencias` | lista | `{ nombre, id? }` — qué hay que tener implementado antes. `id` enlaza otra ficha; si falta, el módulo todavía no está en el catálogo |
 
-**`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: el core SGM y los Estándares de Gobierno Digital. Sin ese campo, el core se leería como un módulo más.
+**`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: hoy, el core SGM. Sin ese campo, el core se leería como un módulo más.
 
 Los dos campos que conviene no dejar para después son **`madurez`** y **`factibilidad`**: agregar una columna a un modelo que ya tiene datos y vistas siempre cuesta más que preverla. María José dejó esa evaluación explícitamente pendiente, y el catálogo es el lugar natural donde vive.
 
@@ -64,16 +66,16 @@ Dos campos más, opcionales. Un nodo que no los trae muestra el bloque «Pendien
 
 | Campo | Tipo | Nota |
 |---|---|---|
-| `espec` | objeto | `{ archivo?, formato, validador, registrada, origen, acceso }` — `archivo` es opcional |
+| `espec` | objeto | `{ archivo?, formato, validador, registrada, origen, acceso, expuesto? }` — `archivo` es opcional. `expuesto` distingue contrato registrado de servicio alcanzable |
 | `pruebas` | texto | Estado del ambiente de pruebas |
 
-**Hay estándar ≠ hay servicio alcanzable.** La ficha separa ambos: un nodo puede declarar contrato (formato, origen, acceso) sin que el servicio esté expuesto. Solo `division-territorial` tiene hoy `espec.archivo` local y servicio existente (en red SEM). `sgm-core` y `adquisiciones` declaran metadato de contrato sin archivo local: sus OpenAPI viven en el corpus SGM y no se copian aquí.
+**Hay estándar ≠ hay servicio alcanzable.** La ficha los separa con `espec.expuesto`. `cut` tiene archivo local (copia) y servicio existente (en red SEM). `fiscalizacion` tiene archivo local, que es una propuesta escrita para la demostración, sin servicio detrás. `adquisiciones` tiene archivo local que es una instantánea ensamblada del OpenAPI seccionado del corpus SGM (versión 0.1.0, 16 de septiembre de 2026); el servicio no está expuesto. `sgm-core` declara metadato de contrato sin archivo local.
 
 **No hay un campo `operaciones`, y es deliberado.** Cuando hay `espec.archivo`, la ficha lo lee y lo renderiza. Cuando solo hay metadato, no se transcriben operaciones. La decisión está en [`adr-2026-09-estandar-legible-por-maquina.md`](adr-2026-09-estandar-legible-por-maquina.md).
 
 En el modelo Django, `espec` es un documento versionado —cada versión se registra, ninguna se corrige— y **se versiona aparte de la ficha**: el contrato puede cambiar sin que cambie la descripción del nodo, y al revés.
 
-Las especificaciones registradas localmente viven en [`prototipos/estandares/`](../prototipos/estandares/). El renderizador es [`prototipos/assets/openapi.js`](../prototipos/assets/openapi.js), y [`js-yaml.min.js`](../prototipos/assets/js-yaml.min.js) viene junto para no depender de la red. Límite de la maqueta: solo resuelve `$ref` internos (`#/…`); no ensambla specs seccionadas en varios archivos.
+Las especificaciones registradas localmente viven en [`prototipos/estandares/`](../prototipos/estandares/). El renderizador es [`prototipos/assets/openapi.js`](../prototipos/assets/openapi.js), y [`js-yaml.min.js`](../prototipos/assets/js-yaml.min.js) viene junto para no depender de la red. Límite de la maqueta: solo resuelve `$ref` internos (`#/…`); no ensambla specs seccionadas en varios archivos. Por eso Adquisiciones se publica ya ensamblada: la fuente viva sigue seccionada en el corpus SGM y esta copia no se edita aquí.
 
 **Una consecuencia práctica:** la ficha de un nodo con `espec.archivo` **no funciona abriendo el archivo con doble clic**, porque el navegador no permite que una página local lea otro archivo del disco. La página lo explica cuando ocurre. Para verla hay que servir la carpeta.
 
@@ -91,6 +93,8 @@ El catálogo tiene **dos intercambios visibles**: los Códigos Únicos Territori
 Se retiraron del archivo los nueve nodos que venían del mapeo de interoperabilidad del Juzgado de Policía Local de Lo Barnechea y del levantamiento municipal: `pagos-tesoreria`, `indice-expedientes`, `notificador-electronico`, `dom`, `nodos-gobierno`, `correos`, `inspeccion-municipal`, `direcciones-municipales` y `entre-juzgados`.
 
 **Salen del catálogo, no del levantamiento.** Siguen siendo intercambios reales que alguien necesita, y el trabajo de María José Besa y Allison Díaz que los identificó no se pierde: está en el mapeo original. Lo que cambió es el umbral para aparecer acá. Cuando uno de ellos tenga contrato publicado, vuelve.
+
+`nodos-gobierno` (Estándares de Gobierno Digital) es la excepción: ya se había retirado el 16 de septiembre de 2026 por otra razón, y esa no cambia aunque el umbral baje. Es condición de capa —Clave Única, FirmaGob, la plataforma de interoperabilidad del Estado—, no un intercambio que el municipio active. Sigue siendo restricción sobre el resto; no es ficha del catálogo.
 
 ### El campo `oculto`
 

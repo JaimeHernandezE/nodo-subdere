@@ -107,7 +107,7 @@
     var mas = n.instituciones.length > 2
       ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
     var claseTag = (n.clase === 'plataforma')
-      ? '<span class="tag tag-plataforma">Plataforma</span>' : '';
+      ? '<span class="tag tag-plataforma">Base</span>' : '';
     return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
       + '<div class="cab"><h4>'+esc(n.nombre)+'</h4>'
       + '<span class="'+(n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad')+'">'+esc(n.madurez)+'</span></div>'
