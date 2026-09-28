@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buscador de códigos territoriales · Nodo SUBDERE</title>
+<meta name="description" content="Busca el Código Único Territorial de una comuna, provincia o región, o averigua a qué lugar corresponde un código.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Buscador de códigos territoriales · Nodo SUBDERE">
+<meta property="og:description" content="El código de una comuna, provincia o región — y al revés, a qué lugar corresponde un código.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/servicio-cut.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Servicio en construcción. La pantalla consume la API del CUT; cuando el servicio no está alcanzable, funciona con una muestra de demostración y lo indica.</div></div>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <details class="nav-menu">
+      <summary data-current="true">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
+      <div class="nav-drop">
+        <a href="catalogo.html" aria-current="page">Servicios<span class="desc">Herramientas para usarlos</span></a>
+        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
+      </div>
+    </details>
+    <a href="wiki.html">Wiki</a>
+    <a href="participar.html">Cómo participar</a>
+  </nav>
+</div></header>
+
+<section style="padding-bottom:10px"><div class="wrap">
+  <p class="miga"><a href="catalogo.html">Servicios</a> / Buscador de códigos territoriales</p>
+  <p class="eyebrow">Servicio</p>
+  <h2>Buscador de códigos territoriales</h2>
+  <p class="lead">Escriba el nombre de una comuna, provincia o región para obtener su Código Único Territorial. O escriba un código para ver a qué lugar corresponde. Funciona en las dos direcciones con el mismo campo.</p>
+
+  <div style="margin-top:22px">
+    <label for="b" class="eyebrow" style="display:block;margin-bottom:8px">Comuna, provincia, región o código</label>
+    <input class="buscar-grande" id="b" type="search" autocomplete="off"
+           placeholder="Talca, Maule, 13101…" aria-describedby="pista">
+    <p class="pista" id="pista">Dos dígitos se leen como región, tres como provincia y cinco como comuna. Los ceros a la izquierda son parte del código, pero si los omite igual se encuentra.</p>
+  </div>
+
+  <p class="conteo" id="estado"></p>
+  <div id="res" aria-live="polite"></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">De dónde salen estos datos</p>
+  <h2>La pantalla no tiene una lista propia</h2>
+  <p class="lead">Este buscador consulta la <a href="nodo.html?id=cut">API de Códigos Únicos Territoriales</a> por la misma interfaz pública que usaría el sistema de un municipio o el de un proveedor. No tiene acceso privilegiado ni una copia paralela de la lista: si la API cambia, esta pantalla cambia con ella.</p>
+  <p class="lead" id="estado-fuente"></p>
+  <div class="tabla-ancha"><table>
+    <tr><th>Qué consulta</th><th>Operación de la API</th></tr>
+    <tr><td>La lista de regiones, provincias y comunas, al abrir la página</td><td><code>GET /regiones</code> · <code>GET /provincias</code> · <code>GET /comunas</code></td></tr>
+    <tr><td>El detalle de una comuna con su provincia y región</td><td><code>GET /comunas/{id}/full</code></td></tr>
+    <tr><td>El detalle de una provincia con su región</td><td><code>GET /provincias/{id}</code></td></tr>
+  </table></div>
+  <div class="aviso"><p><b>Un detalle que esta pantalla corrige a mano.</b> La API entrega los códigos como número entero, así que Iquique llega como <code>1101</code> y no como <code>01101</code>. Acá se muestran con sus ceros a la izquierda, que es la forma canónica. Que cada cliente tenga que rellenarlos por su cuenta es una de las observaciones al contrato: está en <a href="wiki-cut.html">la entrada de wiki del CUT</a>.</p></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div>Códigos: SUBDERE, CUT actualizado a 2018 · Especificación de referencia: septiembre de 2026</div>
+  </div>
+</div></footer>
+
+<script src="assets/nav.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------------
+     Base de la API. Por defecto la ruta que declara la especificación.
+     Se puede apuntar a otro servidor con ?api=http://localhost:8000
+     sin tocar el archivo, que es lo que hace falta para probar.
+     ------------------------------------------------------------------ */
+  var params = new URLSearchParams(location.search);
+  var API = (params.get('api') || '').replace(/\/+$/, '') + '/gescod/api/v1';
+
+  /* ------------------------------------------------------------------
+     Muestra de demostración. Son los únicos códigos que aparecen en los
+     documentos publicados por SUBDERE que se revisaron, y están acá solo
+     para que la pantalla se pueda mirar sin el servicio arriba. No es el
+     catálogo: el catálogo tiene 346 comunas y vive en la API.
+     ------------------------------------------------------------------ */
+  var MUESTRA = {
+    regiones: [
+      { id: 1,  nombre: 'Tarapacá' },
+      { id: 7,  nombre: 'Maule', abreviatura: 'MAULE' },
+      { id: 12, nombre: 'Magallanes y de la Antártica Chilena' },
+      { id: 13, nombre: 'Metropolitana de Santiago' },
+      { id: 14, nombre: 'Los Ríos' }
+    ],
+    provincias: [
+      { id: 11,  nombre: 'Iquique',    region: 1 },
+      { id: 71,  nombre: 'Talca',      region: 7 },
+      { id: 121, nombre: 'Magallanes', region: 12 },
+      { id: 131, nombre: 'Santiago',   region: 13 },
+      { id: 141, nombre: 'Valdivia',   region: 14 }
+    ],
+    comunas: [
+      { id: 1101,  nombre: 'Iquique',      provincia: 11 },
+      { id: 7101,  nombre: 'Talca',        provincia: 71 },
+      { id: 12101, nombre: 'Punta Arenas', provincia: 121 },
+      { id: 13101, nombre: 'Santiago',     provincia: 131 },
+      { id: 14101, nombre: 'Valdivia',     provincia: 141 }
+    ]
+  };
+
+  var datos = null;     // { regiones, provincias, comunas } ya normalizado
+  var envivo = false;   // true si vino de la API
+
+  var campo = document.getElementById('b');
+  var caja = document.getElementById('res');
+  var estado = document.getElementById('estado');
+  var fuente = document.getElementById('estado-fuente');
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* El CUT es jerárquico y de largo fijo: 2 dígitos la región,
+     3 la provincia, 5 la comuna, con ceros a la izquierda. */
+  var LARGO = { region: 2, provincia: 3, comuna: 5 };
+  function canonico(id, nivel) {
+    var s = String(id);
+    while (s.length < LARGO[nivel]) s = '0' + s;
+    return s;
+  }
+
+  function normaliza(sinAcentos) {
+    return String(sinAcentos).toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
+  /* ---------------- carga ---------------- */
+
+  function traer(ruta) {
+    return fetch(API + ruta, { headers: { accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  }
+
+  function cargar() {
+    estado.textContent = 'Consultando el servicio…';
+    return Promise.all([traer('/regiones'), traer('/provincias'), traer('/comunas')])
+      .then(function (r) {
+        // La API entrega provincias y comunas sin su padre, así que la
+        // jerarquía se reconstruye con el propio código: el de una comuna
+        // empieza por el de su provincia, y el de una provincia por el de
+        // su región. Es la propiedad que hace útil al CUT.
+        var regiones = r[0].map(function (x) {
+          return { id: x.region_id, nombre: x.nombre, abreviatura: x.abreviatura };
+        });
+        var provincias = r[1].map(function (x) {
+          return { id: x.provincia_id, nombre: x.nombre,
+                   region: Number(canonico(x.provincia_id, 'provincia').slice(0, 2)) };
+        });
+        var comunas = r[2].map(function (x) {
+          return { id: x.comuna_id, nombre: x.nombre,
+                   provincia: Number(canonico(x.comuna_id, 'comuna').slice(0, 3)) };
+        });
+        datos = { regiones: regiones, provincias: provincias, comunas: comunas };
+        envivo = true;
+      })
+      .catch(function () {
+        datos = MUESTRA;
+        envivo = false;
+      })
+      .then(pinta);
+  }
+
+  /* ---------------- consultas ---------------- */
+
+  function regionDe(id) {
+    return datos.regiones.filter(function (x) { return x.id === id; })[0];
+  }
+  function provinciaDe(id) {
+    return datos.provincias.filter(function (x) { return x.id === id; })[0];
+  }
+
+  function porCodigo(texto) {
+    var n = Number(texto);
+    if (texto.length <= 2) {
+      var r = regionDe(n);
+      return r ? [{ nivel: 'region', item: r }] : [];
+    }
+    if (texto.length === 3) {
+      var p = provinciaDe(n);
+      return p ? [{ nivel: 'provincia', item: p }] : [];
+    }
+    var c = datos.comunas.filter(function (x) { return x.id === n; })[0];
+    return c ? [{ nivel: 'comuna', item: c }] : [];
+  }
+
+  function porNombre(texto) {
+    var q = normaliza(texto), out = [];
+    function busca(lista, nivel) {
+      lista.forEach(function (x) {
+        var i = normaliza(x.nombre).indexOf(q);
+        if (i > -1) out.push({ nivel: nivel, item: x, exacto: i === 0 });
+      });
+    }
+    busca(datos.comunas, 'comuna');
+    busca(datos.provincias, 'provincia');
+    busca(datos.regiones, 'region');
+    out.sort(function (a, b) {
+      if (a.exacto !== b.exacto) return a.exacto ? -1 : 1;
+      return a.item.nombre.localeCompare(b.item.nombre, 'es');
+    });
+    return out.slice(0, 30);
+  }
+
+  /* ---------------- salida ---------------- */
+
+  var ETIQUETA = { region: 'Región', provincia: 'Provincia', comuna: 'Comuna' };
+
+  function jerarquia(r) {
+    var partes = [];
+    if (r.nivel === 'comuna') {
+      var p = provinciaDe(r.item.provincia);
+      if (p) {
+        partes.push('Provincia de <b>' + esc(p.nombre) + '</b> <code>' + canonico(p.id, 'provincia') + '</code>');
+        var reg = regionDe(p.region);
+        if (reg) partes.push('Región <b>' + esc(reg.nombre) + '</b> <code>' + canonico(reg.id, 'region') + '</code>');
+      }
+    } else if (r.nivel === 'provincia') {
+      var reg2 = regionDe(r.item.region);
+      if (reg2) partes.push('Región <b>' + esc(reg2.nombre) + '</b> <code>' + canonico(reg2.id, 'region') + '</code>');
+      var n = datos.comunas.filter(function (c) { return c.provincia === r.item.id; }).length;
+      if (n) partes.push(n === 1 ? '1 comuna' : n + ' comunas');
+    } else {
+      var np = datos.provincias.filter(function (p2) { return p2.region === r.item.id; }).length;
+      var nc = datos.comunas.filter(function (c2) {
+        var p3 = provinciaDe(c2.provincia);
+        return p3 && p3.region === r.item.id;
+      }).length;
+      if (np) partes.push(np === 1 ? '1 provincia' : np + ' provincias');
+      if (nc) partes.push(nc === 1 ? '1 comuna' : nc + ' comunas');
+      if (r.item.abreviatura) partes.push('Abreviatura <b>' + esc(r.item.abreviatura) + '</b>');
+    }
+    if (!partes.length) return '';
+    return '<div class="jerarquia">' + partes.join(' <span class="sep">·</span> ') + '</div>';
+  }
+
+  function tarjeta(r) {
+    var cod = canonico(r.item.id, r.nivel);
+    return '<div class="res">'
+      + '<div class="res-cab"><h3>' + esc(r.item.nombre) + '</h3>'
+      + '<span class="res-nivel">' + ETIQUETA[r.nivel] + '</span></div>'
+      + '<div class="codigo-cut"><code>' + cod + '</code>'
+      + '<button class="btn-copiar" type="button" data-cod="' + cod + '">Copiar</button></div>'
+      + jerarquia(r)
+      + '</div>';
+  }
+
+  function pinta() {
+    if (!datos) return;
+
+    fuente.innerHTML = envivo
+      ? '<span class="fuente" data-vivo="1">Conectado al servicio</span> '
+        + 'La lista que se está buscando viene de la API, en vivo.'
+      : '<span class="fuente">Muestra de demostración</span> '
+        + 'El servicio no está alcanzable desde acá, así que la pantalla funciona con '
+        + '<b>' + MUESTRA.comunas.length + ' comunas de ejemplo</b> tomadas de los documentos '
+        + 'publicados por SUBDERE. El catálogo real tiene 346. Para probar contra un servicio '
+        + 'propio, agregue <code>?api=http://localhost:8000</code> a la dirección de esta página.';
+
+    var texto = campo.value.trim();
+    if (!texto) {
+      caja.innerHTML = '';
+      estado.textContent = envivo
+        ? datos.comunas.length + ' comunas disponibles para buscar'
+        : 'Muestra de demostración: ' + datos.comunas.length + ' comunas';
+      return;
+    }
+
+    var res = /^\d+$/.test(texto) ? porCodigo(texto) : porNombre(texto);
+
+    if (!res.length) {
+      var ayuda = /^\d+$/.test(texto)
+        ? (texto.length > 5
+            ? 'Ese código es demasiado largo. Son dos dígitos para una región, tres para una provincia y cinco para una comuna.'
+            : 'Ningún lugar tiene ese código' + (envivo ? '.' : ' en la muestra de demostración.'))
+        : 'Ningún lugar coincide con ese nombre' + (envivo ? '.' : ' en la muestra de demostración.');
+      caja.innerHTML = '<p class="pendiente">' + ayuda + '</p>';
+      estado.textContent = '';
+      return;
+    }
+
+    caja.innerHTML = res.map(tarjeta).join('');
+    estado.textContent = res.length === 1 ? '1 resultado' : res.length + ' resultados';
+  }
+
+  /* ---------------- interacción ---------------- */
+
+  var espera;
+  campo.addEventListener('input', function () {
+    clearTimeout(espera);
+    espera = setTimeout(function () {
+      pinta();
+      var p = new URLSearchParams(location.search);
+      if (campo.value.trim()) p.set('q', campo.value.trim()); else p.delete('q');
+      var s = p.toString();
+      history.replaceState(null, '', s ? '?' + s : location.pathname);
+    }, 160);
+  });
+
+  caja.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.btn-copiar') : null;
+    if (!b || !navigator.clipboard) return;
+    navigator.clipboard.writeText(b.getAttribute('data-cod')).then(function () {
+      var antes = b.textContent;
+      b.textContent = 'Copiado';
+      b.setAttribute('data-ok', '1');
+      setTimeout(function () { b.textContent = antes; b.removeAttribute('data-ok'); }, 1400);
+    });
+  });
+
+  campo.value = params.get('q') || '';
+  cargar();
+})();
+</script>
+</body>
+</html>

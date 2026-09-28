@@ -27,18 +27,26 @@
   <nav class="nav">
     <a href="index.html">Inicio</a>
     <a href="que-es.html" aria-current="page">Qué es el nodo</a>
-    <a href="catalogo.html">Catálogo</a>
+    <details class="nav-menu">
+      <summary data-current="false">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
+      <div class="nav-drop">
+        <a href="catalogo.html">Servicios<span class="desc">Herramientas para usarlos</span></a>
+        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
+      </div>
+    </details>
+    <a href="wiki.html">Wiki</a>
     <a href="participar.html">Cómo participar</a>
-    <a href="comentarios.html">Comentarios</a>
   </nav>
 </div></header>
 
 <section><div class="wrap">
   <p class="eyebrow">Descripción general</p>
   <h2>Cómo funciona el nodo</h2>
-  <p class="lead">El municipio hace dos cosas con el resto del Estado: <strong>entregar</strong> información que le piden, y <strong>preguntar</strong> por información que necesita. Hoy cada una de esas dos cosas se hace de una manera distinta con cada institución. El nodo las junta en una sola.</p>
+  <p class="lead">El municipio hace dos cosas con la información que no es solo suya: <strong>entregar</strong> lo que le piden, y <strong>preguntar</strong> por lo que necesita. Hoy cada una de esas dos cosas se hace de una manera distinta con cada institución, y casi ninguna está publicada. El nodo publica el estándar de cada intercambio y lo expone por una sola interfaz.</p>
   <p class="lead">Para cada intercambio, el nodo publica de antemano <strong>qué se entrega y en qué forma</strong>. Eso es lo que llamamos el estándar, y está escrito de manera que un programa pueda leerlo, no solo una persona.</p>
+  <p class="lead">Del otro lado, lo que SUBDERE necesita del resto del Estado o le entrega al resto del Estado viaja por sus propios canales institucionales —sus nodos de la Red de Interoperabilidad y los convenios que ya tiene vigentes—. Eso no cambia con esto y no es lo que este sitio describe.</p>
   <p class="lead"><strong>El nodo conecta sistemas, no personas.</strong> No tiene pantallas donde un funcionario suba una planilla: las plataformas que reciben información municipal ya tienen sus propios formularios y el nodo no los repite. Quien conversa con el nodo es el sistema del municipio.</p>
+  <p class="alt">(Redacción pendiente de zanjar con la jefatura: cuánto describe el sitio del lado de SUBDERE hacia el resto del Estado. La versión de arriba lo menciona sin detallarlo.)</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
@@ -74,7 +82,7 @@
     <tr><th>Qué tanto ayuda</th><th>Qué hace</th><th>Cuándo pasa</th></tr>
     <tr><td><strong>Revisa con las reglas de quien recibe</strong></td><td>Antes de enviar, compara el informe con lo que esa institución publicó que espera.</td><td>Cuando la institución publicó sus reglas.</td></tr>
     <tr><td><strong>Revisa con las reglas de la norma</strong></td><td>Aplica lo que dice la norma, escrito como regla y mantenido al día.</td><td>Cuando la exigencia es pública aunque la institución no publique nada.</td></tr>
-    <tr><td><strong>Le da el formato y lo entrega</strong></td><td>Arma el informe como esa institución lo acepta, lo entrega, y devuelve el comprobante y las observaciones que lleguen.</td><td>Siempre, como mínimo. El municipio deja de preparar varios formatos a mano.</td></tr>
+    <tr><td><strong>Le da el formato</strong></td><td>Arma el informe como el destino lo acepta y se lo devuelve al municipio listo para entregar, o lo cursa cuando SUBDERE tiene canal propio con ese destino, devolviendo el comprobante y las observaciones que lleguen.</td><td>Siempre, como mínimo, en su primera forma. Cursarlo depende de que exista canal con ese destino.</td></tr>
     <tr><td><strong>Prepara el documento</strong></td><td>Lo produce y se lo devuelve al municipio para que lo publique él.</td><td>Cuando el municipio publica por su cuenta y no hay con quién convenir nada.</td></tr>
   </table>
   <div class="aviso"><p>Decir que se revisó algo que no se revisó sería la forma más rápida de que nadie vuelva a confiar en esto. Por eso cada entrega dice qué se miró y qué no.</p></div>
@@ -99,6 +107,7 @@
 
   <p class="lead" style="margin-top:20px">Dos cosas que conviene notar. La primera: <strong>nadie tiene atajos.</strong> La pantalla del propio SGM entra por esta misma puerta, igual que el sistema de cualquier municipio o de cualquier proveedor. La segunda: el permiso de entrada es temporal y se pide cada vez, así que revocarle el acceso a alguien es inmediato y no depende de avisarle a nadie.</p>
   <p class="lead">Esta puerta no decide nada del contenido. No sabe si un informe está bien: eso lo revisa cada servicio con sus reglas. Solo se ocupa de quién entra, cuánto puede pedir y que quede anotado.</p>
+  <p class="lead">Son dos piezas separadas y conviene nombrarlas así: <strong>quién es quién</strong> —el registro de municipios, sistemas y credenciales— y <strong>el control de paso</strong> —lo que comprueba cada llamada, la limita y la anota—. Se eligen por separado y se pueden reemplazar por separado. La <a href="../docs/plataforma-control.md">nota de la plataforma de control</a> tiene el detalle técnico.</p>
 </div></section>
 
 <section><div class="wrap">
@@ -133,16 +142,20 @@
     <div class="card">
       <div class="num">C</div>
       <h3>Si no tiene ningún sistema</h3>
-      <p>El nodo conecta sistemas, así que no es la respuesta para este caso. La respuesta es el <strong>SGM</strong>: código abierto y sin costo de licencia. El SGM será además el primero en usar el nodo.</p>
+      <p>El nodo conecta sistemas, así que no es la respuesta para este caso. La respuesta es el <strong>SGM</strong>: código abierto y sin costo de licencia. El SGM será además el primero en consumir estos servicios, por la misma puerta que cualquier otro sistema.</p>
     </div>
   </div>
   <div class="aviso"><p>El nodo <b>no recibe planillas subidas a mano</b>. Las plataformas que hoy reciben información municipal ya tienen sus propios formularios y van a seguir funcionando; el nodo no los reemplaza ni los repite.</p></div>
 </div></section>
 
 <footer><div class="wrap">
-  <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
-  <div>División de Políticas y Estudios · SUBDERE</div>
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
 </div></footer>
 
+<script src="assets/nav.js"></script>
 </body>
 </html>

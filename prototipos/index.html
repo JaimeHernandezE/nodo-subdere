@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nodo SUBDERE</title>
-<meta name="description" content="Una sola puerta para que el municipio converse con el resto del Estado: entrega una vez, sabe antes si está bien y queda con comprobante.">
+<meta name="description" content="Los servicios y estándares que SUBDERE publica para los municipios: qué se entrega y en qué forma, revisado antes de enviar y con comprobante de lo entregado.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nodo SUBDERE">
 <meta property="og:title" content="Nodo SUBDERE">
-<meta property="og:description" content="Una sola puerta para que el municipio converse con el resto del Estado: entrega una vez, sabe antes si está bien y queda con comprobante.">
+<meta property="og:description" content="Los servicios y estándares que SUBDERE publica para los municipios: qué se entrega y en qué forma, revisado antes de enviar y con comprobante de lo entregado.">
 <meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/index.html">
 <meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -20,25 +20,31 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> El catálogo junta lo levantado con un Juzgado de Policía Local, un servicio que ya existe en SUBDERE y las dos primeras piezas del SGM. No es un sitio publicado ni un compromiso institucional.</div></div>
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> El catálogo parte con un solo intercambio, los Códigos Únicos Territoriales. No es un sitio publicado ni un compromiso institucional.</div></div>
 
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
   <nav class="nav">
     <a href="index.html" aria-current="page">Inicio</a>
     <a href="que-es.html">Qué es el nodo</a>
-    <a href="catalogo.html">Catálogo</a>
+    <details class="nav-menu">
+      <summary data-current="false">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
+      <div class="nav-drop">
+        <a href="catalogo.html">Servicios<span class="desc">Herramientas para usarlos</span></a>
+        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
+      </div>
+    </details>
+    <a href="wiki.html">Wiki</a>
     <a href="participar.html">Cómo participar</a>
-    <a href="comentarios.html">Comentarios</a>
   </nav>
 </div></header>
 
 <div class="hero"><div class="wrap">
   <p class="eyebrow">Subsecretaría de Desarrollo Regional y Administrativo</p>
-  <h1>Una sola puerta entre el municipio y el Estado</h1>
-  <p>El Nodo SUBDERE le da al municipio una sola puerta para conversar con el resto del Estado. Dice de antemano qué se entrega y en qué forma, revisa antes de enviar, y deja comprobante de lo entregado.</p>
-  <p>Hoy, cada institución pide a su manera —su formato, su página, su clave—, alguien arma lo mismo varias veces al mes, lo manda sin saber si está bien, y después no tiene cómo comprobar qué mandó.</p>
-  <p class="alt">(Versión alternativa en discusión, que parte por el problema en vez de la propuesta: «Cada institución que le pide información a un municipio se la pide a su manera: su propio formato, su propia página, su propia clave. Alguien arma lo mismo varias veces al mes, lo manda sin saber si está bien, y después no tiene cómo comprobar qué mandó. El Nodo SUBDERE cambia esas muchas puertas por una: dice de antemano qué se entrega y en qué forma, revisa antes de enviar, y deja comprobante.»)</p>
+  <h1>Los estándares municipales, en un solo lugar</h1>
+  <p>El Nodo SUBDERE publica de antemano qué información se entrega y en qué forma, revisa el envío antes de que salga, y deja comprobante de lo entregado. El sistema del municipio conversa con él por una interfaz documentada, cualquiera que sea el proveedor de ese sistema.</p>
+  <p>Hoy cada institución pide a su manera —su formato, su página, su clave—, alguien arma lo mismo varias veces al mes, lo manda sin saber si está bien, y después no tiene cómo comprobar qué mandó.</p>
+  <p class="alt">(Versión alternativa en discusión, que parte por el problema en vez de la propuesta: «Cada institución que le pide información a un municipio se la pide a su manera: su propio formato, su propia página, su propia clave. Alguien arma lo mismo varias veces al mes, lo manda sin saber si está bien, y después no tiene cómo comprobar qué mandó. El Nodo SUBDERE publica qué se entrega y en qué forma, revisa antes de enviar, y deja comprobante.»)</p>
   <div class="acciones">
     <a class="btn btn-p" href="catalogo.html">Ver el catálogo de nodos</a>
     <a class="btn btn-s" href="que-es.html">Cómo funciona</a>
@@ -46,33 +52,40 @@
 </div></div>
 
 <section><div class="wrap">
+  <p class="eyebrow">Qué es, en una línea</p>
+  <h2>Un catálogo, una puerta y un compromiso de operación</h2>
+  <p class="lead">El nombre puede dar a entender una red aparte, y no lo es. El <strong>Nodo SUBDERE</strong> son tres cosas concretas: el <strong>catálogo</strong> donde cada intercambio del municipio queda publicado con su estándar; la <strong>puerta</strong> por la que los sistemas acceden a esos servicios, igual para todos; y el compromiso de <strong>sostener</strong> ambos en el tiempo. Lo que SUBDERE hace con el resto del Estado —sus nodos de la Red de Interoperabilidad y los convenios que ya tiene vigentes— queda del otro lado de esa puerta y no cambia con esto.</p>
+  <p class="alt">(Redacción pendiente de zanjar con la jefatura: hasta dónde el sitio describe el lado de SUBDERE hacia el resto del Estado. La versión de arriba lo menciona sin detallarlo.)</p>
+</div></section>
+
+<section class="gris"><div class="wrap">
   <p class="eyebrow">Qué cambia</p>
   <h2>Cuatro cosas que hoy no pasan</h2>
   <div class="cols-2">
     <div class="card">
       <div class="num">01</div>
-      <h3>Entrega una vez, llega a todos</h3>
-      <p>El municipio entrega su información en un solo formato. El nodo la reparte a cada destino en el formato que ese destino ya acepta. Ninguna plataforma necesita cambiar.</p>
+      <h3>El formato está publicado antes de que empiece nada</h3>
+      <p>Cada intercambio tiene su estándar publicado con número de versión, escrito de manera que un programa pueda leerlo y no solo una persona. El sistema del municipio se construye contra eso, no contra lo que alguien recuerde de la última vez.</p>
     </div>
     <div class="card">
       <div class="num">02</div>
       <h3>Sabe antes de enviar si está correcta</h3>
-      <p>El nodo compara el informe con lo que esa institución publicó que espera, y los errores aparecen en la pantalla donde el funcionario ya está trabajando. Revisar no cuesta nada y se puede repetir.</p>
+      <p>El informe se compara con lo que está publicado, y los errores aparecen en la pantalla donde el funcionario ya está trabajando. Revisar no cuesta nada, no envía nada y se puede repetir.</p>
     </div>
     <div class="card">
       <div class="num">03</div>
       <h3>Recibe comprobante de lo que entregó</h3>
-      <p>Qué salió, cuándo y a dónde, consultable cuando quiera. Autorizar el envío es un permiso; poder comprobarlo después es una garantía.</p>
+      <p>Qué salió, cuándo, a dónde y contra qué versión de la regla se revisó, consultable cuando quiera. Autorizar el envío es un permiso; poder comprobarlo después es una garantía.</p>
     </div>
     <div class="card">
       <div class="num">04</div>
-      <h3>Un solo registro, no uno por plataforma</h3>
-      <p>Hoy cada plataforma lleva su propia lista de quién es quién en el municipio, y el mismo funcionario se inscribe una y otra vez. Con una lista común eso se hace una sola vez.</p>
+      <h3>Una credencial del municipio, no una por plataforma</h3>
+      <p>El acceso se pide con la credencial del municipio y vale para los servicios que ese municipio tenga habilitados. Es temporal y se pide cada vez, así que retirar un acceso es inmediato.</p>
     </div>
   </div>
 </div></section>
 
-<section class="gris"><div class="wrap">
+<section><div class="wrap">
   <p class="eyebrow">Lo que el nodo no es</p>
   <h2>Para que no haya malentendidos</h2>
   <div class="cols-3">
@@ -82,28 +95,45 @@
     </div>
     <div class="card">
       <h3>No pide información nueva</h3>
-      <p>Es la misma que el municipio ya entrega hoy. Lo que cambia es cuántas veces la prepara.</p>
+      <p>Es la misma que el municipio ya entrega hoy. Lo que cambia es cuántas veces la prepara y si sabe de antemano si está bien.</p>
+    </div>
+    <div class="card">
+      <h3>No reemplaza a la Red del Estado</h3>
+      <p>Lo que un órgano intercambia con otro sigue su propio camino. Este sitio es el lado municipal: los estándares del dominio y los servicios que SUBDERE pone a disposición.</p>
     </div>
     <div class="card">
       <h3>Nada sale sin que el municipio lo autorice</h3>
       <p>Entregar sigue siendo una decisión del municipio, y de cada envío queda registro.</p>
     </div>
+    <div class="card">
+      <h3>No recibe planillas subidas a mano</h3>
+      <p>Conecta sistemas, no personas. Las plataformas que hoy reciben información municipal tienen sus propios formularios y siguen funcionando.</p>
+    </div>
+    <div class="card">
+      <h3>No es un producto que se compre</h3>
+      <p>Lo publicado es público. Cualquier proveedor puede construir contra el estándar sin pedirle permiso a nadie y sin firmar nada, mientras trabaje con datos de práctica.</p>
+    </div>
   </div>
 </div></section>
 
-<section><div class="wrap">
+<section class="gris"><div class="wrap">
   <p class="eyebrow">Cómo está armado</p>
   <h2>Una lista de intercambios, cada uno con su ficha</h2>
   <p class="lead">Cada intercambio del municipio con alguien es un <strong>nodo</strong>, y tiene su propia ficha: para qué sirve, quiénes participan, en qué estado está y —cuando ya existe— qué entrega exactamente. El catálogo es la lista de lo disponible: cualquiera puede mirarlo y empezar a diseñar a partir de esos estándares.</p>
+  <p class="lead">La ficha distingue dos cosas que se confunden: que un estándar esté <strong>publicado</strong> y que el servicio esté <strong>alcanzable</strong>. Hoy la mayoría de los nodos del catálogo están en estado deseable o en evaluación, y las fichas lo dicen una por una en vez de dar a entender que todo está funcionando.</p>
   <div class="acciones" style="margin-top:22px">
     <a class="btn btn-p" href="catalogo.html">Entrar al catálogo</a>
   </div>
 </div></section>
 
 <footer><div class="wrap">
-  <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
-  <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
 </div></footer>
 
+<script src="assets/nav.js"></script>
 </body>
 </html>

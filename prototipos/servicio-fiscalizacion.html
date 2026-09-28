@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consulta de permiso de circulación · Nodo SUBDERE</title>
+<meta name="description" content="Escriba una patente y vea si el vehículo tiene su permiso de circulación al día, en qué comuna se pagó y cuánto.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Consulta de permiso de circulación · Nodo SUBDERE">
+<meta property="og:description" content="Una patente, y el estado de su permiso de circulación.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/servicio-fiscalizacion.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="alerta"><div class="wrap"><b>Demostración.</b> Los datos de esta pantalla son inventados. Ninguna patente, vehículo ni empresa corresponde a un registro real.</div></div>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <details class="nav-menu">
+      <summary data-current="true">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
+      <div class="nav-drop">
+        <a href="catalogo.html" aria-current="page">Servicios<span class="desc">Herramientas para usarlos</span></a>
+        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
+      </div>
+    </details>
+    <a href="wiki.html">Wiki</a>
+    <a href="participar.html">Cómo participar</a>
+  </nav>
+</div></header>
+
+<section style="padding-bottom:10px"><div class="wrap">
+  <p class="miga"><a href="catalogo.html">Servicios</a> / Consulta de permiso de circulación</p>
+  <p class="eyebrow">Servicio</p>
+  <h2>Consulta de permiso de circulación</h2>
+  <p class="lead">Escriba la patente de un vehículo para ver si su permiso de circulación está vigente, en qué comuna se pagó y cuánto. Sirve también para patentes provisorias de automotora.</p>
+
+  <div style="margin-top:22px">
+    <label for="b" class="eyebrow" style="display:block;margin-bottom:8px">Patente</label>
+    <input class="buscar-grande" id="b" type="search" autocomplete="off" spellcheck="false"
+           style="text-transform:uppercase;letter-spacing:2px;max-width:340px"
+           placeholder="BDPF18" aria-describedby="pista">
+    <p class="pista" id="pista">Sin guiones ni puntos. Admite los dos formatos: dos letras y cuatro dígitos, o cuatro letras y dos dígitos. Para una provisoria, <code>PR</code> y cuatro dígitos.</p>
+  </div>
+
+  <p class="conteo" id="estado"></p>
+  <div id="res" aria-live="polite"></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">De dónde salen estos datos</p>
+  <h2>La pantalla no tiene una base propia</h2>
+  <p class="lead">Este servicio consulta la <a href="nodo.html?id=fiscalizacion">API de permisos de circulación</a> por la misma interfaz pública que usaría el sistema de un municipio o el de una institución que fiscaliza. No tiene acceso privilegiado ni una copia paralela del registro.</p>
+  <p class="lead" id="estado-fuente"></p>
+  <div class="tabla-ancha"><table>
+    <tr><th>Qué consulta</th><th>Operación de la API</th></tr>
+    <tr><td>Los datos del vehículo</td><td><code>GET /vehiculos/{patente}</code></td></tr>
+    <tr><td>Sus permisos por año, con la comuna que los recaudó</td><td><code>GET /vehiculos/{patente}/permisos</code></td></tr>
+    <tr><td>Los permisos de una patente provisoria</td><td><code>GET /permisos-provisionales/{patente}</code></td></tr>
+  </table></div>
+  <div class="aviso"><p><b>La comuna viaja como código, no como nombre.</b> Cada permiso identifica a la institución recaudadora con su Código Único Territorial —<code>13101</code>, no <code>SANTIAGO</code>—, que es lo que permite cruzar esta información con cualquier otra del Estado sin adivinar. Es el <a href="wiki-cut.html">estándar del CUT</a> usado por otro intercambio, que es exactamente para lo que existe. La entrada de wiki de este servicio, con lo que cambió respecto de la colección de referencia, está en <a href="wiki-fiscalizacion.html">permisos de circulación</a>.</p></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
+</div></footer>
+
+<script src="assets/fiscalizacion-demo.js"></script>
+<script src="assets/nav.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  var API = (params.get('api') || '').replace(/\/+$/, '') + '/api/bum/v1';
+  var conServicio = !!params.get('api');
+
+  var campo = document.getElementById('b');
+  var caja = document.getElementById('res');
+  var estado = document.getElementById('estado');
+  var fuente = document.getElementById('estado-fuente');
+
+  var RE_PATENTE = /^([A-Z]{2}[0-9]{4}|[A-Z]{4}[0-9]{2})$/;
+  var RE_PROVISORIA = /^PR[0-9]{4}$/;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function pesos(n) {
+    return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  /* La API entrega fechas ISO 8601; se muestran en el formato local.
+     La conversión va en la pantalla, no en el contrato. */
+  var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+               'agosto','septiembre','octubre','noviembre','diciembre'];
+  function fecha(iso) {
+    var p = String(iso).split('-');
+    if (p.length !== 3) return iso;
+    return Number(p[2]) + ' de ' + MESES[Number(p[1]) - 1] + ' de ' + p[0];
+  }
+
+  function traer(ruta) {
+    return fetch(API + ruta, { headers: { accept: 'application/json' } })
+      .then(function (r) {
+        if (r.status === 404) return null;
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      });
+  }
+
+  /* ---------------- consultas ---------------- */
+
+  function consultaVehiculo(pat) {
+    if (!conServicio) {
+      var d = FISCALIZACION_DEMO;
+      return Promise.resolve({
+        vehiculo: d.vehiculos[pat] || null,
+        permisos: d.permisos[pat] || []
+      });
+    }
+    return Promise.all([traer('/vehiculos/' + pat), traer('/vehiculos/' + pat + '/permisos')])
+      .then(function (r) { return { vehiculo: r[0], permisos: r[1] || [] }; });
+  }
+
+  function consultaProvisoria(pat) {
+    if (!conServicio) {
+      return Promise.resolve(FISCALIZACION_DEMO.provisionales[pat] || null);
+    }
+    return traer('/permisos-provisionales/' + pat);
+  }
+
+  /* ---------------- salida ---------------- */
+
+  function tarjetaPermiso(p) {
+    var cuotas = (p.cuotas || []).map(function (c) {
+      return '<tr><td>Cuota ' + c.numero + '</td><td>' + pesos(c.monto) + '</td>'
+        + '<td>' + fecha(c.fecha_pago) + '</td><td>' + esc(c.medio_pago || '—') + '</td></tr>';
+    }).join('');
+    var clase = p.estado === 'VIGENTE' ? 'tag tag-dev' : 'tag';
+    return '<div class="res">'
+      + '<div class="res-cab"><h3>Permiso ' + p.anio + '</h3>'
+      + '<span class="' + clase + '">' + esc(p.estado) + '</span></div>'
+      + '<div class="jerarquia" style="border-top:0;padding-top:6px;margin-top:6px">'
+      + 'Recaudado por <b>' + esc(p.comuna.nombre) + '</b> <code>' + esc(p.comuna.cut) + '</code>'
+      + ' <span class="sep">·</span> Total <b>' + pesos(p.monto_total) + '</b>'
+      + (p.vigente_hasta ? ' <span class="sep">·</span> Vigente hasta <b>' + fecha(p.vigente_hasta) + '</b>' : '')
+      + '</div>'
+      + (cuotas ? '<div class="tabla-ancha"><table><tr><th></th><th>Monto</th><th>Pagada</th><th>Medio</th></tr>'
+                  + cuotas + '</table></div>' : '')
+      + '</div>';
+  }
+
+  function pintaVehiculo(pat, r) {
+    if (!r.vehiculo) {
+      caja.innerHTML = '<p class="pendiente">No hay ningún vehículo inscrito con la patente <b>'
+        + esc(pat) + '</b>' + (conServicio ? '.' : ' en los datos de demostración.') + '</p>';
+      estado.textContent = '';
+      return;
+    }
+    var v = r.vehiculo;
+    var vigente = r.permisos.filter(function (p) { return p.estado === 'VIGENTE'; })[0];
+    var resumen = vigente
+      ? '<span class="tag tag-dev">Permiso ' + vigente.anio + ' vigente</span>'
+      : '<span class="tag tag-mad">Sin permiso vigente</span>';
+
+    caja.innerHTML = '<div class="res">'
+      + '<div class="res-cab"><h3>' + esc(v.patente) + '</h3>' + resumen + '</div>'
+      + '<div class="jerarquia" style="border-top:0;padding-top:6px;margin-top:6px">'
+      + '<b>' + esc(v.marca) + ' ' + esc(v.modelo) + '</b>'
+      + (v.color ? ' <span class="sep">·</span> ' + esc(v.color) : '')
+      + (v.anio_fabricacion ? ' <span class="sep">·</span> ' + v.anio_fabricacion : '')
+      + (v.tipo ? ' <span class="sep">·</span> ' + esc(v.tipo) : '')
+      + '</div></div>'
+      + (r.permisos.length
+          ? r.permisos.map(tarjetaPermiso).join('')
+          : '<p class="pendiente">Este vehículo no tiene permisos de circulación registrados.</p>');
+
+    estado.textContent = r.permisos.length === 1
+      ? '1 permiso registrado' : r.permisos.length + ' permisos registrados';
+  }
+
+  function pintaProvisoria(pat, lista) {
+    if (!lista || !lista.length) {
+      caja.innerHTML = '<p class="pendiente">No hay permisos provisionales para <b>' + esc(pat) + '</b>'
+        + (conServicio ? '.' : ' en los datos de demostración.') + '</p>';
+      estado.textContent = '';
+      return;
+    }
+    caja.innerHTML = lista.map(function (p) {
+      return '<div class="res">'
+        + '<div class="res-cab"><h3>' + esc(pat) + '</h3>'
+        + '<span class="res-nivel">Permiso provisional</span></div>'
+        + '<div class="jerarquia" style="border-top:0;padding-top:6px;margin-top:6px">'
+        + '<b>' + esc(p.marca || '—') + ' ' + esc(p.modelo || '') + '</b>'
+        + ' <span class="sep">·</span> ' + p.anio + ', semestre ' + p.semestre
+        + ' <span class="sep">·</span> ' + esc(p.comuna.nombre) + ' <code>' + esc(p.comuna.cut) + '</code>'
+        + '</div>'
+        + '<div class="jerarquia">Titular <b>' + esc(p.titular.razon_social) + '</b> '
+        + '<code>' + esc(p.titular.rut) + '</code></div>'
+        + '</div>';
+    }).join('');
+    estado.textContent = lista.length === 1 ? '1 permiso provisional' : lista.length + ' permisos provisionales';
+  }
+
+  function consulta() {
+    var pat = campo.value.trim().toUpperCase().replace(/[\s.\-]/g, '');
+
+    fuente.innerHTML = conServicio
+      ? '<span class="fuente" data-vivo="1">Conectado al servicio</span> Las respuestas vienen de la API, en vivo.'
+      : '<span class="fuente">Datos de demostración</span> '
+        + 'Esta pantalla está funcionando con <b>cinco vehículos y dos patentes provisorias inventados</b>, '
+        + 'que viven en el propio sitio. Para probar contra un servicio real, agregue '
+        + '<code>?api=https://…</code> a la dirección de esta página.';
+
+    if (!pat) {
+      caja.innerHTML = '';
+      estado.textContent = conServicio ? '' : 'Pruebe con BDPF18, CHCR68, AB0251, DLYP38, KR4419 o PR0909';
+      return;
+    }
+
+    if (RE_PROVISORIA.test(pat)) {
+      estado.textContent = 'Consultando…';
+      consultaProvisoria(pat).then(function (l) { pintaProvisoria(pat, l); }).catch(error);
+      return;
+    }
+
+    if (!RE_PATENTE.test(pat)) {
+      caja.innerHTML = '<p class="pendiente">Esa patente no tiene un formato válido. '
+        + 'Son dos letras y cuatro dígitos, o cuatro letras y dos dígitos. '
+        + 'Para una provisoria, <code>PR</code> y cuatro dígitos.</p>';
+      estado.textContent = '';
+      return;
+    }
+
+    estado.textContent = 'Consultando…';
+    consultaVehiculo(pat).then(function (r) { pintaVehiculo(pat, r); }).catch(error);
+  }
+
+  function error() {
+    caja.innerHTML = '<p class="pendiente">No se pudo consultar el servicio. '
+      + 'Si está apuntando a un servidor propio con <code>?api=</code>, revise que esté arriba '
+      + 'y que acepte llamadas desde este origen.</p>';
+    estado.textContent = '';
+  }
+
+  var espera;
+  campo.addEventListener('input', function () {
+    clearTimeout(espera);
+    espera = setTimeout(function () {
+      consulta();
+      var p = new URLSearchParams(location.search);
+      if (campo.value.trim()) p.set('p', campo.value.trim().toUpperCase()); else p.delete('p');
+      var s = p.toString();
+      history.replaceState(null, '', s ? '?' + s : location.pathname);
+    }, 200);
+  });
+
+  campo.value = params.get('p') || '';
+  consulta();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catálogo de APIs · Nodo SUBDERE</title>
+<meta name="description" content="Cada intercambio en el que participa el municipio, con su ficha: qué entrega, con quién conversa, en qué estado está y —cuando ya existe— su contrato técnico.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Catálogo de APIs · Nodo SUBDERE">
+<meta property="og:description" content="Cada intercambio en el que participa el municipio, con su ficha y su contrato técnico cuando ya existe.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/apis.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> El catálogo parte con un solo intercambio, los Códigos Únicos Territoriales. No es un sitio publicado ni un compromiso institucional.</div></div>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <details class="nav-menu">
+      <summary data-current="true">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
+      <div class="nav-drop">
+        <a href="catalogo.html">Servicios<span class="desc">Herramientas para usarlos</span></a>
+        <a href="apis.html" aria-current="page">APIs<span class="desc">Los intercambios publicados</span></a>
+      </div>
+    </details>
+    <a href="wiki.html">Wiki</a>
+    <a href="participar.html">Cómo participar</a>
+  </nav>
+</div></header>
+
+<section style="padding-bottom:18px"><div class="wrap">
+  <p class="eyebrow">Catálogos · APIs</p>
+  <h2>Los intercambios publicados</h2>
+  <p class="lead">Cada nodo es un intercambio en el que participa el municipio. La ficha dice qué entrega, con quién conversa, en qué estado está y —cuando ya hay contrato publicado— muestra la especificación operación por operación.</p>
+  <p class="lead">Esta es la vista para quien va a construir: cada ficha dice si ya hay contrato publicado y, cuando lo hay, muestra la especificación operación por operación. Las herramientas hechas sobre estas interfaces, para usarlas desde una pantalla y sin programar, están en el <a href="catalogo.html">catálogo de servicios</a>.</p>
+
+  <div class="filtros">
+    <input class="buscador" id="q" type="search" placeholder="Buscar por nombre o institución…" aria-label="Buscar intercambios">
+  </div>
+  <p class="conteo" id="conteo"></p>
+
+  <div id="grid"></div>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">Cómo leer el estado</p>
+  <h2>Publicar el contrato no es tener el servicio andando</h2>
+  <p class="lead">Son dos cosas distintas y la ficha las separa. Un contrato publicado ya sirve para diseñar y construir contra él, aunque el servicio todavía no responda desde fuera. Decir lo contrario sería la forma más rápida de que nadie vuelva a confiar en este catálogo.</p>
+  <table>
+    <tr><th>Estado</th><th>Qué quiere decir</th></tr>
+    <tr><td><span class="tag tag-mad">Deseable</span></td><td>Alguien lo necesita y está anotado. Nadie ha revisado todavía si es viable ni ha comprometido nada.</td></tr>
+    <tr><td><span class="tag">En evaluación</span></td><td>Se está viendo qué tan difícil es hacerlo y si la institución del otro lado quiere.</td></tr>
+    <tr><td><span class="tag tag-dev">En desarrollo</span></td><td>Ya está escrito qué entrega y hay trabajo andando, pero todavía no se puede usar desde fuera.</td></tr>
+    <tr><td><span class="tag">Operativo</span></td><td>Funciona y hay municipios usándolo.</td></tr>
+  </table>
+  <div class="aviso"><p>El catálogo parte con muy pocos intercambios a propósito. Es preferible una entrada completa —con su contrato, su pantalla y su entrada de wiki— que una lista larga de intenciones. Los siguientes se agregan cuando alcanzan ese mismo nivel.</p></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
+</div></footer>
+
+<script src="assets/data.js"></script>
+<script>
+(function(){
+  var grid = document.getElementById('grid');
+  var conteo = document.getElementById('conteo');
+  var q = document.getElementById('q');
+  // Los nodos marcados como ocultos existen en el modelo y no se listan.
+  // Su ficha sigue siendo alcanzable por enlace directo.
+  var VISIBLES = NODOS.filter(function(n){ return !n.oculto; });
+
+  // Estado inicial desde la dirección, para poder compartir un catálogo filtrado
+  var params = new URLSearchParams(location.search);
+  var filtro = params.get('ambito') || 'todos';
+  q.value = params.get('q') || '';
+
+  function guardaEstado(){
+    var p = new URLSearchParams();
+    if (filtro !== 'todos') p.set('ambito', filtro);
+    if (q.value.trim()) p.set('q', q.value.trim());
+    var s = p.toString();
+    history.replaceState(null, '', s ? '?' + s : location.pathname);
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function tarjeta(n){
+    var inst = n.instituciones.slice(0,2).map(function(i){
+      return '<span class="tag tag-inst">'+esc(i)+'</span>'; }).join('');
+    var mas = n.instituciones.length > 2
+      ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
+    var claseTag = (n.clase === 'plataforma')
+      ? '<span class="tag tag-plataforma">Plataforma</span>' : '';
+    return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
+      + '<div class="cab"><h4>'+esc(n.nombre)+'</h4>'
+      + '<span class="'+(n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad')+'">'+esc(n.madurez)+'</span></div>'
+      + '<p class="func">'+esc(n.funcion)+'</p>'
+      + '<div class="meta"><span class="tag tag-ambito">'+esc(n.ambito)+'</span>'
+      + claseTag + inst + mas + '</div></a>';
+  }
+
+  function slugAmb(a){
+    return String(a).toLowerCase().replace(/\s+/g, '-');
+  }
+
+  function pinta(){
+    var texto = q.value.trim().toLowerCase();
+    var lista = VISIBLES.filter(function(n){
+      var okAmb = (filtro === 'todos') || (n.ambito === filtro);
+      var okTxt = !texto
+        || n.nombre.toLowerCase().indexOf(texto) > -1
+        || n.funcion.toLowerCase().indexOf(texto) > -1
+        || n.instituciones.join(' ').toLowerCase().indexOf(texto) > -1;
+      return okAmb && okTxt;
+    });
+    if (!lista.length) {
+      grid.innerHTML = '<p class="pendiente">Ningún intercambio coincide con esa búsqueda. El catálogo todavía es muy corto y va a ir creciendo.</p>';
+    } else {
+      var ambitos = filtro === 'todos' ? AMBITOS : [filtro];
+      grid.innerHTML = ambitos.map(function(amb){
+        var grupo = lista.filter(function(n){ return n.ambito === amb; });
+        if (!grupo.length) return '';
+        var n = grupo.length === 1 ? '1 nodo' : grupo.length + ' nodos';
+        return '<div class="grupo-cat" aria-labelledby="cat-'+esc(slugAmb(amb))+'">'
+          + '<h3 class="grupo-cat__tit" id="cat-'+esc(slugAmb(amb))+'">'+esc(amb)
+          + ' <span class="grupo-cat__n">'+n+'</span></h3>'
+          + '<div class="grid-nodos">'+grupo.map(tarjeta).join('')+'</div>'
+          + '</div>';
+      }).join('');
+    }
+    conteo.textContent = lista.length === VISIBLES.length
+      ? (VISIBLES.length === 1 ? '1 intercambio en el catálogo' : VISIBLES.length + ' intercambios en el catálogo')
+      : lista.length + ' de ' + VISIBLES.length + ' intercambios';
+    guardaEstado();
+  }
+
+  q.addEventListener('input', pinta);
+  pinta();
+})();
+</script>
+<script src="assets/nav.js"></script>
+</body>
+</html>

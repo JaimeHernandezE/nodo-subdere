@@ -27,9 +27,15 @@
   <nav class="nav">
     <a href="index.html">Inicio</a>
     <a href="que-es.html">Qué es el nodo</a>
-    <a href="catalogo.html" aria-current="page">Catálogo</a>
+    <details class="nav-menu">
+      <summary data-current="true">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
+      <div class="nav-drop">
+        <a href="catalogo.html" aria-current="page">Servicios<span class="desc">Herramientas para usarlos</span></a>
+        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
+      </div>
+    </details>
+    <a href="wiki.html">Wiki</a>
     <a href="participar.html">Cómo participar</a>
-    <a href="comentarios.html">Comentarios</a>
   </nav>
 </div></header>
 
@@ -38,8 +44,11 @@
 <div id="ficha"></div>
 
 <footer><div class="wrap">
-  <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
-  <div>Datos semilla: mapeo JPL, prototipo SEM y primeros nodos SGM · septiembre de 2026</div>
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
 </div></footer>
 
 <script src="assets/js-yaml.min.js"></script>
@@ -51,6 +60,9 @@
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
   var id = new URLSearchParams(location.search).get('id');
+  // El nodo cambió de nombre en septiembre de 2026; el enlace antiguo sigue sirviendo
+  var ALIAS = { "division-territorial": "cut" };
+  if (ALIAS[id]) id = ALIAS[id];
   var n = NODOS.filter(function(x){ return x.id === id; })[0];
   var cont = document.getElementById('ficha');
 
@@ -62,6 +74,17 @@
 
   document.title = n.nombre + ' · Nodo SUBDERE';
   document.getElementById('miga').textContent = '/ ' + n.nombre;
+
+  // Un nodo oculto existe en el modelo y no aparece en los listados.
+  // Su ficha sigue siendo alcanzable, y lo dice.
+  if (n.oculto) {
+    var av = document.createElement('div');
+    av.className = 'aviso-neutro aviso';
+    av.innerHTML = '<p><b>Este intercambio no aparece en el catálogo.</b> Está en preparación y '
+      + 'se muestra solo por enlace directo. Lo que dice esta ficha puede cambiar antes de publicarse.</p>';
+    var mg = document.getElementById('miga');
+    mg.parentNode.insertBefore(av, mg.nextSibling);
+  }
 
   // Hay estándar ≠ hay servicio alcanzable. Solo división-territorial tiene ambos hoy.
   var tieneArchivo = !!(n.espec && n.espec.archivo);
@@ -167,5 +190,6 @@
         + '</div>';
     });
 })();</script>
+<script src="assets/nav.js"></script>
 </body>
 </html>

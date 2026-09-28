@@ -17,6 +17,9 @@
    Campos:
      clase    intercambio | plataforma
               plataforma = condición de otros; no se elige por módulo
+     oculto   true = el nodo existe en el modelo pero no aparece en los
+              listados. Su ficha sigue siendo alcanzable por enlace directo.
+              Se usa para lo que está en preparación y todavía no se muestra.
 
    Campos opcionales, presentes solo cuando el nodo ya tiene contrato publicado:
      espec    { archivo?, formato, validador, registrada, origen, acceso }
@@ -31,6 +34,7 @@
 const NODOS = [
   {
     id: "sgm-core",
+    oculto: true,
     nombre: "Base común del SGM",
     ambito: "SGM",
     clase: "plataforma",
@@ -53,6 +57,7 @@ const NODOS = [
   },
   {
     id: "adquisiciones",
+    oculto: true,
     nombre: "Adquisiciones",
     ambito: "SGM",
     clase: "intercambio",
@@ -74,11 +79,38 @@ const NODOS = [
     pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción."
   },
   {
-    id: "division-territorial",
-    nombre: "División Político-Administrativa",
+    id: "fiscalizacion",
+    nombre: "Permisos de circulación por patente",
     ambito: "Transversal",
     clase: "intercambio",
-    funcion: "Regiones, provincias y comunas con su código oficial, para que todos los sistemas llamen igual a cada lugar.",
+    funcion: "Consultar el permiso de circulación de un vehículo a partir de su patente: el vehículo, los permisos pagados por año y la institución que los recaudó.",
+    descripcion: "El permiso de circulación lo cobra cada municipio, pero quien necesita comprobarlo casi nunca es el municipio que lo cobró: es otro municipio, una policía en un control, o el propio dueño del vehículo. Hoy esa comprobación depende de a quién se le pregunte. Este intercambio la resuelve con una consulta por patente que devuelve el vehículo, sus permisos y quién los recaudó, identificando a la institución por su Código Único Territorial y no por el nombre escrito a mano.",
+    instituciones: [
+      "SUBDERE — SEM",
+      "Municipios",
+      "Instituciones que fiscalizan en vía pública"
+    ],
+    intercambio: "El municipio consulta",
+    madurez: "En evaluación",
+    factibilidad: "Media",
+    origen: "Colección de referencia del equipo de Servicios Municipales de SUBDERE, septiembre de 2026",
+    nota: "Demostración. La especificación que se publica acá es una propuesta reconstruida para mostrar qué forma tendría este intercambio como estándar, no el contrato del servicio. No hay compromiso de disponibilidad ni de contenido, y los datos de la pantalla son inventados.",
+    espec: {
+      archivo: "estandares/fiscalizacion.openapi.yaml",
+      formato: "OpenAPI 3.0.3 — propuesta de contrato, escrita para esta demostración",
+      validador: "https://spec.openapis.org/oas/v3.0.3",
+      registrada: "27 de septiembre de 2026",
+      origen: "La escribió el equipo del Nodo SUBDERE a partir de una colección de referencia de Servicios Municipales. No es el contrato publicado del servicio: es una propuesta de cómo se vería publicado. Las diferencias respecto de la colección de origen están en la wiki.",
+      acceso: "Credencial de corta duración entregada por la puerta de acceso. A diferencia de los códigos territoriales, acá circulan datos de un vehículo y de su titular, así que la consulta queda registrada."
+    },
+    pruebas: "No hay ambiente de pruebas. La pantalla de demostración funciona con datos inventados que viven en el propio sitio, y se descarta apenas el servicio sea alcanzable."
+  },
+  {
+    id: "cut",
+    nombre: "Códigos Únicos Territoriales (CUT)",
+    ambito: "Transversal",
+    clase: "intercambio",
+    funcion: "Regiones, provincias y comunas con su Código Único Territorial, para que todos los sistemas llamen igual a cada lugar.",
     descripcion: "Casi cualquier intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se está hablando. Si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien. Este nodo entrega la lista oficial vigente, con el código que le corresponde a cada lugar. Conviene que sea el primero justamente porque casi todos los demás lo necesitan.",
     instituciones: ["SUBDERE — SEM", "Municipios", "Proveedores de sistemas de gestión municipal"],
     intercambio: "El municipio consulta",
@@ -87,141 +119,64 @@ const NODOS = [
     origen: "Un servicio que ya construyó el equipo SEM de SUBDERE",
     nota: "Es el único del catálogo que además de estar escrito ya funciona. Pero funciona solo dentro de la red de SUBDERE: desde fuera todavía no se puede usar, y nadie se ha comprometido a mantenerlo andando. Lo que se publica acá es qué entrega, no una promesa de que esté disponible.",
     espec: {
-      archivo: "estandares/division-territorial.openapi.yaml",
+      archivo: "estandares/cut.openapi.yaml",
       formato: "OpenAPI 3.0.3 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "15 de septiembre de 2026",
-      origen: "La publicó el equipo SEM de SUBDERE. Este archivo es una copia exacta, sin ningún cambio: el catálogo no la edita.",
+      origen: "Especificación de referencia entregada por Juan Helo, septiembre de 2026. Este archivo es una copia exacta, sin ningún cambio: el catálogo no la edita. Las observaciones sobre el contrato están en la wiki, no aquí.",
       acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin firmar nada."
     },
     pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin convenio y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro."
   },
+];
+
+
+/* ---------------------------------------------------------------------
+   SERVICIOS — las herramientas de uso humano construidas sobre las APIs.
+
+   Un servicio no es un intercambio: es una pantalla que consume uno o más
+   nodos del catálogo de APIs y resuelve una tarea concreta sin programar.
+   Se listan aparte porque responden a otra pregunta: el catálogo de APIs
+   dice qué se puede consumir; este dice qué se puede usar hoy.
+
+   Campos:
+     id       slug de la URL
+     nombre   cómo se llama la herramienta, no el nodo del que consume
+     nodo     id del nodo de APIs sobre el que está construida
+     url      página del servicio dentro de este sitio
+     tareas   qué resuelve, en frases que el usuario reconozca
+     estado   Disponible | En construcción | Deseable
+     nota     advertencia destacada, opcional
+   --------------------------------------------------------------------- */
+const SERVICIOS = [
   {
-    id: "pagos-tesoreria",
-    nombre: "Pagos y Tesorería Municipal",
-    ambito: "Pagos",
-    clase: "intercambio",
-    funcion: "Que la sentencia, la multa y su estado de pago fluyan hacia la contabilidad del municipio.",
-    descripcion: "Conecta la resolución del tribunal con el registro contable municipal, de modo que la multa cursada y su estado de pago lleguen al sistema de gestión sin transcripción. Para los municipios que no tienen sistema de gestión, opera con un mecanismo alternativo de comunicación, de manera que ninguno queda fuera por no tener con qué conectarse.",
-    instituciones: ["SUBDERE — SGM", "Tesorería General de la República", "Proveedores de sistemas de gestión municipal"],
-    intercambio: "Bidireccional",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: "Desemboca en la contabilidad del sistema de gestión municipal: es uno de los dos nodos que apuntan de vuelta al propio SGM."
+    id: "consulta-permiso-circulacion",
+    nombre: "Consulta de permiso de circulación",
+    nodo: "fiscalizacion",
+    url: "servicio-fiscalizacion.html",
+    funcion: "Escribir una patente y ver si el vehículo tiene su permiso de circulación al día, en qué comuna se pagó y cuánto.",
+    tareas: [
+      "Comprobar si un vehículo tiene el permiso vigente",
+      "Ver el historial de permisos por año y su institución recaudadora",
+      "Consultar una patente provisoria de automotora"
+    ],
+    estado: "En construcción",
+    nota: "Pantalla de demostración, con datos inventados."
   },
   {
-    id: "indice-expedientes",
-    nombre: "Índice de Expedientes",
-    ambito: "Juzgado de Policía Local",
-    clase: "intercambio",
-    funcion: "Carpeta digital por ROL, con documentos firmados e identificador único nacional.",
-    descripcion: "Le da a cada causa un número único en todo el país, con un formato conocido, para poder seguirla a lo largo de su recorrido y entre instituciones. Sin ese número común, cada institución vuelve a bautizar el mismo expediente a su manera y después nadie sabe que son el mismo.",
-    instituciones: ["Poder Judicial", "Corte Suprema"],
-    intercambio: "Bidireccional",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: ""
-  },
-  {
-    id: "notificador-electronico",
-    nombre: "Notificador Electrónico",
-    ambito: "Transversal",
-    clase: "intercambio",
-    funcion: "Notificación al domicilio digital único, con firma del Estado.",
-    descripcion: "Reemplaza la notificación física por la entrega al domicilio digital único de la persona. Es el nodo que más depende de una definición externa: habilita una norma miscelánea que está pendiente en la ley de reajuste.",
-    instituciones: ["Secretaría de Gobierno Digital", "FirmaGob", "Domicilio Digital Único"],
-    intercambio: "El municipio entrega",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: "Su factibilidad no es técnica: depende de que se apruebe la norma que lo habilita."
-  },
-  {
-    id: "dom",
-    nombre: "Dirección de Obras Municipales",
-    ambito: "Municipal",
-    clase: "intercambio",
-    funcion: "Recepción final de obras, emplazamiento y permisos de edificación.",
-    descripcion: "Intercambio con la Dirección de Obras del propio municipio para resolver antecedentes de emplazamiento, permisos de edificación y recepción final que el tribunal necesita en sus causas.",
-    instituciones: ["Dirección de Obras Municipales"],
-    intercambio: "El municipio consulta",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: "Es el segundo nodo que apunta de vuelta al propio municipio: la DOM es un módulo municipal más, no una institución externa."
-  },
-  {
-    id: "nodos-gobierno",
-    nombre: "Estándares de Gobierno Digital",
-    ambito: "Transversal",
-    clase: "plataforma",
-    funcion: "Clave Única, FirmaGob y la plataforma de interoperabilidad del Estado.",
-    descripcion: "No es un intercambio de datos sino el conjunto de estándares de transformación digital sobre los que se apoyan los demás: autenticación, firma electrónica, y el canal por el que el Estado conversa consigo mismo.",
-    instituciones: ["Secretaría de Gobierno Digital"],
-    intercambio: "Transversal",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: "Más que un nodo propio, es una condición de todos los demás: lo que se decida acá limita al resto del catálogo. Está siempre; no es algo que se active."
-  },
-  {
-    id: "correos",
-    nombre: "Correos de Chile",
-    ambito: "Transversal",
-    clase: "intercambio",
-    funcion: "Envío de archivos para cartas certificadas.",
-    descripcion: "Convenio de envío de archivos para la emisión de cartas certificadas, que es hoy el canal formal de notificación mientras el domicilio digital único no esté disponible.",
-    instituciones: ["Correos de Chile"],
-    intercambio: "El municipio entrega",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Mapeo JPL",
-    nota: ""
-  },
-  {
-    id: "inspeccion-municipal",
-    nombre: "Inspección Municipal",
-    ambito: "Municipal",
-    clase: "intercambio",
-    funcion: "Origen masivo de las infracciones municipales que llegan al tribunal.",
-    descripcion: "La inspección municipal es donde se generan en volumen las infracciones que después tramita el tribunal. Conectarla evita que el parte se digite dos veces: una al cursarlo y otra al ingresarlo a la causa.",
-    instituciones: ["Municipalidad — Inspección"],
-    intercambio: "El municipio entrega",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Agregado por Allison Díaz",
-    nota: ""
-  },
-  {
-    id: "direcciones-municipales",
-    nombre: "Direcciones municipales que remiten infracciones",
-    ambito: "Municipal",
-    clase: "intercambio",
-    funcion: "Canalizar hacia el tribunal las infracciones que originan otras direcciones del municipio.",
-    descripcion: "Además de inspección, varias direcciones municipales remiten infracciones al tribunal. El mapeo propone canalizarlas a través de la inspección de cada municipalidad en vez de abrir un canal por dirección.",
-    instituciones: ["Municipalidad — direcciones varias"],
-    intercambio: "El municipio entrega",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Agregado por Allison Díaz",
-    nota: ""
-  },
-  {
-    id: "entre-juzgados",
-    nombre: "Interoperabilidad entre Juzgados de Policía Local",
-    ambito: "Juzgado de Policía Local",
-    clase: "intercambio",
-    funcion: "Tramitación electrónica de exhortos y diligencias entre tribunales.",
-    descripcion: "Permite que dos juzgados de policía local se envíen exhortos y otras diligencias por vía electrónica, evitando el intercambio físico de documentos entre comunas.",
-    instituciones: ["Juzgados de Policía Local"],
-    intercambio: "Bidireccional",
-    madurez: "Deseable",
-    factibilidad: "Por evaluar",
-    origen: "Agregado por Allison Díaz",
-    nota: ""
+    id: "buscador-cut",
+    nombre: "Buscador de códigos territoriales",
+    nodo: "cut",
+    url: "servicio-cut.html",
+    funcion: "Buscar el Código Único Territorial de una comuna, provincia o región, o averiguar a qué lugar corresponde un código.",
+    tareas: [
+      "Escribir el nombre de una comuna y obtener su código",
+      "Escribir un código y ver a qué comuna, provincia y región corresponde",
+      "Copiar el código en su forma canónica, con los ceros a la izquierda"
+    ],
+    estado: "En construcción",
+    nota: "Consulta la API del CUT. Mientras el servicio no esté alcanzable desde fuera de la red de SUBDERE, la pantalla funciona con una muestra de demostración y lo dice en pantalla."
   }
 ];
 
-const AMBITOS = ["SGM", "Transversal", "Juzgado de Policía Local", "Pagos", "Municipal"];
+const AMBITOS = ["SGM", "Transversal"];

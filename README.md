@@ -1,69 +1,98 @@
-﻿# Nodo SUBDERE
+# Nodo SUBDERE
 
-Repositorio del Nodo SUBDERE: el punto único por el que un municipio entrega información a las instituciones que se la piden, y recibe constancia de lo entregado.
+Repositorio del Nodo SUBDERE: el catálogo de estándares e intercambios del dominio municipal, las pantallas que los usan y la documentación de cómo funcionan.
 
-Acá se documenta, se prototipa y —más adelante— se construye. Hoy contiene la **maqueta del sitio**, que es una pieza de conversación: existe para que las observaciones sean sobre algo concreto y no sobre lo que cada uno se imaginó.
+Es un monorepo. Contiene la maqueta que sirve para conversar, el código de producto, y las decisiones que llevaron de una a otro.
 
-**Sitio publicado:** https://jaimehernandeze.github.io/nodo-subdere/
+**Maqueta publicada:** https://jaimehernandeze.github.io/nodo-subdere/
 
 ---
 
-## Qué hay en este repositorio
+## Qué hay acá
 
-| Ruta | Qué es |
-|---|---|
-| [`prototipos/`](prototipos/) | La maqueta del sitio. HTML, CSS y JS a mano, sin build ni dependencias |
-| [`docs/`](docs/) | Documentación del nodo |
+| Ruta | Qué es | Estado |
+|---|---|---|
+| [`prototipos/`](prototipos/) | La maqueta del sitio. HTML, CSS y JS a mano, sin build ni dependencias | En uso. Es la referencia de contenido y diseño |
+| [`backend/`](backend/) | API en Django: catálogos, wiki y adaptadores a servicios externos | Estructura inicial |
+| [`frontend/`](frontend/) | El sitio en React | Estructura inicial |
+| [`docs/`](docs/) | Decisiones, notas técnicas y la memoria del proyecto | En uso |
 
-Cuando entren el backend y el frontend, la maqueta se queda en `prototipos/` y el código de producto vive en su propia estructura. El despliegue de la maqueta ya corre por un workflow de Actions.
+**La maqueta no se retira cuando llegue el código.** Cumple una función que el producto no cumple: permite proponer una pantalla y discutirla en el mismo día, sin migraciones ni despliegues. Mientras siga sirviendo para eso, se queda. Cada README dice qué toma de ella.
+
+---
+
+## Las tres piezas del sitio
+
+La barra superior del sitio separa tres usos que conviene no mezclar:
+
+| | Para qué se entra | Ejemplo |
+|---|---|---|
+| **Catálogos › APIs** | Construir contra un contrato publicado | La especificación del CUT, operación por operación |
+| **Catálogos › Servicios** | Resolver una tarea sin programar | Buscar el código de una comuna |
+| **Wiki** | Entender cómo se usa y por qué está definido así | Cómo se compone el CUT y qué decreto lo fija |
+
+Hoy hay dos intercambios en el catálogo, y los dos tienen las tres vistas escritas: los **Códigos Únicos Territoriales** y los **permisos de circulación por patente**, este último como demostración con datos inventados.
+
+El catálogo parte corto a propósito: es preferible una entrada completa —contrato, pantalla y entrada de wiki— que una lista larga de intenciones.
+
+---
 
 ## Documentación
 
 | Documento | Qué contiene |
 |---|---|
-| [`docs/plataforma-control.md`](docs/plataforma-control.md) | **Propuesta.** Plataforma Institucional de Gestión de APIs (Plataforma de Control): base técnica licitables; control, logs y casos de uso |
-| [`docs/flujo_2.md`](docs/flujo_2.md) | Diagrama de producción de la Plataforma de Control (zonas de red) |
-| [`docs/flujo_1.md`](docs/flujo_1.md) | Diagrama de demo de la Plataforma de Control (un servidor) |
+| [`docs/maqueta.md`](docs/maqueta.md) | **El documento principal.** Las páginas del sitio, el modelo de datos del catálogo, la identidad gráfica, qué describe el sitio y qué no, y las decisiones de cada cambio |
 | [`docs/adr-2026-09-estandar-legible-por-maquina.md`](docs/adr-2026-09-estandar-legible-por-maquina.md) | **Decisión.** El estándar de cada nodo se publica como especificación legible por máquina; el catálogo la renderiza y no la transcribe |
-| [`docs/maqueta.md`](docs/maqueta.md) | Las páginas de la maqueta, el modelo de datos del catálogo y las preguntas para el QA |
+| [`docs/plataforma-control.md`](docs/plataforma-control.md) | **Propuesta.** Quién es quién y control de paso: las dos piezas de la puerta de acceso |
+| [`docs/flujo_1.md`](docs/flujo_1.md) · [`docs/flujo_2.md`](docs/flujo_2.md) | Diagramas de la plataforma de control: demostración y producción |
 | [`docs/nodo-lp-precedente.md`](docs/nodo-lp-precedente.md) | El Nodo Laboral y Previsional de la Subsecretaría de Previsión Social, en operación desde noviembre de 2025: qué se copia, qué no, y qué advertencias deja |
 
-## Ver la maqueta sin publicarla
+---
 
-**Conviene servir la carpeta.** El doble clic funciona para casi todo, pero dos cosas no: `404.html` usa rutas absolutas porque se sirve desde cualquier URL, y la ficha de un nodo con especificación necesita leer un archivo del disco, que el navegador bloquea en páginas locales. Ambas se ven bien servidas:
+## Ver la maqueta
+
+**Conviene servir la carpeta.** El doble clic funciona para casi todo, pero dos cosas no: `404.html` usa rutas absolutas porque se sirve desde cualquier URL, y la ficha de un intercambio con especificación necesita leer un archivo del disco, que el navegador bloquea en páginas locales.
 
 ```bash
 python -m http.server 8000 --directory prototipos
 # http://localhost:8000
 ```
 
-## Publicar
+Las pantallas de servicio consultan APIs externas y, cuando no están alcanzables, funcionan con datos de demostración diciéndolo en pantalla. Para apuntarlas a un servicio real se agrega `?api=` a la dirección.
 
-La maqueta se publica en **GitHub Pages** al hacer push a `main` (workflow [`.github/workflows/pages-prototipos.yml`](.github/workflows/pages-prototipos.yml)).
+## Levantar el producto
+
+Cada parte tiene su README con el detalle:
 
 ```bash
-git add .
-git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Maqueta del sitio del Nodo SUBDERE"
-git push origin main
+# backend  → http://localhost:8000
+cd backend && python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]" && cp .env.example .env && python manage.py migrate && python manage.py runserver
+
+# frontend → http://localhost:5173
+cd frontend && npm install && cp .env.example .env.local && npm run dev
 ```
 
-### Activar GitHub Pages (una sola vez)
+## Publicar la maqueta
 
-1. En GitHub: **Settings → Pages**
-2. **Build and deployment → Source:** `GitHub Actions`
-3. Push a `main` o ejecutar **Actions → Deploy prototipos → Run workflow**
-4. Cuando termine en verde: **Settings → Pages** muestra la URL
+Va a **GitHub Pages** al hacer push a `main`, por el workflow [`.github/workflows/pages-prototipos.yml`](.github/workflows/pages-prototipos.yml).
+
+> **Pendiente ahora que el repositorio tiene más de una cosa adentro:** ese workflow conviene acotarlo con `paths:` a `prototipos/**`, para que un cambio en el backend no dispare un despliegue del sitio estático.
+
+---
+
+## Dos reglas que ordenan el proyecto
+
+**Nadie tiene atajos.** Toda pantalla —incluida la nuestra— consume la misma interfaz pública que usaría el sistema de un municipio o de un proveedor. Si una vista de SUBDERE pudiera llegar a datos que la interfaz no expone, el catálogo dejaría de describir lo que de verdad se puede construir.
+
+**La crítica va en la wiki, no en el catálogo.** El catálogo publica cada contrato tal como se entregó, sin editarlo, porque su valor es ser copia fiel y auditable. Las observaciones sobre un contrato viven en su entrada de wiki. Mantener esa separación es lo que permite que el catálogo siga siendo confiable mientras la discusión avanza.
 
 ---
 
 ## Estado
 
-Maqueta para revisión, septiembre de 2026. Nada de lo que muestra está comprometido institucionalmente.
+**Maqueta para revisión, septiembre de 2026.** Nada de lo que muestra está comprometido institucionalmente, y los datos de las pantallas de servicio son inventados.
 
-El catálogo mezcla: (1) nueve nodos del mapeo JPL en **deseable**; (2) división político-administrativa, con OpenAPI local y servicio en red SEM; (3) ámbito **SGM** — core de plataforma (obligatorio) y Adquisiciones (primer módulo de negocio), con contrato declarado y sin servicio expuesto.
-
-Toda API del catálogo se alcanza por la [Plataforma de Control](docs/plataforma-control.md).
-
-El mapeo traía trece nodos: cuatro se retiraron por ser consultas a otros órganos del Estado, que corresponden a PISEE y no a este catálogo. El motivo está en [`docs/maqueta.md`](docs/maqueta.md).
+Backend y frontend tienen su estructura de carpetas y su documentación inicial; todavía no hay código.
 
 Comentarios a jaime.hernandez@subdere.gov.cl — División de Políticas y Estudios, SUBDERE.

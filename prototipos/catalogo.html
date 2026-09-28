@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Catálogo de nodos · Nodo SUBDERE</title>
-<meta name="description" content="Catálogo de nodos: intercambios y condiciones de plataforma. El municipio entrega por algunos y consulta por otros. Toda API se alcanza por la Plataforma de Control.">
+<title>Catálogo de servicios · Nodo SUBDERE</title>
+<meta name="description" content="Las herramientas construidas sobre las APIs del catálogo, para usarlas desde una pantalla y sin programar.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nodo SUBDERE">
-<meta property="og:title" content="Catálogo de nodos · Nodo SUBDERE">
-<meta property="og:description" content="Catálogo de nodos: intercambios y condiciones de plataforma. El municipio entrega por algunos y consulta por otros.">
+<meta property="og:title" content="Catálogo de servicios · Nodo SUBDERE">
+<meta property="og:description" content="Las herramientas construidas sobre las APIs del catálogo, para usarlas sin programar.">
 <meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/catalogo.html">
 <meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -20,32 +20,33 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> El catálogo mezcla lo levantado con un Juzgado de Policía Local, un servicio que ya existe en SUBDERE y las dos primeras piezas del SGM. Ninguno está disponible todavía.</div></div>
+<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> Hay un solo servicio y está en construcción. La lista va a crecer a medida que las APIs del catálogo tengan una pantalla que las use.</div></div>
 
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
   <nav class="nav">
     <a href="index.html">Inicio</a>
     <a href="que-es.html">Qué es el nodo</a>
-    <a href="catalogo.html" aria-current="page">Catálogo</a>
+    <details class="nav-menu">
+      <summary data-current="true">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
+      <div class="nav-drop">
+        <a href="catalogo.html" aria-current="page">Servicios<span class="desc">Herramientas para usarlos</span></a>
+        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
+      </div>
+    </details>
+    <a href="wiki.html">Wiki</a>
     <a href="participar.html">Cómo participar</a>
-    <a href="comentarios.html">Comentarios</a>
   </nav>
 </div></header>
 
 <section style="padding-bottom:18px"><div class="wrap">
-  <p class="eyebrow">Catálogo</p>
-  <h2>Los nodos publicados</h2>
-  <p class="lead">Cada nodo es un intercambio en el que participa el municipio: con una institución del Estado, con otro municipio o entre sus propias unidades. En algunos el municipio entrega información; en otros pregunta por ella. Unos pocos están siempre y no se eligen, porque los demás dependen de ellos. La ficha de cada uno dice qué entrega, con quién conversa y en qué estado está.</p>
+  <p class="eyebrow">Catálogos · Servicios</p>
+  <h2>Lo que se puede usar sin programar</h2>
+  <p class="lead">Un servicio es una pantalla construida sobre una o más APIs del catálogo, que resuelve una tarea concreta. No hay que instalar nada ni escribir código: se entra, se busca y se usa.</p>
+  <p class="lead">Es la contracara del <a href="apis.html">catálogo de APIs</a>. Aquel dice qué se puede consumir desde un sistema; este dice qué se puede hacer hoy desde una pantalla. Cada servicio indica sobre qué API está construido, porque quien lo necesite dentro de su propio sistema va a querer llegar a lo mismo por la interfaz.</p>
 
   <div class="filtros">
-    <button class="chip" data-ambito="todos" aria-pressed="true">Todos</button>
-    <button class="chip" data-ambito="SGM" aria-pressed="false">SGM</button>
-    <button class="chip" data-ambito="Transversal" aria-pressed="false">Transversal</button>
-    <button class="chip" data-ambito="Juzgado de Policía Local" aria-pressed="false">Juzgado de Policía Local</button>
-    <button class="chip" data-ambito="Pagos" aria-pressed="false">Pagos</button>
-    <button class="chip" data-ambito="Municipal" aria-pressed="false">Municipal</button>
-    <input class="buscador" id="q" type="search" placeholder="Buscar por nombre o institución…" aria-label="Buscar nodos">
+    <input class="buscador" id="q" type="search" placeholder="Buscar un servicio o una tarea…" aria-label="Buscar servicios">
   </div>
   <p class="conteo" id="conteo"></p>
 
@@ -53,110 +54,91 @@
 </div></section>
 
 <section class="gris"><div class="wrap">
-  <p class="eyebrow">Cómo leer el estado</p>
-  <h2>Casi todo está por hacerse, y el catálogo lo dice</h2>
-  <p class="lead">No es un descuido: es el estado real del trabajo. Los nueve nodos que salieron del juzgado están solo identificados, sin evaluar. <a href="nodo.html?id=division-territorial">División territorial</a> es el único que además tiene un servicio funcionando, aunque por ahora solo dentro de SUBDERE. <a href="nodo.html?id=sgm-core">La base común del SGM</a> y <a href="nodo.html?id=adquisiciones">Adquisiciones</a> ya publicaron qué entregan, pero todavía no se pueden usar desde fuera.</p>
-  <p class="lead">Dos de la lista van marcados como <b>base</b>: la base común del SGM y los estándares de Gobierno Digital. Eso significa que no son algo que el municipio decida activar — están siempre, porque los demás se apoyan en ellos.</p>
+  <p class="eyebrow">Qué falta</p>
+  <h2>Por qué la lista es tan corta</h2>
+  <p class="lead">Un servicio solo puede existir cuando la API sobre la que se apoya ya entrega algo. Hoy una sola del catálogo está en ese punto, así que hay un solo servicio. No es una lista incompleta: es el estado real, y va a crecer al ritmo del otro catálogo.</p>
+  <p class="lead">La regla que ordena esto: <strong>el servicio no tiene atajos.</strong> Consume la misma interfaz pública que usaría el sistema de un municipio o el de un proveedor. Si una pantalla de SUBDERE pudiera llegar a datos que la interfaz no expone, el catálogo de APIs dejaría de describir lo que de verdad se puede construir.</p>
   <table>
     <tr><th>Estado</th><th>Qué quiere decir</th></tr>
-    <tr><td><span class="tag tag-mad">Deseable</span></td><td>Alguien lo necesita y está anotado. Nadie ha revisado todavía si es viable ni ha comprometido nada.</td></tr>
-    <tr><td><span class="tag">En evaluación</span></td><td>Se está viendo qué tan difícil es hacerlo y si la institución del otro lado quiere.</td></tr>
-    <tr><td><span class="tag tag-dev">En desarrollo</span></td><td>Ya está escrito qué entrega y hay trabajo andando, pero todavía no se puede usar.</td></tr>
-    <tr><td><span class="tag">Operativo</span></td><td>Funciona y hay municipios usándolo.</td></tr>
+    <tr><td><span class="tag tag-mad">Deseable</span></td><td>Se sabe que hace falta y está anotado. Todavía no hay nada construido.</td></tr>
+    <tr><td><span class="tag tag-dev">En construcción</span></td><td>La pantalla existe y se puede probar, pero la API detrás no está alcanzable para todos o el alcance está incompleto.</td></tr>
+    <tr><td><span class="tag">Disponible</span></td><td>Funciona de punta a punta y cualquiera puede usarlo.</td></tr>
   </table>
 </div></section>
 
 <footer><div class="wrap">
-  <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
-  <div>Datos semilla: mapeo JPL, prototipo SEM y primeros nodos SGM · septiembre de 2026</div>
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
 </div></footer>
 
 <script src="assets/data.js"></script>
+<script src="assets/nav.js"></script>
 <script>
-(function(){
+(function () {
   var grid = document.getElementById('grid');
   var conteo = document.getElementById('conteo');
   var q = document.getElementById('q');
-  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
 
-  // Estado inicial desde la dirección, para poder compartir un catálogo filtrado
   var params = new URLSearchParams(location.search);
-  var filtro = params.get('ambito') || 'todos';
-  if (!chips.some(function(c){ return c.getAttribute('data-ambito') === filtro; })) filtro = 'todos';
   q.value = params.get('q') || '';
-  chips.forEach(function(c){
-    c.setAttribute('aria-pressed', c.getAttribute('data-ambito') === filtro ? 'true' : 'false');
-  });
 
-  function guardaEstado(){
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function nodoDe(id) {
+    return NODOS.filter(function (n) { return n.id === id; })[0];
+  }
+
+  function tarjeta(s) {
+    var n = nodoDe(s.nodo);
+    var tagEstado = s.estado === 'En construcción' ? 'tag tag-dev'
+                  : s.estado === 'Disponible' ? 'tag' : 'tag tag-mad';
+    var tareas = (s.tareas || []).map(function (t) {
+      return '<li>' + esc(t) + '</li>';
+    }).join('');
+    return '<a class="nodo" href="' + esc(s.url) + '">'
+      + '<div class="cab"><h4>' + esc(s.nombre) + '</h4>'
+      + '<span class="' + tagEstado + '">' + esc(s.estado) + '</span></div>'
+      + '<p class="func">' + esc(s.funcion) + '</p>'
+      + (tareas ? '<ul class="tareas">' + tareas + '</ul>' : '')
+      + '<div class="meta">'
+      + (n ? '<span class="tag tag-ambito">Sobre la API de ' + esc(n.nombre) + '</span>' : '')
+      + '</div></a>';
+  }
+
+  function pinta() {
+    var texto = q.value.trim().toLowerCase();
+    var lista = SERVICIOS.filter(function (s) {
+      if (!texto) return true;
+      var n = nodoDe(s.nodo);
+      return (s.nombre + ' ' + s.funcion + ' ' + (s.tareas || []).join(' ')
+              + ' ' + (n ? n.nombre : '')).toLowerCase().indexOf(texto) > -1;
+    });
+
+    if (!lista.length) {
+      grid.innerHTML = '<p class="pendiente">Ningún servicio coincide con esa búsqueda. '
+        + 'La lista todavía es muy corta: puede que lo que buscas exista como API y '
+        + 'aún no tenga pantalla. Revisa el <a href="apis.html">catálogo de APIs</a>.</p>';
+    } else {
+      grid.innerHTML = '<div class="grid-nodos">' + lista.map(tarjeta).join('') + '</div>';
+    }
+
+    conteo.textContent = lista.length === SERVICIOS.length
+      ? (SERVICIOS.length === 1 ? '1 servicio en el catálogo' : SERVICIOS.length + ' servicios en el catálogo')
+      : lista.length + ' de ' + SERVICIOS.length + ' servicios';
+
     var p = new URLSearchParams();
-    if (filtro !== 'todos') p.set('ambito', filtro);
     if (q.value.trim()) p.set('q', q.value.trim());
     var s = p.toString();
     history.replaceState(null, '', s ? '?' + s : location.pathname);
   }
 
-  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-
-  function tarjeta(n){
-    var inst = n.instituciones.slice(0,2).map(function(i){
-      return '<span class="tag tag-inst">'+esc(i)+'</span>'; }).join('');
-    var mas = n.instituciones.length > 2
-      ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
-    var claseTag = (n.clase === 'plataforma')
-      ? '<span class="tag tag-plataforma">Plataforma</span>' : '';
-    return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
-      + '<div class="cab"><h4>'+esc(n.nombre)+'</h4>'
-      + '<span class="'+(n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad')+'">'+esc(n.madurez)+'</span></div>'
-      + '<p class="func">'+esc(n.funcion)+'</p>'
-      + '<div class="meta"><span class="tag tag-ambito">'+esc(n.ambito)+'</span>'
-      + claseTag + inst + mas + '</div></a>';
-  }
-
-  function slugAmb(a){
-    return String(a).toLowerCase().replace(/\s+/g, '-');
-  }
-
-  function pinta(){
-    var texto = q.value.trim().toLowerCase();
-    var lista = NODOS.filter(function(n){
-      var okAmb = (filtro === 'todos') || (n.ambito === filtro);
-      var okTxt = !texto
-        || n.nombre.toLowerCase().indexOf(texto) > -1
-        || n.funcion.toLowerCase().indexOf(texto) > -1
-        || n.instituciones.join(' ').toLowerCase().indexOf(texto) > -1;
-      return okAmb && okTxt;
-    });
-    if (!lista.length) {
-      grid.innerHTML = '<p class="pendiente">Ningún nodo coincide con esa búsqueda. Puede que el catálogo todavía no lo incluya: la lista es muy corta y va a ir creciendo.</p>';
-    } else {
-      var ambitos = filtro === 'todos' ? AMBITOS : [filtro];
-      grid.innerHTML = ambitos.map(function(amb){
-        var grupo = lista.filter(function(n){ return n.ambito === amb; });
-        if (!grupo.length) return '';
-        var n = grupo.length === 1 ? '1 nodo' : grupo.length + ' nodos';
-        return '<div class="grupo-cat" aria-labelledby="cat-'+esc(slugAmb(amb))+'">'
-          + '<h3 class="grupo-cat__tit" id="cat-'+esc(slugAmb(amb))+'">'+esc(amb)
-          + ' <span class="grupo-cat__n">'+n+'</span></h3>'
-          + '<div class="grid-nodos">'+grupo.map(tarjeta).join('')+'</div>'
-          + '</div>';
-      }).join('');
-    }
-    conteo.textContent = lista.length === NODOS.length
-      ? NODOS.length + ' nodos en el catálogo'
-      : lista.length + ' de ' + NODOS.length + ' nodos';
-    guardaEstado();
-  }
-
-  chips.forEach(function(c){
-    c.addEventListener('click', function(){
-      chips.forEach(function(o){ o.setAttribute('aria-pressed','false'); });
-      c.setAttribute('aria-pressed','true');
-      filtro = c.getAttribute('data-ambito');
-      pinta();
-    });
-  });
   q.addEventListener('input', pinta);
   pinta();
 })();

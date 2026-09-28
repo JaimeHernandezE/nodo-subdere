@@ -1,0 +1,771 @@
+openapi: 3.0.0
+info:
+  title: Fiscalizacion Staging
+  version: 1.0.0
+servers:
+- url: https://stag-api.sem2.gob.cl
+  description: The default server
+paths:
+  /api/bum/fiscalizaciones/AB0251:
+    get:
+      summary: GET ab0251
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      patente:
+                        type: string
+                      marca:
+                        type: string
+                      modelo:
+                        type: string
+                      color:
+                        type: string
+                      ano_fabricacion:
+                        type: number
+                      chasis:
+                        type: string
+                      pagos:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ano:
+                              type: number
+                            monto_cuota:
+                              type: number
+                            fecha_pago_cuota:
+                              type: string
+                            tipo_pago:
+                              type: string
+                            fecha_vigencia:
+                              type: string
+                            monto_total:
+                              type: number
+                            institucion_id:
+                              type: number
+                            institucion_nombre:
+                              type: string
+                            nro_serie_documento:
+                              type: object
+                              nullable: true
+                            codigo_sii:
+                              type: object
+                              nullable: true
+                            estado:
+                              type: string
+              example:
+                data:
+                  id: 1658912
+                  patente: AB0251
+                  marca: YAMAHA
+                  modelo: XTZ 750
+                  color: AZUL
+                  ano_fabricacion: 1995
+                  chasis: JYA3SCS04RA007364
+                  pagos:
+                  - ano: 2025
+                    monto_cuota: 33715
+                    fecha_pago_cuota: 18-03-2025
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2026
+                    monto_total: 33715
+                    institucion_id: 69070300
+                    institucion_nombre: PROVIDENCIA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VIGENTE
+                  - ano: 2024
+                    monto_cuota: 34295
+                    fecha_pago_cuota: 12-06-2024
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2025
+                    monto_total: 34295
+                    institucion_id: 69070300
+                    institucion_nombre: PROVIDENCIA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+                  - ano: 2023
+                    monto_cuota: 31348
+                    fecha_pago_cuota: 05-04-2023
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2024
+                    monto_total: 31348
+                    institucion_id: 69070300
+                    institucion_nombre: PROVIDENCIA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+  /api/bum/fiscalizaciones/BDPF18:
+    get:
+      summary: GET bdpf18
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      patente:
+                        type: string
+                      marca:
+                        type: string
+                      modelo:
+                        type: string
+                      color:
+                        type: string
+                      ano_fabricacion:
+                        type: number
+                      chasis:
+                        type: string
+                      pagos:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ano:
+                              type: number
+                            monto_cuota:
+                              type: number
+                            fecha_pago_cuota:
+                              type: string
+                            tipo_pago:
+                              type: string
+                            fecha_vigencia:
+                              type: string
+                            monto_total:
+                              type: number
+                            institucion_id:
+                              type: number
+                            institucion_nombre:
+                              type: string
+                            nro_serie_documento:
+                              type: number
+                            codigo_sii:
+                              type: string
+                            estado:
+                              type: string
+              example:
+                data:
+                  id: 5141204
+                  patente: BDPF18
+                  marca: SAMSUNG
+                  modelo: SM7 2.3 LE AT
+                  color: BEIGE
+                  ano_fabricacion: 2008
+                  chasis: KNMG4D2JM8P608317
+                  pagos:
+                  - ano: 2026
+                    monto_cuota: 33954
+                    fecha_pago_cuota: 03-08-2026
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2027
+                    monto_total: 35465
+                    institucion_id: 69051000
+                    institucion_nombre: SANTA MARIA
+                    nro_serie_documento: 202408396
+                    codigo_sii: SD2070042
+                    estado: BLOQUEADO
+                  - ano: 2025
+                    monto_cuota: 17130
+                    fecha_pago_cuota: 11-08-2026
+                    tipo_pago: '2'
+                    fecha_vigencia: 31-03-2026
+                    monto_total: 19058
+                    institucion_id: 69051000
+                    institucion_nombre: SANTA MARIA
+                    nro_serie_documento: 76
+                    codigo_sii: SD2070042
+                    estado: BLOQUEADO
+                  - ano: 2025
+                    monto_cuota: 33880
+                    fecha_pago_cuota: 04-04-2025
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2026
+                    monto_total: 33715
+                    institucion_id: 69051000
+                    institucion_nombre: SANTA MARIA
+                    nro_serie_documento: 26682514
+                    codigo_sii: SD0500008
+                    estado: VIGENTE
+                  - ano: 2025
+                    monto_cuota: 33954
+                    fecha_pago_cuota: 15-10-2025
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2026
+                    monto_total: 36096
+                    institucion_id: 69051009
+                    institucion_nombre: ''
+                    nro_serie_documento: 202408373
+                    codigo_sii:
+                    estado: VIGENTE
+                  - ano: 2025
+                    monto_cuota: 1003002000
+                    fecha_pago_cuota: 21-03-2026
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2026
+                    monto_total: 10500400
+                    institucion_id: 69254600
+                    institucion_nombre: SAN JOAQUIN
+                    nro_serie_documento: 202392005525
+                    codigo_sii: VN121002512
+                    estado: VIGENTE
+                  - ano: 2024
+                    monto_cuota: 39790
+                    fecha_pago_cuota: 12-03-2024
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2025
+                    monto_total: 0
+                    institucion_id: 69050609
+                    institucion_nombre: ''
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+                  - ano: 2024
+                    monto_cuota: 33954
+                    fecha_pago_cuota: 04-12-2025
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2025
+                    monto_total: 41566
+                    institucion_id: 69051000
+                    institucion_nombre: SANTA MARIA
+                    nro_serie_documento: 202408382
+                    codigo_sii:
+                    estado: VENCIDO
+                  - ano: 2023
+                    monto_cuota: 18567
+                    fecha_pago_cuota: 01-08-2023
+                    tipo_pago: '2'
+                    fecha_vigencia: 31-03-2024
+                    monto_total: 0
+                    institucion_id: 69050600
+                    institucion_nombre: SAN FELIPE
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+                  - ano: 2023
+                    monto_cuota: 18330
+                    fecha_pago_cuota: 17-02-2023
+                    tipo_pago: '1'
+                    fecha_vigencia: 31-08-2023
+                    monto_total: 0
+                    institucion_id: 69050600
+                    institucion_nombre: SAN FELIPE
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+                  - ano: 2016
+                    monto_cuota: 222222
+                    fecha_pago_cuota: 30-03-2016
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2017
+                    monto_total: 140605
+                    institucion_id: 69091300
+                    institucion_nombre: MARCHIHUE
+                    nro_serie_documento: 202392005525
+                    codigo_sii: VN121002512
+                    estado: VIGENTE
+  /api/bum/fiscalizaciones/CHCR68:
+    get:
+      summary: GET chcr68
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      patente:
+                        type: string
+                      marca:
+                        type: string
+                      modelo:
+                        type: string
+                      color:
+                        type: string
+                      ano_fabricacion:
+                        type: number
+                      chasis:
+                        type: string
+                      pagos:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ano:
+                              type: number
+                            monto_cuota:
+                              type: number
+                            fecha_pago_cuota:
+                              type: string
+                            tipo_pago:
+                              type: string
+                            fecha_vigencia:
+                              type: string
+                            monto_total:
+                              type: number
+                            institucion_id:
+                              type: number
+                            institucion_nombre:
+                              type: string
+                            nro_serie_documento:
+                              type: object
+                              nullable: true
+                            codigo_sii:
+                              type: object
+                              nullable: true
+                            estado:
+                              type: string
+              example:
+                data:
+                  id: 2916324
+                  patente: CHCR68
+                  marca: FORD
+                  modelo: ESCAPE XLT 2.5 AUT
+                  color: PLATEADO PLATA
+                  ano_fabricacion: 2010
+                  chasis: 1FMCU0D77AKA41008
+                  pagos:
+                  - ano: 2025
+                    monto_cuota: 49129
+                    fecha_pago_cuota: 19-03-2025
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2026
+                    monto_total: 49129
+                    institucion_id: 69070500
+                    institucion_nombre: NUNOA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VIGENTE
+                  - ano: 2024
+                    monto_cuota: 71281
+                    fecha_pago_cuota: 26-03-2024
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2025
+                    monto_total: 71281
+                    institucion_id: 69070500
+                    institucion_nombre: NUNOA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+                  - ano: 2023
+                    monto_cuota: 62781
+                    fecha_pago_cuota: 14-03-2023
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2024
+                    monto_total: 62781
+                    institucion_id: 69070500
+                    institucion_nombre: NUNOA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+  /api/bum/fiscalizaciones/DLYP38:
+    get:
+      summary: GET dlyp38
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      patente:
+                        type: string
+                      marca:
+                        type: string
+                      modelo:
+                        type: string
+                      color:
+                        type: string
+                      ano_fabricacion:
+                        type: number
+                      chasis:
+                        type: string
+                      pagos:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ano:
+                              type: number
+                            monto_cuota:
+                              type: number
+                            fecha_pago_cuota:
+                              type: string
+                            tipo_pago:
+                              type: string
+                            fecha_vigencia:
+                              type: string
+                            monto_total:
+                              type: number
+                            institucion_id:
+                              type: number
+                            institucion_nombre:
+                              type: string
+                            nro_serie_documento:
+                              type: object
+                              nullable: true
+                            codigo_sii:
+                              type: object
+                              nullable: true
+                            estado:
+                              type: string
+              example:
+                data:
+                  id: 2916361
+                  patente: DLYP38
+                  marca: CHEVROLET
+                  modelo: OPTRA LS 1.6
+                  color: BLANCO
+                  ano_fabricacion: 2012
+                  chasis: KL1JJ8C61BK153923
+                  pagos:
+                  - ano: 2025
+                    monto_cuota: 33715
+                    fecha_pago_cuota: 19-03-2025
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2026
+                    monto_total: 33715
+                    institucion_id: 69070500
+                    institucion_nombre: NUNOA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VIGENTE
+                  - ano: 2024
+                    monto_cuota: 32333
+                    fecha_pago_cuota: 26-03-2024
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2025
+                    monto_total: 32333
+                    institucion_id: 69070500
+                    institucion_nombre: NUNOA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+                  - ano: 2023
+                    monto_cuota: 30885
+                    fecha_pago_cuota: 14-03-2023
+                    tipo_pago: T
+                    fecha_vigencia: 31-03-2024
+                    monto_total: 30885
+                    institucion_id: 69070500
+                    institucion_nombre: NUNOA
+                    nro_serie_documento:
+                    codigo_sii:
+                    estado: VENCIDO
+  /api/bum/fiscalizaciones/provisionales/PR0909/{id}/{id1}:
+    get:
+      summary: GET pr0909 by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    patente:
+                      type: string
+                    institucion_nombre:
+                      type: string
+                    marca:
+                      type: string
+                    modelo:
+                      type: string
+                    permiso_anio:
+                      type: number
+                    permiso_semestre:
+                      type: number
+                    propietarios:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          automotora_razon_social:
+                            type: string
+                          automotora_rut:
+                            type: string
+                          automotora_direccion:
+                            type: string
+                          automotora_comuna:
+                            type: string
+                          automotora_representante_rut:
+                            type: string
+                          automotora_representante_nombre:
+                            type: string
+              example:
+              - id: 1
+                patente: PR0909
+                institucion_nombre: LA REINA
+                marca: HONDA
+                modelo: PILOT
+                permiso_anio: 2026
+                permiso_semestre: 2
+                propietarios:
+                - automotora_razon_social: AUTOKAS SA
+                  automotora_rut: 76242341-3
+                  automotora_direccion: BILBAO 3839
+                  automotora_comuna: LA REINA
+                  automotora_representante_rut: 15339297-8
+                  automotora_representante_nombre: EMILIO DE IOANNES
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id1
+        in: path
+        required: true
+        schema:
+          type: string
+  /api/bum/fiscalizaciones/provisionales/PR0910/{id}/{id1}:
+    get:
+      summary: GET pr0910 by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    patente:
+                      type: string
+                    institucion_nombre:
+                      type: string
+                    marca:
+                      type: string
+                    modelo:
+                      type: string
+                    permiso_anio:
+                      type: number
+                    permiso_semestre:
+                      type: number
+                    propietarios:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          automotora_razon_social:
+                            type: string
+                          automotora_rut:
+                            type: string
+                          automotora_direccion:
+                            type: string
+                          automotora_comuna:
+                            type: string
+                          automotora_representante_rut:
+                            type: string
+                          automotora_representante_nombre:
+                            type: string
+              example:
+              - id: 2
+                patente: PR0910
+                institucion_nombre: LA REINA
+                marca: CHERY
+                modelo: TIGGO 8 PRO
+                permiso_anio: 2026
+                permiso_semestre: 2
+                propietarios:
+                - automotora_razon_social: AUTOKAS SA
+                  automotora_rut: 76242341-3
+                  automotora_direccion: BILBAO 3839
+                  automotora_comuna: LA REINA
+                  automotora_representante_rut: 15339297-8
+                  automotora_representante_nombre: EMILIO DE IOANNES
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id1
+        in: path
+        required: true
+        schema:
+          type: string
+  /api/bum/fiscalizaciones/provisionales/PR0911/{id}/{id1}:
+    get:
+      summary: GET pr0911 by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    patente:
+                      type: string
+                    institucion_nombre:
+                      type: string
+                    marca:
+                      type: string
+                    modelo:
+                      type: string
+                    permiso_anio:
+                      type: number
+                    permiso_semestre:
+                      type: number
+                    propietarios:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          automotora_razon_social:
+                            type: string
+                          automotora_rut:
+                            type: string
+                          automotora_direccion:
+                            type: string
+                          automotora_comuna:
+                            type: string
+                          automotora_representante_rut:
+                            type: string
+                          automotora_representante_nombre:
+                            type: string
+              example:
+              - id: 3
+                patente: PR0911
+                institucion_nombre: LA REINA
+                marca: GAC
+                modelo: GS8
+                permiso_anio: 2026
+                permiso_semestre: 2
+                propietarios:
+                - automotora_razon_social: AUTOKAS SA
+                  automotora_rut: 76242341-3
+                  automotora_direccion: BILBAO 3839
+                  automotora_comuna: LA REINA
+                  automotora_representante_rut: 15339297-8
+                  automotora_representante_nombre: EMILIO DE IOANNES
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id1
+        in: path
+        required: true
+        schema:
+          type: string
+  /api/bum/fiscalizaciones/provisionales/PR1111/{id}/{id1}:
+    get:
+      summary: GET pr1111 by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    patente:
+                      type: string
+                    institucion_nombre:
+                      type: string
+                    marca:
+                      type: string
+                    modelo:
+                      type: string
+                    permiso_anio:
+                      type: number
+                    permiso_semestre:
+                      type: number
+                    propietarios:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          automotora_razon_social:
+                            type: string
+                          automotora_rut:
+                            type: string
+                          automotora_direccion:
+                            type: string
+                          automotora_comuna:
+                            type: string
+                          automotora_representante_rut:
+                            type: string
+                          automotora_representante_nombre:
+                            type: string
+              example:
+              - id: 32
+                patente: PR1111
+                institucion_nombre: LA REINA
+                marca: SUZUKI
+                modelo: VITARA
+                permiso_anio: 2025
+                permiso_semestre: 2
+                propietarios:
+                - automotora_razon_social: ASD
+                  automotora_rut: 77777777-7
+                  automotora_direccion: ADSA
+                  automotora_comuna: LA REINA
+                  automotora_representante_rut: 22222222-2
+                  automotora_representante_nombre: DGFDG
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id1
+        in: path
+        required: true
+        schema:
+          type: string
+x-path-templates:
+# Remove the  prefix to generate an endpoint with its URL
+# Lines that are closer to the top take precedence, the matching is greedy
+- /api/bum/fiscalizaciones/provisionales/PR0909/2/69070600
+- /api/bum/fiscalizaciones/provisionales/PR0910/2/69070600
+- /api/bum/fiscalizaciones/provisionales/PR0911/2/69070600
+- /api/bum/fiscalizaciones/provisionales/PR1111/2/69070600
+- ignore:/favicon.ico

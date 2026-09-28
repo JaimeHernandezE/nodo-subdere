@@ -1,0 +1,340 @@
+openapi: 3.0.3
+
+info:
+  title: Permisos de circulación — consulta por patente
+  version: 0.1.0-demo
+  description: |
+    Consulta del permiso de circulación de un vehículo a partir de su patente:
+    los datos del vehículo, los permisos pagados por año y la institución que
+    los recaudó.
+
+    **Esta especificación es una propuesta reconstruida para demostración.**
+    No es el contrato publicado del servicio. Se escribió a partir de una
+    colección de referencia del equipo de Servicios Municipales para mostrar
+    qué forma tendría este intercambio si se publicara como estándar. Las
+    diferencias respecto de esa colección están documentadas en la wiki del
+    Nodo SUBDERE y no en este archivo.
+
+    Los ejemplos usan datos inventados. Ningún vehículo, patente, empresa ni
+    persona de este documento corresponde a un registro real.
+
+servers:
+  - url: /api/bum/v1
+    description: Ruta base del servicio, detrás de la puerta de acceso
+
+tags:
+  - name: Vehículos
+    description: Identificación del vehículo por su patente
+  - name: Permisos
+    description: Permisos de circulación y sus pagos
+  - name: Provisionales
+    description: Permisos provisionales emitidos a vehículos sin inscripción definitiva
+
+security:
+  - tokenDePuerta: []
+
+paths:
+  /vehiculos/{patente}:
+    get:
+      tags: [Vehículos]
+      summary: Datos del vehículo
+      description: Identificación del vehículo inscrito bajo esa patente.
+      parameters:
+        - $ref: "#/components/parameters/Patente"
+      responses:
+        "200":
+          description: Vehículo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehiculo"
+              example:
+                patente: "BDPF18"
+                marca: "TOYOTA"
+                modelo: "YARIS"
+                color: "BLANCO"
+                anio_fabricacion: 2019
+                tipo: "AUTOMOVIL"
+        "400": { $ref: "#/components/responses/PatenteInvalida" }
+        "401": { $ref: "#/components/responses/NoAutorizado" }
+        "404": { $ref: "#/components/responses/NoEncontrado" }
+
+  /vehiculos/{patente}/permisos:
+    get:
+      tags: [Permisos]
+      summary: Permisos de circulación del vehículo
+      description: |
+        Permisos pagados, del más reciente al más antiguo. Cada permiso indica
+        la institución que lo recaudó, identificada por su Código Único
+        Territorial, y el detalle de las cuotas pagadas.
+      parameters:
+        - $ref: "#/components/parameters/Patente"
+        - in: query
+          name: desde_anio
+          required: false
+          description: Devuelve solo los permisos de ese año en adelante.
+          schema:
+            type: integer
+            minimum: 1990
+            example: 2024
+      responses:
+        "200":
+          description: Permisos del vehículo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Permiso"
+              example:
+                - anio: 2026
+                  estado: "VIGENTE"
+                  comuna:
+                    cut: "13101"
+                    nombre: "Santiago"
+                  monto_total: 214300
+                  vigente_hasta: "2027-03-31"
+                  cuotas:
+                    - numero: 1
+                      monto: 107150
+                      fecha_pago: "2026-03-18"
+                      medio_pago: "EN LINEA"
+                    - numero: 2
+                      monto: 107150
+                      fecha_pago: "2026-08-14"
+                      medio_pago: "EN LINEA"
+        "400": { $ref: "#/components/responses/PatenteInvalida" }
+        "401": { $ref: "#/components/responses/NoAutorizado" }
+        "404": { $ref: "#/components/responses/NoEncontrado" }
+
+  /permisos-provisionales/{patente}:
+    get:
+      tags: [Provisionales]
+      summary: Permisos provisionales de una patente provisoria
+      description: |
+        Permisos emitidos a un vehículo que todavía no tiene inscripción
+        definitiva. El titular es la automotora que lo tiene en venta.
+      parameters:
+        - $ref: "#/components/parameters/PatenteProvisoria"
+      responses:
+        "200":
+          description: Permisos provisionales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PermisoProvisional"
+              example:
+                - anio: 2026
+                  semestre: 2
+                  comuna:
+                    cut: "13123"
+                    nombre: "Providencia"
+                  marca: "HONDA"
+                  modelo: "PILOT"
+                  titular:
+                    rut: "77777777-7"
+                    razon_social: "AUTOMOTORA DE EJEMPLO SPA"
+        "400": { $ref: "#/components/responses/PatenteInvalida" }
+        "401": { $ref: "#/components/responses/NoAutorizado" }
+        "404": { $ref: "#/components/responses/NoEncontrado" }
+
+components:
+
+  securitySchemes:
+    tokenDePuerta:
+      type: http
+      scheme: bearer
+      description: |
+        Credencial de corta duración que entrega la puerta de acceso del Nodo
+        SUBDERE. El servicio no autentica por su cuenta: confía en la puerta,
+        que comprueba quién llama y deja constancia de cada consulta.
+
+  parameters:
+    Patente:
+      in: path
+      name: patente
+      required: true
+      description: |
+        Patente del vehículo, sin guiones ni puntos y en mayúsculas.
+        Admite los dos formatos vigentes: dos letras y cuatro dígitos,
+        o cuatro letras y dos dígitos.
+      schema:
+        type: string
+        pattern: "^([A-Z]{2}[0-9]{4}|[A-Z]{4}[0-9]{2})$"
+        example: "BDPF18"
+
+    PatenteProvisoria:
+      in: path
+      name: patente
+      required: true
+      description: Patente provisoria, con el prefijo PR y cuatro dígitos.
+      schema:
+        type: string
+        pattern: "^PR[0-9]{4}$"
+        example: "PR0909"
+
+  responses:
+    PatenteInvalida:
+      description: La patente no tiene un formato válido
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            codigo: "PATENTE_INVALIDA"
+            mensaje: "La patente debe tener dos letras y cuatro dígitos, o cuatro letras y dos dígitos."
+    NoAutorizado:
+      description: Falta la credencial o está vencida
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            codigo: "NO_AUTORIZADO"
+            mensaje: "La credencial no es válida o expiró. Pídala de nuevo a la puerta de acceso."
+    NoEncontrado:
+      description: No hay registro para esa patente
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            codigo: "NO_ENCONTRADO"
+            mensaje: "No hay ningún vehículo inscrito con esa patente."
+
+  schemas:
+
+    Error:
+      type: object
+      description: Forma única de error para todas las operaciones del servicio.
+      properties:
+        codigo:
+          type: string
+          description: Identificador estable del error, para que el cliente decida qué hacer.
+          example: "NO_ENCONTRADO"
+        mensaje:
+          type: string
+          description: Explicación en lenguaje claro, apta para mostrarse a una persona.
+      required: [codigo, mensaje]
+
+    Comuna:
+      type: object
+      description: |
+        Comuna identificada por su Código Único Territorial. El nombre viaja
+        solo para que la respuesta se pueda leer: lo que identifica es el código.
+      properties:
+        cut:
+          type: string
+          pattern: "^[0-9]{5}$"
+          description: Código Único Territorial de la comuna, cinco dígitos con ceros a la izquierda.
+          example: "13101"
+        nombre:
+          type: string
+          example: "Santiago"
+      required: [cut, nombre]
+
+    Vehiculo:
+      type: object
+      properties:
+        patente:
+          type: string
+          example: "BDPF18"
+        marca:
+          type: string
+          example: "TOYOTA"
+        modelo:
+          type: string
+          example: "YARIS"
+        color:
+          type: string
+          example: "BLANCO"
+        anio_fabricacion:
+          type: integer
+          example: 2019
+        tipo:
+          type: string
+          description: Tipo de vehículo según la clasificación del permiso.
+          example: "AUTOMOVIL"
+      required: [patente, marca, modelo, anio_fabricacion]
+
+    Cuota:
+      type: object
+      properties:
+        numero:
+          type: integer
+          description: El permiso se puede pagar en una o dos cuotas.
+          example: 1
+        monto:
+          type: integer
+          description: Monto en pesos, sin decimales.
+          example: 107150
+        fecha_pago:
+          type: string
+          format: date
+          description: Fecha en que se pagó la cuota, en formato ISO 8601.
+          example: "2026-03-18"
+        medio_pago:
+          type: string
+          example: "EN LINEA"
+      required: [numero, monto, fecha_pago]
+
+    Permiso:
+      type: object
+      properties:
+        anio:
+          type: integer
+          example: 2026
+        estado:
+          type: string
+          enum: [VIGENTE, VENCIDO, ANULADO]
+          example: "VIGENTE"
+        comuna:
+          $ref: "#/components/schemas/Comuna"
+        monto_total:
+          type: integer
+          example: 214300
+        vigente_hasta:
+          type: string
+          format: date
+          example: "2027-03-31"
+        cuotas:
+          type: array
+          items:
+            $ref: "#/components/schemas/Cuota"
+      required: [anio, estado, comuna, monto_total]
+
+    TitularEmpresa:
+      type: object
+      description: |
+        Empresa titular de un permiso provisional. Solo se entregan los datos
+        de la persona jurídica; los de su representante no forman parte de
+        esta respuesta.
+      properties:
+        rut:
+          type: string
+          example: "77777777-7"
+        razon_social:
+          type: string
+          example: "AUTOMOTORA DE EJEMPLO SPA"
+      required: [rut, razon_social]
+
+    PermisoProvisional:
+      type: object
+      properties:
+        anio:
+          type: integer
+          example: 2026
+        semestre:
+          type: integer
+          enum: [1, 2]
+          example: 2
+        comuna:
+          $ref: "#/components/schemas/Comuna"
+        marca:
+          type: string
+          example: "HONDA"
+        modelo:
+          type: string
+          example: "PILOT"
+        titular:
+          $ref: "#/components/schemas/TitularEmpresa"
+      required: [anio, semestre, comuna, titular]

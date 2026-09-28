@@ -9,7 +9,7 @@ desktop.ini
 *.swp
 *~
 
-# Python / Django (cuando llegue el backend)
+# Python / Django
 __pycache__/
 *.py[cod]
 .venv/
@@ -21,14 +21,20 @@ env/
 !.env.example
 staticfiles/
 media/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Node / React (cuando llegue el frontend)
+# Node / React
 node_modules/
 dist/
 build/
 .cache/
 npm-debug.log*
 yarn-error.log*
+.vite/
+coverage/
 
 # Otros
 *.log

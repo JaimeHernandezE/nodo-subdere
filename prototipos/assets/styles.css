@@ -1,16 +1,39 @@
+/* ---------------------------------------------------------------
+   Paleta institucional — Kit Gráfico Gobierno de Chile, 11-03-2026
+   Colores base:  #25306B (Pantone 2756C) · #006BB9 (2175C)
+                  #FF1D3D (1788c)        · #EDF0F5 (663C)
+   Gradientes:    #25306B→#2C3D9E · #25306B→#006BB9 · #FF1D3D→#EDF0F5
+   Tipografía:    gobCL en titulares (Bold). Museo Sans, indicada para
+                  cuerpo, es comercial: aquí se usa una pila de sistema.
+   Para activar gobCL basta dejar los .woff2 en assets/fonts/; sin ellos
+   el sitio cae en la pila de respaldo sin romperse.
+   --------------------------------------------------------------- */
+@font-face{font-family:"gobCL";src:url("fonts/gobCL-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"gobCL";src:url("fonts/gobCL-Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+
 :root{
-  --navy:#0F2A47; --navy-2:#1B3D5F; --navy-l:#8FB3D9; --navy-t:#B8CFE6;
-  --ink:#1F2937; --body:#475569; --muted:#64748B;
-  --line:#94A3B8; --line-l:#CBD5E1; --hair:#E2E8F0; --grey:#F1F5F9;
-  --amb:#B45309; --amb-d:#7C3D06; --amb-bg:#FEF3E2; --amb-md:#8A5215;
+  /* base institucional */
+  --navy:#25306B; --navy-2:#2C3D9E; --navy-l:#9AA4CE; --navy-t:#C4CBE6;
+  --azul:#006BB9; --azul-d:#00558F; --azul-l:#E8F1F9;
+  --rojo:#FF1D3D; --rojo-tx:#D6102B; --rojo-d:#A8102A;
+
+  /* texto y líneas, derivados de la familia azul */
+  --ink:#1E2749; --body:#4A5473; --muted:#6B7490;
+  --line:#8B97AE; --line-l:#C6CFDE; --hair:#DCE2EC; --grey:#EDF0F5;
+
+  /* avisos: el gradiente oficial #FF1D3D→#EDF0F5, en sus extremos claros */
+  --amb:var(--rojo); --amb-d:var(--rojo-d); --amb-bg:#FFF1F3; --amb-md:#93122A;
+
   --white:#fff;
   --max:1120px;
   --font:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --font-tit:"gobCL",var(--font);
 }
+h1,h2,h3,h4,.brand b,.btn{font-family:var(--font-tit)}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:var(--font);color:var(--ink);background:var(--white);line-height:1.55;font-size:16px}
-a{color:var(--navy);text-decoration:none}
+a{color:var(--azul);text-decoration:none}
 a:hover{text-decoration:underline}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
 
@@ -23,14 +46,69 @@ a:hover{text-decoration:underline}
 .nav{display:flex;gap:22px;margin-left:auto;flex-wrap:wrap;padding:8px 0}
 .nav a{color:var(--navy-t);font-size:14px}
 .nav a:hover,.nav a[aria-current="page"]{color:#fff;text-decoration:none}
-.nav a[aria-current="page"]{border-bottom:2px solid var(--amb);padding-bottom:2px}
+.nav a[aria-current="page"]{border-bottom:2px solid var(--rojo);padding-bottom:2px}
 
-.alerta{background:var(--amb-bg);border-bottom:1px solid #F0D9B5;color:var(--amb-md);font-size:13px}
+/* ---------- desplegable de la barra ----------
+   <details> nativo: accesible con teclado y funciona sin JavaScript.
+   assets/nav.js solo agrega cerrar al clic afuera y con Escape. */
+.nav-menu{position:relative}
+.nav-menu>summary{list-style:none;cursor:pointer;color:var(--navy-t);font-size:14px;
+  display:inline-flex;align-items:center;gap:5px;padding-bottom:2px;border-bottom:2px solid transparent}
+.nav-menu>summary::-webkit-details-marker{display:none}
+.nav-menu>summary:hover,.nav-menu[open]>summary{color:#fff}
+.nav-menu>summary:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:2px}
+.nav-menu>summary[data-current="true"]{color:#fff;border-bottom-color:var(--rojo)}
+.nav-menu>summary .caret{font-size:10px;transition:transform .12s}
+.nav-menu[open]>summary .caret{transform:rotate(180deg)}
+.nav-drop{position:absolute;top:calc(100% + 10px);left:-14px;z-index:20;min-width:222px;
+  background:#fff;border:1px solid var(--line-l);border-radius:8px;padding:6px;
+  box-shadow:0 6px 20px rgba(30,39,73,.18)}
+.nav-drop a{display:block;color:var(--ink);font-size:14px;padding:8px 12px;border-radius:5px;border:0}
+.nav-drop a:hover{background:var(--grey);text-decoration:none}
+.nav-drop a[aria-current="page"]{background:var(--azul-l);color:var(--navy);font-weight:700;border:0}
+.nav-drop .desc{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:1px}
+
+/* ---------- tarjeta de servicio: lista de tareas ---------- */
+.nodo .tareas{margin:10px 0 0;padding-left:18px;color:var(--body);font-size:14px}
+.nodo .tareas li{margin:3px 0}
+
+/* ---------- buscador de un servicio ---------- */
+.buscar-grande{width:100%;padding:16px 18px;border:1.5px solid var(--line-l);border-radius:10px;
+  font-size:19px;font-family:inherit;color:var(--ink);background:#fff}
+.buscar-grande:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px var(--azul-l)}
+.pista{font-size:14px;color:var(--muted);margin:10px 0 0}
+
+.res{border:1px solid var(--line-l);border-radius:10px;padding:20px 22px;background:#fff;margin-top:18px;min-width:0;overflow:hidden}
+.res + .res{margin-top:12px}
+.res-cab{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+.res-cab h3{margin:0;font-size:20px;color:var(--navy)}
+.res-nivel{font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.codigo-cut{display:inline-flex;align-items:center;gap:10px;margin:10px 0 0}
+.codigo-cut code{font-size:22px;letter-spacing:2px;padding:6px 12px;background:var(--grey);
+  border:1px solid var(--hair);border-radius:6px;color:var(--navy);white-space:nowrap}
+.btn-copiar{font-family:inherit;font-size:13px;padding:7px 12px;border-radius:6px;cursor:pointer;
+  border:1px solid var(--line-l);background:#fff;color:var(--body)}
+.btn-copiar:hover{border-color:var(--line)}
+.btn-copiar[data-ok="1"]{border-color:var(--azul);color:var(--azul)}
+.jerarquia{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 0;
+  padding-top:14px;border-top:1px solid var(--hair);font-size:14.5px;color:var(--body)}
+.jerarquia b{color:var(--navy)}
+.jerarquia .sep{color:var(--line)}
+.fuente{display:inline-block;font-size:12px;padding:4px 10px;border-radius:999px;
+  border:1px solid var(--hair);background:var(--grey);color:var(--muted)}
+.fuente[data-vivo="1"]{border-color:#CFE2F1;background:var(--azul-l);color:var(--navy)}
+
+@media (max-width:760px){
+  .nav-menu{position:static;width:100%}
+  .nav-drop{position:static;margin:8px 0 2px;box-shadow:none;left:auto;width:100%;min-width:0}
+}
+
+.alerta{background:var(--grey);border-bottom:1px solid var(--hair);color:var(--body);font-size:13px}
 .alerta .wrap{padding:9px 24px}
-.alerta b{color:var(--amb-d)}
+.alerta b{color:var(--navy)}
 
 /* ---------- hero ---------- */
-.hero{background:var(--navy);color:#fff;padding:56px 0 64px}
+.hero{background:var(--navy);background:linear-gradient(115deg,var(--navy) 0%,var(--navy) 58%,var(--azul) 100%);color:#fff;padding:56px 0 64px}
 .hero .eyebrow{font-size:12px;letter-spacing:2.4px;text-transform:uppercase;color:var(--navy-l);font-weight:700;margin:0 0 14px}
 .hero h1{font-size:38px;line-height:1.2;margin:0 0 18px;max-width:20ch}
 .hero p{font-size:17px;color:var(--navy-t);max-width:62ch;margin:0 0 12px}
@@ -44,8 +122,8 @@ a:hover{text-decoration:underline}
      padding-left:14px;border-left:2px solid var(--hair);color:var(--muted)}
 .hero .alt{color:var(--navy-l);border-left-color:var(--navy-2);font-size:15.5px}
 .btn{display:inline-block;padding:11px 20px;border-radius:6px;font-size:14px;font-weight:600;border:1.5px solid transparent}
-.btn-p{background:var(--amb);color:#fff}
-.btn-p:hover{background:var(--amb-d);text-decoration:none}
+.btn-p{background:var(--azul);color:#fff}
+.btn-p:hover{background:var(--azul-d);text-decoration:none}
 .btn-s{border-color:var(--navy-l);color:#fff}
 .btn-s:hover{border-color:#fff;text-decoration:none}
 
@@ -61,7 +139,7 @@ p{color:var(--body)}
 .cols-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:30px}
 .cols-2{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:26px}
 .card{background:#fff;border:1px solid var(--line-l);border-radius:10px;padding:22px}
-.card .num{font-size:12px;font-weight:700;letter-spacing:1.6px;color:var(--amb);margin-bottom:8px}
+.card .num{font-size:12px;font-weight:700;letter-spacing:1.6px;color:var(--rojo-tx);margin-bottom:8px}
 .card h3{color:var(--navy)}
 .card p{font-size:14.5px;margin:0}
 
@@ -87,9 +165,9 @@ p{color:var(--body)}
 .nodo .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
 .tag{font-size:11.5px;padding:3px 9px;border-radius:4px;background:var(--grey);color:var(--muted);border:1px solid var(--hair);white-space:nowrap}
-.tag-ambito{background:#EAF1F8;color:var(--navy);border-color:#D3E2F0}
+.tag-ambito{background:var(--azul-l);color:var(--navy);border-color:#CFE2F1}
 .tag-plataforma{background:#F3E8FF;color:#5B21B6;border-color:#E9D5FF}
-.tag-mad{background:var(--amb-bg);color:var(--amb-md);border-color:#F0D9B5}
+.tag-mad{background:var(--amb-bg);color:var(--amb-md);border-color:#F6C9D1}
 .tag-dev{background:#ECFDF5;color:#065F46;border-color:#A7F3D0}
 .tag-inst{background:#fff;color:var(--muted);border-color:var(--line-l)}
 
@@ -110,7 +188,7 @@ p{color:var(--body)}
 .panel dd{margin:5px 0 0;font-size:14.5px;color:var(--ink)}
 .panel ul{margin:5px 0 0;padding-left:18px;font-size:14.5px;color:var(--ink)}
 .panel li{margin-bottom:3px}
-.aviso{background:var(--amb-bg);border-left:3px solid var(--amb);padding:14px 18px;border-radius:0 6px 6px 0;margin:22px 0}
+.aviso{background:var(--amb-bg);border-left:3px solid var(--rojo);padding:14px 18px;border-radius:0 6px 6px 0;margin:22px 0}
 .aviso p{margin:0;font-size:14.5px;color:var(--amb-md)}
 .pendiente{border:1px dashed var(--line);border-radius:8px;padding:18px;color:var(--muted);font-size:14px;background:#fff}
 
@@ -121,6 +199,9 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:
 .contrato dd{margin:0;font-size:14.5px;color:var(--ink)}
 .tabla-ancha{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tabla-ancha table{min-width:420px}
+.res .tabla-ancha{max-width:100%}
+.res .tabla-ancha table{min-width:0;table-layout:fixed;width:100%}
+.res .tabla-ancha td,.res .tabla-ancha th{word-break:break-word}
 
 /* ---------- especificación renderizada ---------- */
 .lead-op{font-size:14px;color:var(--muted);margin:0 0 16px;max-width:70ch}
@@ -146,7 +227,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:
 .rc{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--body)}
 .codigo{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:4px;border:1px solid}
 .rc-ok{background:#ECFDF5;color:#065F46;border-color:#A7F3D0}
-.rc-err{background:var(--amb-bg);color:var(--amb-d);border-color:#F0D9B5}
+.rc-err{background:var(--amb-bg);color:var(--amb-d);border-color:#F6C9D1}
 .ejemplo{margin:8px 0 0;padding:14px 16px;background:var(--navy);border-radius:7px;overflow-x:auto}
 .ejemplo code{background:transparent;border:0;padding:0;color:#D9E7F5;font-size:12.5px;line-height:1.55;white-space:pre}
 @media (max-width:560px){ .sumario{font-size:13px} .op>summary{padding:11px 12px} }
@@ -159,6 +240,10 @@ th{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute
 
 /* ---------- pie ---------- */
 footer{background:var(--navy);color:var(--navy-t);padding:36px 0;font-size:13.5px;margin-top:0}
+footer .wrap{display:flex;align-items:flex-start;gap:28px;flex-wrap:wrap}
+footer .marca{flex:0 0 auto}
+footer .marca img{display:block;height:88px;width:auto}
+footer .pie-txt{flex:1 1 340px;min-width:0}
 footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer a{color:var(--navy-t);text-decoration:underline}
 footer b{color:#fff}
