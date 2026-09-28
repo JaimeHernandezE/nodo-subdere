@@ -27,21 +27,16 @@
   <nav class="nav">
     <a href="index.html">Inicio</a>
     <a href="que-es.html">Qué es el nodo</a>
-    <details class="nav-menu">
-      <summary data-current="true">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
-      <div class="nav-drop">
-        <a href="catalogo.html" aria-current="page">Servicios<span class="desc">Herramientas para usarlos</span></a>
-        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
-      </div>
-    </details>
+    <a href="apis.html">APIs</a>
+    <a href="catalogo.html" aria-current="page">Servicios</a>
     <a href="wiki.html">Wiki</a>
     <a href="participar.html">Cómo participar</a>
   </nav>
 </div></header>
 
 <section style="padding-bottom:18px"><div class="wrap">
-  <p class="eyebrow">Catálogos · Servicios</p>
-  <h2>Lo que se puede usar sin programar</h2>
+  <p class="eyebrow">Catálogo de servicios</p>
+  <h2>Aplicaciones al alcance de cualquier funcionario</h2>
   <p class="lead">Un servicio es una pantalla construida sobre una o más APIs del catálogo, que resuelve una tarea concreta. No hay que instalar nada ni escribir código: se entra, se busca y se usa.</p>
   <p class="lead">Es la contracara del <a href="apis.html">catálogo de APIs</a>. Aquel dice qué se puede consumir desde un sistema; este dice qué se puede hacer hoy desde una pantalla. Cada servicio indica sobre qué API está construido, porque quien lo necesite dentro de su propio sistema va a querer llegar a lo mismo por la interfaz.</p>
 
@@ -54,8 +49,8 @@
 </div></section>
 
 <section class="gris"><div class="wrap">
-  <p class="eyebrow">Qué falta</p>
-  <h2>Por qué la lista es tan corta</h2>
+  <p class="eyebrow">Cómo crece</p>
+  <h2>Cómo va a crecer la lista</h2>
   <p class="lead">Un servicio solo puede existir cuando la API sobre la que se apoya ya entrega algo. Hoy una sola del catálogo está en ese punto, así que hay un solo servicio. No es una lista incompleta: es el estado real, y va a crecer al ritmo del otro catálogo.</p>
   <p class="lead">La regla que ordena esto: <strong>el servicio no tiene atajos.</strong> Consume la misma interfaz pública que usaría el sistema de un municipio o el de un proveedor. Si una pantalla de SUBDERE pudiera llegar a datos que la interfaz no expone, el catálogo de APIs dejaría de describir lo que de verdad se puede construir.</p>
   <table>
@@ -75,7 +70,6 @@
 </div></footer>
 
 <script src="assets/data.js"></script>
-<script src="assets/nav.js"></script>
 <script>
 (function () {
   var grid = document.getElementById('grid');

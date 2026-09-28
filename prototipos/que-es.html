@@ -27,13 +27,8 @@
   <nav class="nav">
     <a href="index.html">Inicio</a>
     <a href="que-es.html" aria-current="page">Qué es el nodo</a>
-    <details class="nav-menu">
-      <summary data-current="false">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
-      <div class="nav-drop">
-        <a href="catalogo.html">Servicios<span class="desc">Herramientas para usarlos</span></a>
-        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
-      </div>
-    </details>
+    <a href="apis.html">APIs</a>
+    <a href="catalogo.html">Servicios</a>
     <a href="wiki.html">Wiki</a>
     <a href="participar.html">Cómo participar</a>
   </nav>
@@ -42,56 +37,57 @@
 <section><div class="wrap">
   <p class="eyebrow">Descripción general</p>
   <h2>Cómo funciona el nodo</h2>
-  <p class="lead">El municipio hace dos cosas con la información que no es solo suya: <strong>entregar</strong> lo que le piden, y <strong>preguntar</strong> por lo que necesita. Hoy cada una de esas dos cosas se hace de una manera distinta con cada institución, y casi ninguna está publicada. El nodo publica el estándar de cada intercambio y lo expone por una sola interfaz.</p>
+  <p class="lead">El Nodo SUBDERE se presenta en tres piezas —el catálogo de <a href="apis.html">APIs</a>, el de <a href="catalogo.html">servicios</a> y la <a href="wiki.html">wiki</a>—. Esta página explica cómo funciona el intercambio que las sostiene.</p>
+  <p class="lead">El municipio intercambia información con otras instituciones de dos maneras: <strong>entrega</strong> lo que le piden y <strong>pregunta</strong> por lo que necesita. Hoy esa información está dispersa: cada intercambio se hace de una forma distinta con cada institución, y casi ninguno tiene un estándar publicado. El nodo es el punto donde esos intercambios se cruzan: publica el estándar de cada uno y los expone por una sola interfaz.</p>
   <p class="lead">Para cada intercambio, el nodo publica de antemano <strong>qué se entrega y en qué forma</strong>. Eso es lo que llamamos el estándar, y está escrito de manera que un programa pueda leerlo, no solo una persona.</p>
-  <p class="lead">Del otro lado, lo que SUBDERE necesita del resto del Estado o le entrega al resto del Estado viaja por sus propios canales institucionales —sus nodos de la Red de Interoperabilidad y los convenios que ya tiene vigentes—. Eso no cambia con esto y no es lo que este sitio describe.</p>
-  <p class="lead"><strong>El nodo conecta sistemas, no personas.</strong> No tiene pantallas donde un funcionario suba una planilla: las plataformas que reciben información municipal ya tienen sus propios formularios y el nodo no los repite. Quien conversa con el nodo es el sistema del municipio.</p>
-  <p class="alt">(Redacción pendiente de zanjar con la jefatura: cuánto describe el sitio del lado de SUBDERE hacia el resto del Estado. La versión de arriba lo menciona sin detallarlo.)</p>
+  <p class="lead"><strong>Las entregas las hace el sistema del municipio.</strong> Las aplicaciones del catálogo de servicios permiten probar algunas de las APIs desde una pantalla. Usan las mismas APIs publicadas, así que un sistema que se conecte a ellas obtendrá los mismos resultados.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Un ejemplo</p>
-  <h2>Dos municipios entregan el mismo informe</h2>
-  <p class="lead">Los dos tienen que entregar el mismo reporte a fin de mes. Uno usa un sistema que armó su propia unidad de informática; el otro se lo compró a un proveedor. Desde ahí en adelante el camino es idéntico: <strong>al nodo no le importa quién hizo el sistema, solo que cumpla lo que está publicado.</strong></p>
+  <h2>Tres municipios, tres sistemas, el mismo informe</h2>
+  <p class="lead">Todos los municipios tienen que entregar el mismo reporte a fin de mes. Uno usa el SGM, otro un sistema que armó su propia unidad de informática y un tercero se lo compró a un proveedor. Desde ahí en adelante el camino es idéntico: <strong>al nodo no le importa quién hizo el sistema, solo que cumpla lo que está publicado.</strong></p>
+  <p class="lead">El <a href="https://jaimehernandeze.github.io/sgm-nueva-arquitectura/"><strong>SGM</strong></a> es el Sistema de Gestión Municipal que SUBDERE pone a disposición de las municipalidades: de código abierto, sin costo de licencia y organizado por módulos, partiendo por Adquisiciones. Es el primer sistema de gestión municipal conectado al nodo, y entra por la misma puerta que cualquier otro.</p>
   <div class="cols-2">
     <div class="card">
-      <h3>Antes de que empiece nada</h3>
-      <p>Quien recibe el informe publica en el nodo cómo lo quiere y qué reglas aplica, con un número de versión. El nodo no inventa la regla: la guarda y la aplica. Si mañana piden algo distinto, publican una versión nueva y se sabe cuál rige.</p>
+      <h3>Publicamos el estándar de antemano</h3>
+      <p>En SUBDERE publicamos cómo debe venir cada informe que recibimos por mandato y qué reglas le aplicamos, con un número de versión. Si la regla cambia, publicamos una versión nueva y queda claro cuál rige.</p>
     </div>
     <div class="card">
-      <h3>Revisar no cuesta nada y no envía</h3>
+      <h3>Revisar es gratis y se puede repetir</h3>
       <p>El sistema del municipio puede revisar su informe las veces que quiera, y los errores aparecen en la misma pantalla donde el funcionario está trabajando. En este paso no sale nada del municipio.</p>
     </div>
     <div class="card">
-      <h3>Enviar es otra cosa</h3>
+      <h3>Enviar lo decide el municipio</h3>
       <p>Recién cuando el informe está limpio, el funcionario responsable autoriza el envío. Entregar sigue siendo una decisión del municipio, no algo que ocurre solo.</p>
     </div>
     <div class="card">
       <h3>Y queda comprobante</h3>
-      <p>Qué se envió, cuándo, a quién, y contra qué versión de la regla se revisó. Se puede consultar después, no es un mensaje que aparece y se pierde.</p>
+      <p>Qué se envió, cuándo, a quién, y contra qué versión de la regla se revisó. Se puede consultar después, en el mismo lugar para todos los intercambios.</p>
     </div>
   </div>
   <p class="lead" style="margin-top:22px">Ese es el camino cuando el municipio <strong>entrega</strong>. Cuando en cambio <strong>pregunta</strong> —el código de una comuna, el estado de una compra— no hay nada que autorizar: el sistema pregunta y el nodo responde, y queda registrado quién preguntó qué.</p>
 </div></section>
 
 <section><div class="wrap">
-  <p class="eyebrow">Hasta dónde llega</p>
-  <h2>Qué alcanza a revisar el nodo, y qué no</h2>
-  <p class="lead">No todas las instituciones publican sus reglas, y no hay por qué exigírselo. Entonces el nodo ayuda distinto según cada caso, y lo dice de frente en cada entrega en vez de dar a entender que revisó más de lo que revisó.</p>
+  <p class="eyebrow">Qué revisa</p>
+  <h2>La información que recopilamos, estandarizada aquí</h2>
+  <p class="lead">Toda la información que recopilamos como SUBDERE desde las municipalidades queda estandarizada en el nodo: cada informe tiene su estándar publicado, y el nodo lo revisa antes de que salga del municipio. Cada entrega dice qué se revisó.</p>
   <table>
-    <tr><th>Qué tanto ayuda</th><th>Qué hace</th><th>Cuándo pasa</th></tr>
-    <tr><td><strong>Revisa con las reglas de quien recibe</strong></td><td>Antes de enviar, compara el informe con lo que esa institución publicó que espera.</td><td>Cuando la institución publicó sus reglas.</td></tr>
-    <tr><td><strong>Revisa con las reglas de la norma</strong></td><td>Aplica lo que dice la norma, escrito como regla y mantenido al día.</td><td>Cuando la exigencia es pública aunque la institución no publique nada.</td></tr>
-    <tr><td><strong>Le da el formato</strong></td><td>Arma el informe como el destino lo acepta y se lo devuelve al municipio listo para entregar, o lo cursa cuando SUBDERE tiene canal propio con ese destino, devolviendo el comprobante y las observaciones que lleguen.</td><td>Siempre, como mínimo, en su primera forma. Cursarlo depende de que exista canal con ese destino.</td></tr>
-    <tr><td><strong>Prepara el documento</strong></td><td>Lo produce y se lo devuelve al municipio para que lo publique él.</td><td>Cuando el municipio publica por su cuenta y no hay con quién convenir nada.</td></tr>
+    <tr><th>Con qué revisa</th><th>Qué hace</th></tr>
+    <tr><td><strong>Con nuestras reglas</strong></td><td>Compara el informe con el estándar que publicamos para ese intercambio.</td></tr>
+    <tr><td><strong>Con las reglas de la norma</strong></td><td>Aplica lo que dice la norma que obliga la entrega, escrito como regla y mantenido al día.</td></tr>
   </table>
+  <p class="alt">(Pendiente de discutir: qué hace el nodo con lo que las municipalidades envían a otros organismos del Estado. Todavía no está levantado qué se envía, a quién ni por qué canal.)</p>
   <div class="aviso"><p>Decir que se revisó algo que no se revisó sería la forma más rápida de que nadie vuelva a confiar en esto. Por eso cada entrega dice qué se miró y qué no.</p></div>
 </div></section>
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Por dónde pasa todo</p>
   <h2>Una sola puerta, y queda registro de quién entró</h2>
-  <p class="lead">Ningún sistema habla directamente con los servicios del nodo. Todos pasan por la misma puerta, que comprueba quién llama y deja constancia. Sin esa puerta y ese registro, publicar un servicio no es tener un nodo. <strong>Esto todavía no está construido:</strong> es el diseño que se propone.</p>
+  <p class="lead">Detrás de cada API del catálogo hay un <strong>servicio</strong>: el sistema que atiende ese intercambio. Cuando el municipio entrega, el servicio revisa el informe con su estándar, devuelve las observaciones, recibe el envío autorizado y emite el comprobante; cuando el municipio pregunta, el servicio responde. Las aplicaciones del catálogo de servicios son pantallas que usan estos servicios.</p>
+  <p class="alt">(Para discutir con el equipo: «servicio» nombra dos cosas en el sitio, el sistema detrás de cada API y la pestaña «Servicios», que reúne aplicaciones. Una opción es renombrar la pestaña a «Aplicaciones».)</p>
+  <p class="lead">Todos los sistemas llegan a los servicios por la misma puerta, que comprueba quién llama y deja constancia. <strong>Esto todavía no está construido:</strong> es el diseño que se propone.</p>
 
   <div class="flujo" role="img" aria-label="El sistema del municipio pide un permiso de entrada, llama a la puerta con ese permiso, la puerta comprueba y deja pasar al servicio, y queda registro">
     <div class="flujo__caja"><strong>El sistema del municipio</strong><span>Entrega o pregunta</span></div>
@@ -106,13 +102,12 @@
   </div>
 
   <p class="lead" style="margin-top:20px">Dos cosas que conviene notar. La primera: <strong>nadie tiene atajos.</strong> La pantalla del propio SGM entra por esta misma puerta, igual que el sistema de cualquier municipio o de cualquier proveedor. La segunda: el permiso de entrada es temporal y se pide cada vez, así que revocarle el acceso a alguien es inmediato y no depende de avisarle a nadie.</p>
-  <p class="lead">Esta puerta no decide nada del contenido. No sabe si un informe está bien: eso lo revisa cada servicio con sus reglas. Solo se ocupa de quién entra, cuánto puede pedir y que quede anotado.</p>
-  <p class="lead">Son dos piezas separadas y conviene nombrarlas así: <strong>quién es quién</strong> —el registro de municipios, sistemas y credenciales— y <strong>el control de paso</strong> —lo que comprueba cada llamada, la limita y la anota—. Se eligen por separado y se pueden reemplazar por separado. La <a href="../docs/plataforma-control.md">nota de la plataforma de control</a> tiene el detalle técnico.</p>
+  <p class="lead">La puerta tiene dos partes: una que sabe <strong>quién es cada municipio o sistema</strong> y le entrega su permiso, y otra que <strong>revisa ese permiso en cada llamada</strong>, limita cuánto se puede pedir y lo anota. No decide nada del contenido: validar el informe, devolver observaciones y emitir el comprobante lo hace cada servicio. La <a href="../docs/plataforma-control.md">nota de la plataforma de control</a> tiene el detalle técnico.</p>
 </div></section>
 
 <section><div class="wrap">
   <p class="eyebrow">Probar y operar</p>
-  <h2>Practicar con datos inventados no es lo mismo que trabajar con datos reales</h2>
+  <h2>Un espacio para practicar y otro para operar</h2>
   <p class="lead">Son dos situaciones distintas y conviene no mezclarlas. Lo que el servicio promete entregar es idéntico en las dos; lo que cambia son los datos y el permiso que hace falta.</p>
   <table>
     <tr><th></th><th>Para practicar</th><th>Para trabajar de verdad</th></tr>
@@ -145,7 +140,7 @@
       <p>El nodo conecta sistemas, así que no es la respuesta para este caso. La respuesta es el <strong>SGM</strong>: código abierto y sin costo de licencia. El SGM será además el primero en consumir estos servicios, por la misma puerta que cualquier otro sistema.</p>
     </div>
   </div>
-  <div class="aviso"><p>El nodo <b>no recibe planillas subidas a mano</b>. Las plataformas que hoy reciben información municipal ya tienen sus propios formularios y van a seguir funcionando; el nodo no los reemplaza ni los repite.</p></div>
+  <div class="aviso"><p>Las plataformas que hoy reciben información municipal mantienen sus propios formularios; el nodo se conecta con los sistemas del municipio.</p></div>
 </div></section>
 
 <footer><div class="wrap">
@@ -156,6 +151,5 @@
   </div>
 </div></footer>
 
-<script src="assets/nav.js"></script>
 </body>
 </html>

@@ -60,7 +60,7 @@ Salen directo de la maqueta y conviene conservarlas, porque ya se compartieron e
 
 El [Kit Gráfico de Gobierno](../docs/maqueta.md) define la paleta y la tipografía, y los pares de color del sitio ya están verificados contra el mínimo de contraste de la W3C. Traer una biblioteca de componentes significaría o pelear con sus colores o terminar usando los suyos. El sitio tiene siete pantallas y un puñado de patrones: tarjeta, etiqueta, tabla, aviso, buscador.
 
-Lo que sí hace falta cuidar: accesibilidad de teclado y foco visible. El desplegable de la barra en la maqueta es un `<details>`/`<summary>` nativo justamente por eso, y la versión en React debería seguir siéndolo o equivalerle.
+Lo que sí hace falta cuidar: accesibilidad de teclado y foco visible. La barra de la maqueta es una lista de enlaces simples, sin desplegables, y la versión en React debería mantenerla así.
 
 ### Los estilos vienen de la maqueta
 

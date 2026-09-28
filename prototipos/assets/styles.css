@@ -48,26 +48,6 @@ a:hover{text-decoration:underline}
 .nav a:hover,.nav a[aria-current="page"]{color:#fff;text-decoration:none}
 .nav a[aria-current="page"]{border-bottom:2px solid var(--rojo);padding-bottom:2px}
 
-/* ---------- desplegable de la barra ----------
-   <details> nativo: accesible con teclado y funciona sin JavaScript.
-   assets/nav.js solo agrega cerrar al clic afuera y con Escape. */
-.nav-menu{position:relative}
-.nav-menu>summary{list-style:none;cursor:pointer;color:var(--navy-t);font-size:14px;
-  display:inline-flex;align-items:center;gap:5px;padding-bottom:2px;border-bottom:2px solid transparent}
-.nav-menu>summary::-webkit-details-marker{display:none}
-.nav-menu>summary:hover,.nav-menu[open]>summary{color:#fff}
-.nav-menu>summary:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:2px}
-.nav-menu>summary[data-current="true"]{color:#fff;border-bottom-color:var(--rojo)}
-.nav-menu>summary .caret{font-size:10px;transition:transform .12s}
-.nav-menu[open]>summary .caret{transform:rotate(180deg)}
-.nav-drop{position:absolute;top:calc(100% + 10px);left:-14px;z-index:20;min-width:222px;
-  background:#fff;border:1px solid var(--line-l);border-radius:8px;padding:6px;
-  box-shadow:0 6px 20px rgba(30,39,73,.18)}
-.nav-drop a{display:block;color:var(--ink);font-size:14px;padding:8px 12px;border-radius:5px;border:0}
-.nav-drop a:hover{background:var(--grey);text-decoration:none}
-.nav-drop a[aria-current="page"]{background:var(--azul-l);color:var(--navy);font-weight:700;border:0}
-.nav-drop .desc{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:1px}
-
 /* ---------- tarjeta de servicio: lista de tareas ---------- */
 .nodo .tareas{margin:10px 0 0;padding-left:18px;color:var(--body);font-size:14px}
 .nodo .tareas li{margin:3px 0}
@@ -97,11 +77,6 @@ a:hover{text-decoration:underline}
 .fuente{display:inline-block;font-size:12px;padding:4px 10px;border-radius:999px;
   border:1px solid var(--hair);background:var(--grey);color:var(--muted)}
 .fuente[data-vivo="1"]{border-color:#CFE2F1;background:var(--azul-l);color:var(--navy)}
-
-@media (max-width:760px){
-  .nav-menu{position:static;width:100%}
-  .nav-drop{position:static;margin:8px 0 2px;box-shadow:none;left:auto;width:100%;min-width:0}
-}
 
 .alerta{background:var(--grey);border-bottom:1px solid var(--hair);color:var(--body);font-size:13px}
 .alerta .wrap{padding:9px 24px}

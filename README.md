@@ -27,8 +27,8 @@ La barra superior del sitio separa tres usos que conviene no mezclar:
 
 | | Para qué se entra | Ejemplo |
 |---|---|---|
-| **Catálogos › APIs** | Construir contra un contrato publicado | La especificación del CUT, operación por operación |
-| **Catálogos › Servicios** | Resolver una tarea sin programar | Buscar el código de una comuna |
+| **APIs** | Construir contra un contrato publicado | La especificación del CUT, operación por operación |
+| **Servicios** | Resolver una tarea sin programar | Buscar el código de una comuna |
 | **Wiki** | Entender cómo se usa y por qué está definido así | Cómo se compone el CUT y qué decreto lo fija |
 
 Hoy hay dos intercambios en el catálogo, y los dos tienen las tres vistas escritas: los **Códigos Únicos Territoriales** y los **permisos de circulación por patente**, este último como demostración con datos inventados.

@@ -27,19 +27,14 @@
   <nav class="nav">
     <a href="index.html">Inicio</a>
     <a href="que-es.html">Qué es el nodo</a>
-    <details class="nav-menu">
-      <summary data-current="true">Catálogos <span class="caret" aria-hidden="true">▾</span></summary>
-      <div class="nav-drop">
-        <a href="catalogo.html" aria-current="page">Servicios<span class="desc">Herramientas para usarlos</span></a>
-        <a href="apis.html">APIs<span class="desc">Los intercambios publicados</span></a>
-      </div>
-    </details>
+    <a href="apis.html" aria-current="page">APIs</a>
+    <a href="catalogo.html">Servicios</a>
     <a href="wiki.html">Wiki</a>
     <a href="participar.html">Cómo participar</a>
   </nav>
 </div></header>
 
-<div class="wrap"><p class="miga"><a href="catalogo.html">Catálogo</a> <span id="miga"></span></p></div>
+<div class="wrap"><p class="miga"><a href="apis.html">APIs</a> <span id="miga"></span></p></div>
 
 <div id="ficha"></div>
 
@@ -68,7 +63,7 @@
 
   if(!n){
     cont.innerHTML = '<div class="wrap"><section><h2>Nodo no encontrado</h2>'
-      + '<p class="lead">Volver al <a href="catalogo.html">catálogo</a>.</p></section></div>';
+      + '<p class="lead">Volver al <a href="apis.html">catálogo de APIs</a>.</p></section></div>';
     return;
   }
 
@@ -225,6 +220,5 @@
         + '</div>';
     });
 })();</script>
-<script src="assets/nav.js"></script>
 </body>
 </html>

@@ -9,8 +9,8 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 |---|---|
 | `prototipos/index.html` | Landing — qué es el nodo y para quién |
 | `prototipos/que-es.html` | Descripción general: cómo funciona, alcance de la validación, los tres casos de municipio |
-| `prototipos/catalogo.html` | **Catálogos › Servicios.** Las herramientas de uso humano construidas sobre las APIs. Conserva el nombre de archivo por los enlaces ya compartidos; en Django la ruta es `/servicios/` |
-| `prototipos/apis.html` | **Catálogos › APIs.** Los doce intercambios del catálogo, con filtro por ámbito y buscador. Cada ficha dice si ya hay contrato publicado |
+| `prototipos/catalogo.html` | **Servicios.** Las herramientas de uso humano construidas sobre las APIs. Conserva el nombre de archivo por los enlaces ya compartidos; en Django la ruta es `/servicios/` |
+| `prototipos/apis.html` | **APIs.** Los doce intercambios del catálogo, con filtro por ámbito y buscador. Cada ficha dice si ya hay contrato publicado |
 | `prototipos/servicio-cut.html` | Buscador de códigos territoriales |
 | `prototipos/servicio-fiscalizacion.html` | Consulta de permiso de circulación por patente |
 | `prototipos/wiki-fiscalizacion.html` | Entrada de wiki de los permisos de circulación |
@@ -23,7 +23,6 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/assets/data.js` | **Los datos y el modelo.** Cada campo de aquí debería existir en el modelo Django |
 | `prototipos/estandares/` | Las especificaciones registradas localmente: copia del CUT, propuesta de permisos de circulación e instantánea ensamblada de Adquisiciones |
 | `prototipos/_to_delete/` | Archivos retirados, a la espera de borrarse del repositorio |
-| `prototipos/assets/nav.js` | Cierra el desplegable de la barra al hacer clic afuera y con Escape. El menú es un `<details>` nativo: funciona sin este archivo |
 | `prototipos/assets/openapi.js` | Renderiza una especificación OpenAPI en la ficha. Nada de lo que se ve ahí está transcrito |
 | `prototipos/assets/js-yaml.min.js` | Lector de YAML, incluido para no depender de la red |
 | `prototipos/assets/styles.css` | Estilos, con la paleta del proyecto en variables CSS |
@@ -110,13 +109,13 @@ La jefatura pidió distinguir tres usos que antes estaban mezclados en una sola 
 
 | Entrada | Para qué se entra | Archivo |
 |---|---|---|
-| **Catálogos › Servicios** | Buscar qué intercambios existen, leerlos en lenguaje común, filtrar por ámbito | `catalogo.html` |
-| **Catálogos › APIs** | Construir contra un contrato publicado: formato, validador, versión, acceso | `apis.html` |
+| **APIs** | Construir contra un contrato publicado: formato, validador, versión, acceso | `apis.html` |
+| **Servicios** | Buscar qué intercambios existen, leerlos en lenguaje común, filtrar por ámbito | `catalogo.html` |
 | **Wiki** | Entender cómo se usa, cómo se generan los códigos y qué norma obliga qué | `wiki.html` |
 
 La distinción entre Servicios y APIs **no es cosmética y se ve en los datos**: Servicios lista los doce intercambios del catálogo, incluidos los nueve que están solo en estado deseable; APIs lista únicamente los tres que tienen `espec`, o sea contrato publicado. Si la única diferencia fuera el tono del texto, no justificaría dos páginas.
 
-El desplegable es un `<details>`/`<summary>` nativo: accesible con teclado y funcional sin JavaScript. `assets/nav.js` solo agrega cerrar al hacer clic afuera y con Escape, y el sitio funciona igual sin ese archivo.
+Desde el 28 de septiembre de 2026, APIs y Servicios son pestañas independientes en la barra, en el mismo orden que las presenta el hero de la portada. Antes compartían un desplegable «Catálogos». Con eso la barra quedó solo con enlaces, y `assets/nav.js` —que cerraba el desplegable— pasó a `_to_delete/`. La ficha de un nodo (`nodo.html`) cuelga de APIs.
 
 **Se retiró la página de comentarios.** Las preguntas para el QA que vivían ahí están más abajo, en este mismo documento, que es donde corresponde: son una pauta de trabajo del equipo, no contenido de un sitio público.
 
@@ -210,12 +209,32 @@ Consecuencia editorial, y es la regla que conviene mantener: **el sitio describe
 
 Por eso se retiraron dos promesas de la portada anterior:
 
-- **«Una sola puerta entre el municipio y el Estado»** y **«el nodo la reparte a cada destino»**. El reenvío a terceros dejó de enunciarse como característica. En `que-es.html` la fila «Le da el formato y lo entrega» quedó acotada: arma el informe y se lo devuelve al municipio, o lo cursa cuando SUBDERE tiene canal propio con ese destino.
+- **«Una sola puerta entre el municipio y el Estado»** y **«el nodo la reparte a cada destino»**. El reenvío a terceros dejó de enunciarse como característica. Desde el 28 de septiembre de 2026, `que-es.html` tampoco describe qué hace el nodo con lo que el municipio envía a otros organismos: las filas «Le da el formato» y «Prepara el documento» se retiraron porque ese levantamiento todavía no está hecho. Lo que sí se afirma, en primera persona, es que **la información que SUBDERE recopila de las municipalidades queda estandarizada en el nodo**.
 - **«Un solo registro, no uno por plataforma»**, que describía un padrón de funcionarios administrado por SUBDERE. Quedó como **«una credencial del municipio»**, que es la capa de identidad de la puerta y no un registro paralelo.
 
-Se agregó, en cambio, una sección corta en la portada —«Un catálogo, una puerta y un compromiso de operación»— que define el nombre del proyecto en la primera pantalla, porque «Nodo SUBDERE» por sí solo se lee como una red aparte.
+El nombre del proyecto se define en el título del hero: **«Nodo SUBDERE, la plataforma de encuentro municipal»**, porque «Nodo SUBDERE» por sí solo se lee como una red aparte. El párrafo que lo acompaña se ordena por las tres piezas del sitio —catálogo de APIs, catálogo de servicios y wiki—, y la relación con el resto del Estado quedó en la tarjeta «SUBDERE se ocupa del resto del Estado». Esa tarjeta ya no se defiende de parecer una red paralela: presenta la interoperabilidad con el Estado como algo que SUBDERE le resuelve al municipio. Es una excepción consciente a la regla de arriba y queda marcada como redacción pendiente hasta que la jefatura la confirme. Hasta el 28 de septiembre de 2026 esa función la cumplía una sección aparte, «Un catálogo, una puerta y un compromiso de operación», que se retiró porque su tercer punto no decía nada concreto y lo demás repetía la tarjeta.
+
+**El comprobante no se presenta como algo que hoy falta.** El municipio ya recibe comprobantes de lo que entrega; lo que no tiene es uno con la misma forma para todos los intercambios y que diga contra qué versión de la regla se revisó el envío. El sitio no afirma que el municipio «no tiene cómo comprobar» lo que mandó.
 
 El nombre se mantiene por continuidad con lo ya conversado con el equipo y con la Secretaría de Gobierno Digital. La separación en tres sitios que pidió la jefatura —catálogo, servicios y wiki— queda para cuando el contenido de cada uno justifique su propia navegación.
+
+## Tono y reparto de contenido
+
+**Tono afirmativo.** Los encabezados dicen qué propone o qué aporta la plataforma, no qué «hoy no pasa». Se escriben desde quien la usa —el municipio, un proveedor, una institución que recibe información— y no desde el proceso interno de SUBDERE.
+
+**Cada página tiene un alcance y no invade el de las otras:**
+
+| Página | Qué cuenta |
+|---|---|
+| `index.html` | Global. El hero, «Qué propone» (una forma común de pedir y entregar información), las tres piezas con su enlace y lo que el municipio puede esperar |
+| `que-es.html` | Cómo funciona el intercambio que sostiene las tres piezas: publicar, revisar, autorizar, comprobante, la puerta y el paso de práctica a operación |
+| `apis.html` | Construir: los contratos publicados y cómo leer su estado |
+| `catalogo.html` | Usar: las aplicaciones construidas sobre las APIs |
+| `wiki.html` | Entender: cómo se usa cada intercambio y por qué está definido así |
+
+Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, revisión previa, comprobante, credencial) ni la sección «Cómo está armado»: lo primero está en `que-es.html` y lo segundo en «Cómo leer el estado» de `apis.html`. La sección «Lo que el nodo no es» pasó a «Lo que el municipio puede esperar», con cuatro tarjetas en redacción afirmativa.
+
+`que-es.html` decía «el nodo conecta sistemas, no personas», lo que contradecía el catálogo de servicios. Quedó así: las entregas las hace el sistema del municipio, y las aplicaciones de servicios permiten probar algunas APIs desde una pantalla. No son un espejo de todo el catálogo de APIs, pero usan las mismas APIs publicadas, así que un sistema conectado obtiene los mismos resultados. No se destaca que el nodo no recibe planillas.
 
 ## Redacciones alternativas en discusión
 
@@ -233,13 +252,18 @@ Deliberadamente **no** va en un recuadro de advertencia: un bloque amarillo ensu
 grep -rn 'class="alt"' prototipos/
 ```
 
-Hoy hay tres:
+Hoy hay cuatro:
 
-1. En el hero de la portada: la versión que parte por el problema en vez de por la propuesta.
-2. En la portada, sección «Un catálogo, una puerta y un compromiso de operación»: cuánto se describe del lado de SUBDERE hacia el resto del Estado.
-3. En `que-es.html`, primera sección: la misma pregunta, en el cuerpo de la descripción.
+1. En la portada, tarjeta «SUBDERE se ocupa del resto del Estado»: cuánto se compromete del lado de SUBDERE hacia el resto del Estado.
+2. En la portada, tarjeta «Abierto a cualquier proveedor»: si la zona de práctica queda totalmente abierta o pide algún registro, porque hará falta seguridad y control de uso para no saturar los servidores.
+3. En `que-es.html`, sección «Qué revisa»: qué hace el nodo con lo que las municipalidades envían a otros organismos del Estado, que todavía no está levantado.
+4. En `que-es.html`, sección «Por dónde pasa todo»: «servicio» nombra dos cosas —el sistema detrás de cada API y la pestaña «Servicios», que reúne aplicaciones—. Una opción es renombrar la pestaña a «Aplicaciones».
 
-Las dos últimas dependen de la misma definición y se resuelven juntas.
+La primera y la tercera dependen del mismo levantamiento y se resuelven juntas.
+
+`que-es.html` ya no trata la relación de SUBDERE con el resto del Estado: el párrafo que la justificaba se retiró y el tema quedó en la tarjeta de la portada.
+
+La alternativa que estaba en el hero —la versión que partía por el problema— se incorporó como texto de la sección «Qué propone» de la portada.
 
 ## Para el QA
 
