@@ -252,12 +252,14 @@ Deliberadamente **no** va en un recuadro de advertencia: un bloque amarillo ensu
 grep -rn 'class="alt"' prototipos/
 ```
 
-Hoy hay cuatro:
+Hoy hay seis:
 
 1. En la portada, tarjeta «SUBDERE se ocupa del resto del Estado»: cuánto se compromete del lado de SUBDERE hacia el resto del Estado.
 2. En la portada, tarjeta «Abierto a cualquier proveedor»: si la zona de práctica queda totalmente abierta o pide algún registro, porque hará falta seguridad y control de uso para no saturar los servidores.
 3. En `que-es.html`, sección «Qué revisa»: qué hace el nodo con lo que las municipalidades envían a otros organismos del Estado, que todavía no está levantado.
 4. En `que-es.html`, sección «Por dónde pasa todo»: «servicio» nombra dos cosas —el sistema detrás de cada API y la pestaña «Servicios», que reúne aplicaciones—. Una opción es renombrar la pestaña a «Aplicaciones».
+5. En `que-es.html`, caso C de «Casos»: cómo se avisa a las entidades conectadas cuando cambia un estándar y cuánto dura el período de gracia de la versión anterior. El compromiso de avisar con antelación y dar un período de gracia es nuevo: la nota de arquitectura del estándar legible por máquina solo dice que cada versión queda registrada y no se corrige.
+6. En `participar.html`, tarjeta «Quiero usar el nodo»: si conviene mencionar en esta etapa el uso de partes del SGM —sus motores— sin el sistema completo, que todavía no está plenamente definido.
 
 La primera y la tercera dependen del mismo levantamiento y se resuelven juntas.
 
