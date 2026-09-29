@@ -30,6 +30,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/wiki-glosario.html` | Wiki · Glosario de términos del sitio |
 | `prototipos/wiki-decisiones.html` | Wiki · Decisiones de arquitectura |
 | `prototipos/assets/wiki-nav.js` | Barra lateral común de la wiki (`WIKI_NAV`) e índice «En esta página». Ver «La wiki, ordenada como WikiGuías» |
+| `prototipos/assets/pie.js` | Pie común de todas las páginas. Cada página deja `<footer id="pie"></footer>` y carga el script justo después; `data-nota` reemplaza la segunda línea cuando la página necesita citar su fuente |
 | `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a todos |
 | `prototipos/participar.html` | Cómo participar y qué está definido y qué no |
 | `prototipos/404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
@@ -257,7 +258,7 @@ Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, re
 **29 de septiembre de 2026.** El sitio se escribe como versión definitiva, así que se retiraron las marcas de maqueta, que solo le servían al equipo:
 
 - La banda «Maqueta para revisión» salió de todas las páginas. Quedan solo los avisos que le dicen algo al lector: «Estado de la ficha» en `nodo.html`, que describe el estado del contrato, y el de `wiki-fiscalizacion.html`, que explica que el contrato comentado es una propuesta.
-- El pie dice «Última actualización» en vez de «Maqueta de trabajo». En `apis.html` la fecha es la más reciente de los campos `actualizado` de los nodos visibles.
+- El pie dice «Última actualización» en vez de «Maqueta de trabajo». La fecha por omisión y el texto del pie viven en [`assets/pie.js`](../prototipos/assets/pie.js); en `apis.html` se reemplaza por la más reciente de los campos `actualizado` de los nodos visibles.
 
 **Tarjetas de `apis.html`.** Cada tarjeta muestra:
 
@@ -319,7 +320,7 @@ No se copiaron los tags ni los botones de compartir e imprimir: todavía no hay 
 
 Las entradas declaran a qué sección del menú pertenecen con `<main class="wiki-main" data-wiki-seccion="wiki-intercambios.html">`, para que la barra marque «Índice de entradas» aunque la entrada no esté en ella. Su miga es `Wiki / Intercambios / <nombre>`. **Para agregar una entrada** basta crear la página y poner su ruta en el campo `wiki` del nodo; no se toca `WIKI_NAV`.
 
-Cada página nueva de la wiki necesita, además del contenido, el marco `wiki-layout` (`<aside id="wiki-nav">`, `<main class="wiki-main">`, `<nav id="wiki-toc">`) y cargar `assets/wiki-nav.js` al final. `wiki-consumir.html` sirve de molde para una página de sección y `wiki-cut.html` para una entrada.
+Cada página nueva de la wiki necesita, además del contenido, el marco `wiki-layout` (`<aside id="wiki-nav">`, `<main class="wiki-main">`, `<nav id="wiki-toc">`) y cargar `assets/wiki-nav.js` al final, además del pie común (`<footer id="pie">` seguido de `assets/pie.js`). `wiki-consumir.html` sirve de molde para una página de sección y `wiki-cut.html` para una entrada.
 
 ### El tono de la wiki
 
