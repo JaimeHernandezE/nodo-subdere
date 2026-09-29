@@ -65,6 +65,7 @@
     </div>
   </div>
   <p class="lead" style="margin-top:22px">Ese es el camino cuando el municipio <strong>entrega</strong>. Cuando en cambio <strong>pregunta</strong> —el código de una comuna, el estado de una compra— no hay nada que autorizar: el sistema pregunta y el nodo responde, y queda registrado quién preguntó qué.</p>
+  <p>Más detalle en la wiki: <a href="wiki-recorrido.html">cómo funciona un intercambio →</a></p>
 </div></section>
 
 <section><div class="wrap">
@@ -85,7 +86,7 @@
   <h2>Una sola puerta, y queda registro de quién entró</h2>
   <p class="lead">Detrás de cada API del catálogo hay un <strong>servicio</strong>: el sistema que atiende ese intercambio. Cuando el municipio entrega, el servicio revisa el informe con su estándar, devuelve las observaciones, recibe el envío autorizado y emite el comprobante; cuando el municipio pregunta, el servicio responde. Las aplicaciones del catálogo de servicios son pantallas que usan estos servicios.</p>
   <p class="alt">(Para discutir con el equipo: «servicio» nombra dos cosas en el sitio, el sistema detrás de cada API y la pestaña «Servicios», que reúne aplicaciones. Una opción es renombrar la pestaña a «Aplicaciones».)</p>
-  <p class="lead">Todos los sistemas llegan a los servicios por la <a class="termino" href="wiki.html#puerta-de-acceso">misma puerta</a>, que comprueba quién llama y deja constancia. <strong>Esto todavía no está construido:</strong> es el diseño que se propone.</p>
+  <p class="lead">Todos los sistemas llegan a los servicios por la <a class="termino" href="wiki-glosario.html#puerta-de-acceso">misma puerta</a>, que comprueba quién llama y deja constancia. <strong>Esto todavía no está construido:</strong> es el diseño que se propone.</p>
 
   <div class="flujo" role="img" aria-label="El sistema del municipio pide un permiso de entrada, llama a la puerta con ese permiso, la puerta comprueba y deja pasar al servicio, y queda registro">
     <div class="flujo__caja"><strong>El sistema del municipio</strong><span>Entrega o pregunta</span></div>
@@ -100,7 +101,8 @@
   </div>
 
   <p class="lead" style="margin-top:20px">Dos cosas que conviene notar. La primera: <strong>nadie tiene atajos.</strong> La pantalla del propio SGM entra por esta misma puerta, igual que el sistema de cualquier municipio o de cualquier proveedor. La segunda: el permiso de entrada es temporal y se pide cada vez, así que revocarle el acceso a alguien es inmediato y no depende de avisarle a nadie.</p>
-  <p class="lead">La <a class="termino" href="wiki.html#puerta-de-acceso">puerta</a> tiene dos partes: una que sabe <strong>quién es cada municipio o sistema</strong> y le entrega su permiso, y otra que <strong>revisa ese permiso en cada llamada</strong>, limita cuánto se puede pedir y lo anota. No decide nada del contenido: validar el informe, devolver observaciones y emitir el comprobante lo hace cada servicio. La <a href="../docs/plataforma-control.md">nota de la plataforma de control</a> tiene el detalle técnico.</p>
+  <p class="lead">La <a class="termino" href="wiki-glosario.html#puerta-de-acceso">puerta</a> tiene dos partes: una que sabe <strong>quién es cada municipio o sistema</strong> y le entrega su permiso, y otra que <strong>revisa ese permiso en cada llamada</strong>, limita cuánto se puede pedir y lo anota. No decide nada del contenido: validar el informe, devolver observaciones y emitir el comprobante lo hace cada servicio. La <a href="../docs/plataforma-control.md">nota de la plataforma de control</a> tiene el detalle técnico.</p>
+  <p>Más detalle en la wiki: <a href="wiki-glosario.html#puerta-de-acceso">qué es la puerta de acceso →</a></p>
 </div></section>
 
 <section><div class="wrap">
@@ -138,6 +140,7 @@
       <p class="alt">(Para definir con el equipo: cómo se avisa a las entidades conectadas y cuánto dura el período de gracia.)</p>
     </div>
   </div>
+  <p style="margin-top:22px">Más detalle en la wiki: <a href="wiki-conectar.html">conectar un sistema →</a></p>
 </div></section>
 
 <footer><div class="wrap">

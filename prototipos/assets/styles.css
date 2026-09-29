@@ -213,6 +213,54 @@ a.termino:hover{color:var(--azul);text-decoration-style:solid}
 .glosario dd p:last-child{margin-bottom:0}
 .glosario__alias{color:var(--muted)}
 
+/* ---------- wiki: barra lateral, contenido e índice ----------
+   Orden tomado de WikiGuías (wikiguias.digital.gob.cl): menú a la izquierda,
+   «En esta página» a la derecha. El menú lo pinta assets/wiki-nav.js. */
+.wiki-layout{max-width:1360px;display:grid;grid-template-columns:230px minmax(0,1fr) 200px;gap:40px;align-items:start;padding-top:28px;padding-bottom:56px}
+.wiki-nav,.wiki-toc{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;font-size:14px}
+.wiki-nav__plegable>summary{display:none}
+.wiki-nav__lista{list-style:none;margin:0;padding:0}
+.wiki-nav__grupo{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:4px 0 6px;padding:0 12px}
+.wiki-nav__div{height:1px;background:var(--hair);margin:12px 0}
+.wiki-nav a{display:block;padding:6px 12px;border-left:2px solid transparent;color:var(--body);line-height:1.35}
+.wiki-nav a:hover{color:var(--navy);background:var(--grey);text-decoration:none}
+.wiki-nav a[aria-current="page"]{border-left-color:var(--rojo);color:var(--navy);font-weight:600;background:var(--grey)}
+.wiki-toc__tit{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 8px}
+.wiki-toc ul{list-style:none;margin:0;padding:0;border-left:1px solid var(--hair)}
+.wiki-toc a{display:block;padding:4px 0 4px 12px;color:var(--body);font-size:13.5px;line-height:1.35}
+.wiki-toc a:hover{color:var(--azul)}
+.wiki-main{min-width:0}
+.wiki-main section{padding:30px 0}
+.wiki-main section:first-child{padding-top:0}
+.wiki-main section .wrap{max-width:none;padding:0}
+.wiki-main section.gris{border:1px solid var(--hair);border-radius:10px;padding:28px;margin:10px 0}
+.wiki-main h2{scroll-margin-top:20px}
+.wiki-main .miga{padding-top:0}
+.wiki-ambitos{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:12px}
+.wiki-ambitos li{background:#fff;border:1px solid var(--line-l);border-radius:10px;padding:16px 20px}
+.wiki-ambitos b{display:block;font-family:var(--font-tit);color:var(--navy);font-size:16px;margin-bottom:2px}
+.wiki-ambitos span{font-size:14.5px;color:var(--body)}
+.para-tecnico{margin:12px 0 0;padding-top:10px;border-top:1px dashed var(--hair);font-size:13.5px;color:var(--muted)}
+.para-tecnico b{color:var(--body);font-weight:600}
+.nodo-enlaces{display:flex;gap:6px 16px;flex-wrap:wrap;margin:0;font-size:14px}
+.wiki-main .nodo:hover{border-color:var(--line-l);box-shadow:none}
+.terminos-indice{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:18px 0 0;padding:0}
+.terminos-indice a{display:inline-block;font-size:13.5px;padding:5px 12px;border:1px solid var(--line-l);border-radius:999px;background:#fff;color:var(--navy)}
+.terminos-indice a:hover{border-color:var(--azul);text-decoration:none}
+@media (max-width:1180px){
+  .wiki-layout{grid-template-columns:220px minmax(0,1fr)}
+  .wiki-toc{display:none}
+}
+@media (max-width:900px){
+  .wiki-layout{grid-template-columns:1fr;gap:20px;padding-top:18px}
+  .wiki-nav{position:static;max-height:none;overflow:visible}
+  .wiki-nav__plegable{border:1px solid var(--line-l);border-radius:8px;background:#fff}
+  .wiki-nav__plegable>summary{display:block;padding:12px 16px;cursor:pointer;font-weight:600;color:var(--navy)}
+  .wiki-nav__plegable[open]>summary{border-bottom:1px solid var(--hair)}
+  .wiki-nav__lista{padding:10px 4px}
+  .wiki-main section.gris{padding:22px 18px}
+}
+
 /* ---------- disponibilidad ----------
    Viene del monitoreo (estado/status.json) o de un sondeo directo, nunca de la ficha. */
 .disp{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}

@@ -46,10 +46,12 @@ prototipos/
 ├── catalogo.html       # Catálogo (filtro por ámbito + buscador)
 ├── nodo.html           # Ficha de un nodo (?id=<slug>)
 ├── participar.html     # Cómo participar
-├── comentarios.html    # Canal de comentarios y preguntas de QA
+├── wiki.html           # Portada de la wiki
+├── wiki-*.html         # Páginas de la wiki (consumir, cut, fiscalizacion, codigos, normas, glosario, decisiones)
 ├── 404.html            # Error; rutas absolutas /nodo-subdere/…
 └── assets/
     ├── styles.css
+    ├── wiki-nav.js     # Barra lateral de la wiki (WIKI_NAV) e índice «En esta página»
     ├── data.js         # Semilla del catálogo = maqueta del modelo Django
     ├── favicon.svg
     └── og.png

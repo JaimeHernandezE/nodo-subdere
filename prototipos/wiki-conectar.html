@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conectar un sistema · Wiki · Nodo SUBDERE</title>
+<meta name="description" content="Qué necesita un municipio o un proveedor para conectar su sistema al Nodo SUBDERE: qué se puede hacer hoy, qué falta y cómo cambian las versiones.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Conectar un sistema · Wiki">
+<meta property="og:description" content="Qué necesita un municipio o un proveedor para conectar su sistema al nodo.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/wiki-conectar.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <a href="apis.html">APIs</a>
+    <a href="catalogo.html">Servicios</a>
+    <a href="wiki.html" aria-current="page">Wiki</a>
+    <a href="participar.html">Cómo participar</a>
+  </nav>
+</div></header>
+
+<div class="wrap wiki-layout">
+<aside class="wiki-nav" id="wiki-nav" aria-label="Menú de la wiki"><a href="wiki.html">Inicio de la wiki</a></aside>
+<main class="wiki-main">
+
+<section style="padding-bottom:16px"><div class="wrap">
+  <p class="miga"><a href="wiki.html">Wiki</a> / Conectar un sistema</p>
+  <p class="eyebrow">Usar el nodo</p>
+  <h2>Conectarse sin cambiar de sistema</h2>
+  <p class="lead">Al nodo no le importa quién hizo el sistema del municipio, solo que cumpla lo publicado. Aquí explicamos qué se puede hacer hoy para conectarse, qué falta y qué pasa cuando cambian las reglas.</p>
+  <p class="lead">Hay dos situaciones que conviene no mezclar: <strong>construir y practicar</strong>, que no le pide permiso a nadie, y <strong>trabajar con datos de un municipio</strong>, que sí.</p>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">Tres casos</p>
+  <h2>Cómo se conecta un sistema, hoy y más adelante</h2>
+  <div class="cols-3">
+    <div class="card">
+      <div class="num num-letra">A</div>
+      <h3>El SGM, sistema de referencia</h3>
+      <p>El <a href="wiki-glosario.html#sgm">SGM</a> es el primer sistema de gestión municipal conectado al nodo y el primero en cumplir sus estándares. Con él comprobamos que cada estándar funciona antes de que se conecten otros sistemas.</p>
+    </div>
+    <div class="card">
+      <div class="num num-letra">B</div>
+      <h3>Un municipio con otro sistema</h3>
+      <p>Lo publicado es público y cualquiera puede construir a partir de ahí: el proveedor del municipio o su propio equipo de informática. Para trabajar con datos reales hacen falta los <a href="wiki-glosario.html#terminos-y-condiciones">Términos y Condiciones</a> y la <a href="wiki-glosario.html#credencial">credencial</a>.</p>
+    </div>
+    <div class="card">
+      <div class="num num-letra">C</div>
+      <h3>Cuando cambia un estándar</h3>
+      <p>Cuando publiquemos una versión nueva de un estándar, avisaremos con antelación a quienes estén conectados, y la versión anterior seguirá funcionando un tiempo, para que cada sistema se actualice sin cortar sus entregas.</p>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">Paso a paso</p>
+  <h2>Qué hacer para conectar su sistema</h2>
+  <ol class="pasos">
+    <li><strong>Busque el intercambio en el <a href="apis.html">catálogo de APIs</a>.</strong> Cada tarjeta dice en qué etapa va y si está funcionando; qué significa cada etiqueta está en <a href="wiki-ficha.html">cómo leer una ficha</a>.</li>
+    <li><strong>Lea la ficha.</strong> Dice qué entrega el servicio, qué se le puede pedir, de qué otros módulos depende y cómo se entra.</li>
+    <li><strong>Descargue el contrato.</strong> Es el archivo que describe qué se puede pedir y qué se recibe, en un formato que leen los programas. Se abre tal cual en herramientas de prueba como Postman o Insomnia.</li>
+    <li><strong>Practique donde se pueda.</strong> Algunas fichas tienen un ambiente de pruebas que responde con datos inventados, dentro del mismo navegador.</li>
+    <li><strong>Para trabajar con datos reales</strong>, el municipio acepta los Términos y Condiciones con SUBDERE y recibe una credencial a su nombre.</li>
+  </ol>
+  <p class="pendiente">El último paso todavía no se puede dar: los Términos y Condiciones no están redactados y la <a class="termino" href="wiki-glosario.html#puerta-de-acceso">puerta de acceso</a> que revisa la credencial está diseñada, pero no construida.</p>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">Practicar y operar</p>
+  <h2>Un espacio para practicar y otro para trabajar de verdad</h2>
+  <p class="lead">Lo que el servicio promete entregar es lo mismo en los dos; cambian los datos y el permiso que hace falta.</p>
+  <table>
+    <tr><th></th><th>Para practicar</th><th>Para trabajar de verdad</th></tr>
+    <tr><td><strong>Quién</strong></td><td>Cualquiera que esté construyendo un sistema</td><td>El municipio, o el sistema que él autorice</td></tr>
+    <tr><td><strong>Con qué datos</strong></td><td>Datos inventados; ninguno de un municipio real</td><td>Los datos del municipio que autorizó</td></tr>
+    <tr><td><strong>¿Hace falta aceptar Términos y Condiciones?</strong></td><td>No</td><td>Sí, con SUBDERE</td></tr>
+    <tr><td><strong>Permiso</strong></td><td>Abierto o de prueba, según el servicio</td><td>Una credencial a nombre del municipio, que se entrega al aceptar los Términos y Condiciones</td></tr>
+  </table>
+  <div class="aviso"><p><b>La <a href="wiki-glosario.html#zona-de-practica">zona de práctica</a> todavía no existe.</b> La idea es que cada servicio publicado tenga una, con datos inventados, para construir sin pedir permiso. Los ambientes de prueba que hoy tienen las fichas del <a href="nodo.html?id=cut">CUT</a> y de <a href="nodo.html?id=fiscalizacion">permisos de circulación</a> funcionan dentro del navegador y sirven para conocer el contrato, no para conectar un sistema.</p></div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">Versiones</p>
+  <h2 id="versiones">Lo que ya funciona no se rompe de un día para otro</h2>
+  <p class="lead">Cada contrato publicado queda registrado con su versión. Eso significa:</p>
+  <ul class="lead">
+    <li><strong>Ninguna versión se borra ni se corrige.</strong> Si algo cambia, registramos una versión nueva.</li>
+    <li><strong>Siempre se sabe cuál rige</strong>, y se puede ver qué cambió entre una y otra.</li>
+    <li><strong>Quienes estén conectados reciben aviso con antelación</strong>, y la versión anterior sigue funcionando durante un período de gracia.</li>
+  </ul>
+  <p class="pendiente">Por definir: qué cambio obliga a una versión mayor, cómo se avisa a quienes están conectados y cuánto dura el período de gracia. Es la política de versionado que la nota de arquitectura deja pendiente (X-109).</p>
+  <p><a href="wiki-decisiones.html">Ver las decisiones de arquitectura →</a></p>
+</div></section>
+
+</main>
+<nav class="wiki-toc" id="wiki-toc" aria-label="En esta página"></nav>
+</div>
+
+<footer><div class="wrap">
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Última actualización: septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
+</div></footer>
+
+<script src="assets/wiki-nav.js"></script>
+</body>
+</html>

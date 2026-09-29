@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Códigos Únicos Territoriales · Wiki · Nodo SUBDERE</title>
-<meta name="description" content="Cómo se compone el Código Único Territorial, qué norma lo fija, por qué comuna no es lo mismo que municipio, y qué revisar antes de consumir la API.">
+<meta name="description" content="Cómo se compone el Código Único Territorial, qué norma lo fija, por qué comuna no es lo mismo que municipio, y qué revisar antes de usar la API.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Nodo SUBDERE">
 <meta property="og:title" content="Códigos Únicos Territoriales · Wiki">
-<meta property="og:description" content="Cómo se compone el CUT, qué norma lo fija y qué revisar antes de consumir la API.">
+<meta property="og:description" content="Cómo se compone el CUT, qué norma lo fija y qué revisar antes de usar la API.">
 <meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/wiki-cut.html">
 <meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -32,31 +32,35 @@
   </nav>
 </div></header>
 
+<div class="wrap wiki-layout">
+<aside class="wiki-nav" id="wiki-nav" aria-label="Menú de la wiki"><a href="wiki.html">Inicio de la wiki</a></aside>
+<main class="wiki-main" data-wiki-seccion="wiki-intercambios.html">
+
 <section style="padding-bottom:16px"><div class="wrap">
-  <p class="miga"><a href="wiki.html">Wiki</a> / Códigos Únicos Territoriales</p>
-  <p class="eyebrow">Códigos y datos maestros</p>
-  <h2>Cómo se generan los Códigos Únicos Territoriales</h2>
-  <p class="lead">El Código Único Territorial —el CUT— es el número con el que el Estado identifica cada región, provincia y comuna del país. Casi todo intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se habla: si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien.</p>
-  <p class="lead">Esta entrada explica cómo se compone el código, qué norma lo fija, y qué conviene revisar antes de consumir la API. El contrato técnico y la ficha están en el <a href="apis.html">catálogo de APIs</a>, y la pantalla para buscar un código sin programar es el <a href="servicio-cut.html">buscador de códigos territoriales</a>.</p>
+  <p class="miga"><a href="wiki.html">Wiki</a> / <a href="wiki-intercambios.html">Intercambios</a> / Códigos Únicos Territoriales</p>
+  <p class="eyebrow">Intercambios</p>
+  <h2>Que todos los sistemas llamen igual a cada comuna</h2>
+  <p class="lead">El Código Único Territorial —el CUT— es el número con el que el Estado identifica cada región, provincia y comuna del país. Casi todo intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se habla. Si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien.</p>
+  <p class="lead">Aquí explicamos cómo se arma el código, qué norma lo fija y qué conviene revisar antes de usarlo. La ficha técnica está en el <a href="apis.html">catálogo de APIs</a>, y para buscar un código sin programar está el <a href="servicio-cut.html">buscador de códigos territoriales</a>.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">La estructura</p>
-  <h2>Un código que contiene a los de arriba</h2>
-  <p class="lead">El CUT es jerárquico: el código de una comuna empieza con el de su provincia, y el de la provincia empieza con el de su región. Por eso, mirando solo el número de una comuna se sabe a qué provincia y a qué región pertenece, sin consultar nada.</p>
+  <h2>Con el número de una comuna ya sabe su provincia y su región</h2>
+  <p class="lead">El código de una comuna empieza con el de su provincia, y el de la provincia empieza con el de su región. Mirando solo el número se sabe dónde queda, sin consultar nada más.</p>
   <div class="tabla-ancha"><table>
     <tr><th>Nivel</th><th>Dígitos</th><th>Cómo se forma</th><th>Ejemplo</th></tr>
     <tr><td><strong>Región</strong></td><td>2</td><td>Código propio</td><td><code>13</code> — Metropolitana de Santiago</td></tr>
     <tr><td><strong>Provincia</strong></td><td>3</td><td>Región + 1 dígito</td><td><code>131</code> — Santiago</td></tr>
     <tr><td><strong>Comuna</strong></td><td>5</td><td>Provincia + 2 dígitos</td><td><code>13101</code> — Santiago</td></tr>
   </table></div>
-  <div class="aviso"><p><b>Los ceros a la izquierda son parte del código.</b> Iquique es <code>01101</code>, no <code>1101</code>. Las regiones 1 a 9 llevan cero delante, y tratar el código como un número entero se lo come. Esta es la primera causa de que dos listas de comunas no calcen.</p></div>
+  <div class="aviso"><p><b>Los ceros a la izquierda son parte del código.</b> Iquique es <code>01101</code>, no <code>1101</code>. Las regiones 1 a 9 llevan cero delante, y si un sistema guarda el código como número, el cero desaparece. Es la primera causa de que dos listas de comunas no calcen.</p></div>
 </div></section>
 
 <section><div class="wrap">
   <p class="eyebrow">Marco normativo</p>
   <h2>Qué norma lo fija</h2>
-  <p class="lead"><b>Cómo se leyeron estas fuentes:</b> se leyó la página de SUBDERE que publica los códigos y el documento de códigos que esa página enlaza. <b>No se leyó el texto de los decretos.</b> Antes de citar esto fuera del equipo, conviene cotejarlo contra el Diario Oficial.</p>
+  <p class="lead"><b>Qué leímos:</b> la página de SUBDERE que publica los códigos y el documento de códigos que esa página enlaza. <b>No leímos el texto de los decretos.</b> Antes de citar esto fuera del equipo, conviene cotejarlo con el Diario Oficial.</p>
   <div class="tabla-ancha"><table>
     <tr><th>Norma</th><th>Qué hace</th><th>Estado de la verificación</th></tr>
     <tr>
@@ -70,34 +74,37 @@
       <td>Referencia leída, texto no</td>
     </tr>
   </table></div>
-  <p class="lead">La consecuencia práctica: <strong>el CUT tiene versiones, y la versión importa.</strong> Cuando se crea una región o una comuna, los códigos cambian y las listas anteriores quedan desactualizadas. Un sistema que guarda códigos sin guardar contra qué versión los guardó no puede reconstruir después qué quiso decir.</p>
+  <p class="lead">En la práctica: <strong>el CUT tiene versiones, y la versión importa.</strong> Cuando se crea una región o una comuna, los códigos cambian y las listas anteriores quedan desactualizadas. Un sistema que guarda códigos sin anotar de qué versión los sacó no puede reconstruir después qué quiso decir.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Una confusión que cuesta cara</p>
   <h2>Comuna no es lo mismo que municipio</h2>
-  <p class="lead">La comuna es el territorio; la municipalidad es el órgano que lo administra. Casi siempre van uno a uno, pero no siempre: hay comunas que no tienen municipalidad propia y son administradas por la de otra comuna.</p>
-  <p class="lead">Por eso las cifras no coinciden, y las dos son correctas según qué se esté contando. La especificación del servicio declara en su verificación de carga un ejemplo de <code>346</code> comunas; los programas de SUBDERE trabajan habitualmente con <strong>345 municipalidades</strong>. Un sistema que use el CUT como lista de municipios va a tener una fila que no le calza, y no es un error de datos.</p>
-  <div class="aviso"><p>El primer intercambio que usa este estándar es la <a href="wiki-fiscalizacion.html">consulta de permisos de circulación</a>: identifica a la institución recaudadora por su código de comuna en vez del nombre escrito a mano.</p></div>
-  <div class="aviso"><p><b>Regla para quien construye:</b> si lo que se necesita es el territorio —dónde ocurrió algo, a qué comuna corresponde un domicilio— el CUT es la lista correcta. Si lo que se necesita es la entidad que responde —quién entrega el informe, quién firma— hace falta además un registro de municipalidades, que es otra cosa y todavía no está en el catálogo.</p></div>
+  <p class="lead">La comuna es el territorio; la municipalidad es la institución que lo administra. Casi siempre hay una por cada comuna, pero no siempre: algunas comunas no tienen municipalidad propia y las administra la de otra comuna.</p>
+  <p class="lead">Por eso las cifras no coinciden, y las dos son correctas según qué se cuente. La especificación del servicio trae como ejemplo <code>346</code> comunas; los programas de SUBDERE trabajan habitualmente con <strong>345 municipalidades</strong>. Un sistema que use el CUT como lista de municipios va a tener una fila que no le calza, y no es un error de datos.</p>
+  <div class="aviso"><p>El primer intercambio que usa este estándar es la <a href="wiki-fiscalizacion.html">consulta de permisos de circulación</a>: identifica a la municipalidad que cobró por su código de comuna, en vez de escribir el nombre a mano.</p></div>
+  <div class="aviso"><p><b>Para quien construye un sistema:</b> si necesita el territorio —dónde ocurrió algo, a qué comuna corresponde un domicilio—, el CUT es la lista correcta. Si necesita la institución que responde —quién entrega el informe, quién firma—, hace falta además un registro de municipalidades, que es otra cosa y todavía no está en el catálogo.</p></div>
 </div></section>
 
 <section><div class="wrap">
-  <p class="eyebrow">Consumir la API</p>
-  <h2>Qué entrega y cómo se recorre</h2>
-  <p class="lead">La especificación de referencia describe once operaciones, todas de consulta. Se agrupan en tres familias más dos de operación del propio servicio.</p>
+  <p class="eyebrow">Usar la API</p>
+  <h2>Qué se le puede pedir</h2>
+  <p class="lead">Al servicio solo se le consultan datos; no se le envía nada. Se le puede pedir la lista de regiones, provincias o comunas, lo que hay dentro de cada una, y una comuna con su provincia y su región de una sola vez.</p>
   <div class="tabla-ancha"><table>
-    <tr><th>Para qué</th><th>Operación</th><th>Devuelve</th></tr>
+    <tr><th>Para qué</th><th>Dirección</th><th>Qué entrega</th></tr>
     <tr><td rowspan="2"><strong>Regiones</strong></td><td><code>GET /regiones</code></td><td>Todas las regiones, con código y nombre</td></tr>
     <tr><td><code>GET /regiones/{id}/provincias</code><br><code>GET /regiones/{id}/comunas</code></td><td>Lo que hay dentro de una región. La lista de comunas incluye la provincia de cada una</td></tr>
     <tr><td rowspan="2"><strong>Provincias</strong></td><td><code>GET /provincias</code></td><td>Todas las provincias</td></tr>
     <tr><td><code>GET /provincias/{id}</code><br><code>GET /provincias/{id}/comunas</code></td><td>El detalle de una provincia, con su región, y sus comunas</td></tr>
     <tr><td rowspan="2"><strong>Comunas</strong></td><td><code>GET /comunas</code></td><td>Todas las comunas, con código y nombre</td></tr>
-    <tr><td><code>GET /comunas/{id}/full</code></td><td>Una comuna con su provincia y su región resueltas, sin tener que hacer tres llamadas</td></tr>
-    <tr><td><strong>Estado del servicio</strong></td><td><code>GET /healthz</code><br><code>GET /readyz</code></td><td>Si el servicio está arriba, y si alcanzó a cargar el catálogo</td></tr>
+    <tr><td><code>GET /comunas/{id}/full</code></td><td>Una comuna con su provincia y su región, sin tener que hacer tres consultas</td></tr>
+    <tr><td><strong>Estado del servicio</strong></td><td><code>GET /healthz</code><br><code>GET /readyz</code></td><td>Si el servicio está funcionando, y si alcanzó a cargar los códigos</td></tr>
   </table></div>
-  <p class="lead">Dos cosas que conviene notar. La primera: <code>/comunas/{id}/full</code> existe justamente para no obligar a encadenar llamadas — pedir una comuna y recibirla con su provincia y su región resueltas es el caso de uso más común. La segunda: <code>healthz</code> y <code>readyz</code> no son parte del dominio, son del servicio. Un cliente no debería llamarlas en su flujo normal.</p>
-  <p class="lead">El catálogo se carga desde un archivo en memoria al iniciar el servicio, sin base de datos. Eso lo hace rápido y simple, y significa que <strong>actualizar el CUT es reiniciar el servicio con un archivo nuevo</strong>, no escribir en una tabla.</p>
+  <ul>
+    <li><b>Lo más usado es pedir una comuna completa.</b> Para eso existe <code>/comunas/{id}/full</code>: entrega la comuna con su provincia y su región en una sola respuesta.</li>
+    <li><b>Las dos últimas direcciones son para quien opera el servicio.</b> <code>healthz</code> y <code>readyz</code> dicen si está funcionando; un sistema que solo pide datos no las necesita en su trabajo normal.</li>
+    <li><b>Actualizar el CUT es reiniciar el servicio con un archivo nuevo.</b> Los códigos se cargan desde un archivo al encender el servicio, sin base de datos. Eso lo hace rápido y simple.</li>
+  </ul>
   <div class="acciones" style="margin-top:22px">
     <a class="btn btn-p" href="nodo.html?id=cut">Ver la especificación completa</a>
     <a class="btn btn-s" href="servicio-cut.html" style="border-color:var(--line-l);color:var(--navy)">Abrir el buscador</a>
@@ -106,43 +113,53 @@
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Antes de comprometer el contrato</p>
-  <h2>Cinco observaciones sobre la especificación de referencia</h2>
-  <p class="lead">Lo que sigue son observaciones del equipo sobre la versión de referencia, no defectos del servicio en operación. Están acá y no en el catálogo de APIs a propósito: el catálogo publica el contrato tal como se entregó, sin editarlo, y la discusión sobre el contrato vive en la wiki.</p>
+  <h2>Cinco cosas que conviene corregir en la especificación</h2>
+  <p class="lead">Son observaciones nuestras sobre la versión de referencia, no fallas del servicio en funcionamiento. Las ponemos aquí y no en el catálogo de APIs a propósito: el catálogo publica el contrato tal como se entregó, sin editarlo, y la conversación sobre él ocurre en la wiki.</p>
 
   <div class="cols-2">
     <div class="card">
       <div class="num">01</div>
-      <h3>Los códigos están declarados como número entero</h3>
-      <p>Los identificadores vienen como <code>integer</code>. Con eso, Iquique deja de ser <code>01101</code> y pasa a ser <code>1101</code>: se pierde el cero a la izquierda, que es parte del código. Declararlos como texto, con largo fijo, evita que cada cliente tenga que rellenar ceros por su cuenta y que algunos no lo hagan.</p>
+      <h3>Los códigos pueden perder el cero inicial</h3>
+      <p>Tal como está escrito, Iquique puede llegar como <code>1101</code> en vez de <code>01101</code>. Si cada sistema tiene que agregar el cero por su cuenta, alguno no lo va a hacer.</p>
+      <p class="para-tecnico"><b>Para quien programa:</b> los identificadores están declarados como <code>integer</code>. Declararlos como texto de largo fijo lo resuelve.</p>
     </div>
     <div class="card">
       <div class="num">02</div>
-      <h3>No declara versión del CUT en la respuesta</h3>
-      <p>La descripción dice que es el CUT 2018, pero ninguna respuesta lo indica. Quien guarde estos códigos no puede saber después contra qué versión los obtuvo. Un campo con la versión vigente en cada respuesta lo resuelve.</p>
+      <h3>La respuesta no dice de qué año son los códigos</h3>
+      <p>La descripción dice que es el CUT 2018, pero ninguna respuesta lo indica. Quien guarde estos códigos no puede saber después de qué versión los sacó.</p>
+      <p class="para-tecnico"><b>Para quien programa:</b> basta un campo con la versión vigente en cada respuesta.</p>
     </div>
     <div class="card">
       <div class="num">03</div>
-      <h3>No declara autenticación</h3>
-      <p>El contrato no trae esquema de seguridad. Para datos públicos de solo consulta puede ser deliberado, pero entonces conviene decirlo en el propio contrato en vez de dejarlo en silencio, porque el resto del sitio declara que todo pasa por la <a class="termino" href="wiki.html#puerta-de-acceso">misma puerta</a>.</p>
+      <h3>No dice quién puede entrar</h3>
+      <p>El contrato no indica si hay que identificarse. Para datos públicos de solo consulta puede ser a propósito, pero entonces conviene decirlo, porque el resto del sitio explica que todo pasa por la <a class="termino" href="wiki-glosario.html#puerta-de-acceso">misma puerta</a>.</p>
+      <p class="para-tecnico"><b>Para quien programa:</b> el contrato no trae esquema de seguridad.</p>
     </div>
     <div class="card">
       <div class="num">04</div>
-      <h3>Una ruta termina en barra y las demás no</h3>
-      <p><code>/regiones/{id}/</code> lleva barra final; sus vecinas no. Los <em>Lineamientos para el desarrollo de software</em> de la Secretaría de Gobierno Digital piden no usar barra al final de la URI. Es un detalle, pero es el tipo de detalle que después obliga a cada cliente a probar las dos formas.</p>
+      <h3>Una dirección está escrita distinto a las demás</h3>
+      <p>Una de las direcciones termina en barra y sus vecinas no. Es un detalle, pero obliga a cada sistema a probar las dos formas.</p>
+      <p class="para-tecnico"><b>Para quien programa:</b> <code>/regiones/{id}/</code> lleva barra final. Los <em>Lineamientos para el desarrollo de software</em> de la Secretaría de Gobierno Digital piden no usar barra al final de la URI.</p>
     </div>
     <div class="card">
       <div class="num">05</div>
-      <h3>Sin búsqueda ni filtros</h3>
-      <p>Las listas se entregan completas. Para 346 comunas alcanza, pero los mismos lineamientos sugieren parámetros de consulta para filtrar y ordenar. Buscar una comuna por nombre —el caso más frecuente en una pantalla— hoy se resuelve del lado del cliente.</p>
+      <h3>No se puede buscar una comuna por nombre</h3>
+      <p>Las listas llegan completas. Para 346 comunas alcanza, pero buscar una comuna por su nombre —lo más frecuente en una pantalla— hoy lo tiene que resolver cada sistema por su lado.</p>
+      <p class="para-tecnico"><b>Para quien programa:</b> los mismos lineamientos sugieren parámetros de consulta para filtrar y ordenar.</p>
     </div>
     <div class="card">
       <div class="num">06</div>
-      <h3>Y una que no es observación</h3>
-      <p>El contrato solo usa referencias internas y está completo en un archivo. Eso permite que el catálogo lo renderice tal cual, sin ensamblar nada. Suena menor y no lo es: es la diferencia entre publicar un estándar y publicar un enlace a un estándar.</p>
+      <h3>Y una cosa que está bien hecha</h3>
+      <p>El contrato está completo en un solo archivo. Por eso el catálogo lo puede mostrar tal cual, sin armar nada. Suena menor y no lo es: es la diferencia entre publicar un estándar y publicar un enlace a un estándar.</p>
+      <p class="para-tecnico"><b>Para quien programa:</b> solo usa referencias internas.</p>
     </div>
   </div>
-  <div class="aviso"><p>Ninguna de estas observaciones impide construir contra el contrato hoy. Las dos primeras sí conviene resolverlas antes de que alguien guarde códigos en producción, porque corregirlas después obliga a migrar datos.</p></div>
+  <div class="aviso"><p>Ninguna de estas observaciones impide construir con el contrato hoy. Las dos primeras sí conviene resolverlas antes de que alguien guarde códigos en producción, porque corregirlas después obliga a migrar datos.</p></div>
 </div></section>
+
+</main>
+<nav class="wiki-toc" id="wiki-toc" aria-label="En esta página"></nav>
+</div>
 
 <footer><div class="wrap">
   <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
@@ -152,5 +169,6 @@
   </div>
 </div></footer>
 
+<script src="assets/wiki-nav.js"></script>
 </body>
 </html>

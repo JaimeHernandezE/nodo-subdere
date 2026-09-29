@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cómo leer una ficha · Wiki · Nodo SUBDERE</title>
+<meta name="description" content="Qué quiere decir cada estado, indicador y etiqueta de las fichas del catálogo de APIs del Nodo SUBDERE.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Cómo leer una ficha · Wiki">
+<meta property="og:description" content="Qué quiere decir cada estado, indicador y etiqueta de las fichas del catálogo.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/wiki-ficha.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <a href="apis.html">APIs</a>
+    <a href="catalogo.html">Servicios</a>
+    <a href="wiki.html" aria-current="page">Wiki</a>
+    <a href="participar.html">Cómo participar</a>
+  </nav>
+</div></header>
+
+<div class="wrap wiki-layout">
+<aside class="wiki-nav" id="wiki-nav" aria-label="Menú de la wiki"><a href="wiki.html">Inicio de la wiki</a></aside>
+<main class="wiki-main">
+
+<section style="padding-bottom:16px"><div class="wrap">
+  <p class="miga"><a href="wiki.html">Wiki</a> / Cómo leer una ficha</p>
+  <p class="eyebrow">Usar el nodo</p>
+  <h2>Saber de un vistazo si una API ya se puede usar</h2>
+  <p class="lead">Cada API del <a href="apis.html">catálogo</a> tiene una tarjeta y una ficha. Las etiquetas de colores responden cuatro preguntas: en qué etapa va, si está funcionando ahora, de dónde sale su contrato y cómo se entra.</p>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">En qué etapa va</p>
+  <h2>Contrato publicado y servicio disponible: dos cosas distintas</h2>
+  <p class="lead">La ficha las separa a propósito. Un contrato publicado —la descripción de qué se puede pedir y qué se recibe— ya sirve para diseñar y construir un sistema, aunque el servicio todavía no responda desde fuera.</p>
+  <table>
+    <tr><th>Estado</th><th>Qué quiere decir</th></tr>
+    <tr><td><span class="tag tag-mad">Deseable</span></td><td>Alguien lo necesita y está anotado. Nadie ha revisado todavía si es viable ni ha comprometido nada.</td></tr>
+    <tr><td><span class="tag tag-eval">En evaluación</span></td><td>Estamos evaluando si el intercambio hace falta y si es viable.</td></tr>
+    <tr><td><span class="tag tag-dev">En desarrollo</span></td><td>Ya está escrito qué entrega y hay trabajo andando, pero todavía no se puede usar desde fuera.</td></tr>
+    <tr><td><span class="tag tag-oper">Operativo</span></td><td>Funciona y hay municipios usándolo.</td></tr>
+  </table>
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">Si está funcionando ahora</p>
+  <h2>La disponibilidad la mide una máquina, no la escribimos a mano</h2>
+  <p class="lead">El indicador sale de un monitor que revisa el servicio cada cierto tiempo. Si una API no tiene monitoreo, la tarjeta lo dice en vez de suponer que funciona.</p>
+  <table>
+    <tr><th>Indicador</th><th>Qué quiere decir</th></tr>
+    <tr><td><span class="disp disp--up">Disponible</span></td><td>El monitor lo encontró respondiendo en su última revisión. Al pasar el cursor se ve cuándo fue y qué porcentaje del tiempo funcionó en los últimos 30 días.</td></tr>
+    <tr><td><span class="disp disp--degradado">Degradado</span></td><td>Responde, pero lento o con errores en parte de las consultas.</td></tr>
+    <tr><td><span class="disp disp--caido">Caído</span></td><td>No respondió en la última revisión.</td></tr>
+    <tr><td><span class="disp disp--interno">Solo red interna</span></td><td>El servicio existe, pero solo responde dentro de la red de SUBDERE. Desde fuera no se puede usar ni medir.</td></tr>
+    <tr><td><span class="disp disp--sin">Sin monitoreo</span></td><td>Todavía no hay un servicio que medir, o no está conectado al monitor.</td></tr>
+  </table>
+</div></section>
+
+<section class="gris"><div class="wrap">
+  <p class="eyebrow">De dónde sale el contrato</p>
+  <h2 id="procedencia">Cuánto se le puede creer a lo que muestra el catálogo</h2>
+  <p class="lead">No siempre escribimos nosotros el contrato de una API. Por eso cada ficha tiene un apartado de <strong>procedencia</strong>: quién responde por el contrato, dónde está la versión que rige y qué relación tiene con lo que se ve en el catálogo.</p>
+  <table>
+    <tr><th>Etiqueta</th><th>Qué quiere decir</th></tr>
+    <tr><td><span class="tag tag-dev">Copia exacta</span></td><td>Lo que se ve es el mismo contrato que entregó el responsable, sin cambios.</td></tr>
+    <tr><td><span class="tag tag-eval">Instantánea</span></td><td>Una foto del contrato tomada en una fecha. La versión oficial puede haber cambiado después.</td></tr>
+    <tr><td><span class="tag tag-mad">Propuesta reconstruida</span></td><td>La escribimos nosotros a partir de lo que nos entregaron. Sirve para conversar, pero no es el contrato oficial.</td></tr>
+    <tr><td><span class="tag tag-sin">Sin copia en el catálogo</span></td><td>El catálogo no guarda el archivo, a propósito, para que no se desactualice. Hay que ir a la fuente oficial que indica la ficha.</td></tr>
+  </table>
+  <p class="lead">Las diferencias y las preguntas abiertas sobre cada contrato no se escriben dentro de él: van en su entrada de esta wiki, y la ficha enlaza a ella en «Observaciones». Todas las entradas están en el <a href="wiki-intercambios.html">índice de intercambios</a>.</p>
+</div></section>
+
+<section><div class="wrap">
+  <p class="eyebrow">Cómo se entra</p>
+  <h2 id="acceso">Quién puede pedirle datos</h2>
+  <p class="lead">La tarjeta resume en una etiqueta cómo se entra, y la ficha lo explica con detalle en «Quién puede usarlo».</p>
+  <table>
+    <tr><th>Etiqueta</th><th>Qué quiere decir</th></tr>
+    <tr><td><span class="tag tag-acceso">Abierto</span></td><td>No hay que identificarse para consultar.</td></tr>
+    <tr><td><span class="tag tag-acceso">Con credencial</span></td><td>El sistema que pide los datos se identifica con una <a href="wiki-glosario.html#credencial">credencial</a> del municipio.</td></tr>
+    <tr><td><span class="tag tag-acceso">Clave Única</span></td><td>Una persona entra con su <a href="wiki-glosario.html#clave-unica">Clave Única</a>.</td></tr>
+  </table>
+  <p class="lead">Dos etiquetas más aparecen junto a la de acceso:</p>
+  <ul>
+    <li><span class="tag tag-contrato">OpenAPI</span> o <span class="tag tag-sin">Sin contrato</span>: si el contrato ya está publicado, y en qué formato. OpenAPI es un formato estándar para describir APIs, que leen tanto personas como programas.</li>
+    <li><span class="tag tag-sandbox">Se puede probar</span>: la ficha tiene un ambiente de pruebas que responde con datos inventados. Funciona dentro del navegador, así que se puede practicar aunque el servicio real todavía no esté publicado.</li>
+  </ul>
+  <div class="aviso"><p>El ambiente de pruebas de una ficha no es la <a href="wiki-glosario.html#zona-de-practica">zona de práctica</a> del nodo, que todavía no existe. Qué se puede hacer hoy y qué falta está en <a href="wiki-conectar.html">conectar un sistema</a>.</p></div>
+</div></section>
+
+</main>
+<nav class="wiki-toc" id="wiki-toc" aria-label="En esta página"></nav>
+</div>
+
+<footer><div class="wrap">
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Última actualización: septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
+</div></footer>
+
+<script src="assets/wiki-nav.js"></script>
+</body>
+</html>

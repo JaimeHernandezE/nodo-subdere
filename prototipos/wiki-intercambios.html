@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Índice de entradas · Wiki · Nodo SUBDERE</title>
+<meta name="description" content="Una entrada de wiki por cada intercambio del catálogo del Nodo SUBDERE: cómo funciona, qué norma lo respalda y qué observamos en su contrato.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nodo SUBDERE">
+<meta property="og:title" content="Índice de entradas · Wiki">
+<meta property="og:description" content="Una entrada de wiki por cada intercambio del catálogo.">
+<meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/wiki-intercambios.html">
+<meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
+  <nav class="nav">
+    <a href="index.html">Inicio</a>
+    <a href="que-es.html">Qué es el nodo</a>
+    <a href="apis.html">APIs</a>
+    <a href="catalogo.html">Servicios</a>
+    <a href="wiki.html" aria-current="page">Wiki</a>
+    <a href="participar.html">Cómo participar</a>
+  </nav>
+</div></header>
+
+<div class="wrap wiki-layout">
+<aside class="wiki-nav" id="wiki-nav" aria-label="Menú de la wiki"><a href="wiki.html">Inicio de la wiki</a></aside>
+<main class="wiki-main">
+
+<section><div class="wrap">
+  <p class="miga"><a href="wiki.html">Wiki</a> / Intercambios</p>
+  <p class="eyebrow">Intercambios</p>
+  <h2>Una entrada para cada intercambio</h2>
+  <p class="lead">Cada intercambio del <a href="apis.html">catálogo de APIs</a> tiene aquí su explicación: cómo funciona, qué norma lo respalda y qué observamos en su contrato —la descripción de qué se puede pedir y qué se recibe—.</p>
+  <p class="lead">Esta lista se arma sola con el catálogo: cuando publicamos un intercambio nuevo, aparece aquí.</p>
+
+  <div class="filtros">
+    <input class="buscador" id="q" type="search" placeholder="Buscar un intercambio…" aria-label="Buscar intercambios">
+  </div>
+  <p class="conteo" id="conteo"></p>
+  <div id="lista"></div>
+</div></section>
+
+</main>
+<nav class="wiki-toc" id="wiki-toc" aria-label="En esta página"></nav>
+</div>
+
+<footer><div class="wrap">
+  <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
+  <div class="pie-txt">
+    <div><b>Nodo SUBDERE</b> · Última actualización: septiembre de 2026</div>
+    <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
+  </div>
+</div></footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/wiki-nav.js"></script>
+<script>
+(function () {
+  var lista = document.getElementById('lista');
+  var conteo = document.getElementById('conteo');
+  var q = document.getElementById('q');
+
+  var params = new URLSearchParams(location.search);
+  q.value = params.get('q') || '';
+
+  var visibles = NODOS.filter(function (n) { return !n.oculto; });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function sinTildes(s) {
+    return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function aplicaciones(n) {
+    return SERVICIOS.filter(function (s) { return s.nodo === n.id; });
+  }
+
+  function tarjeta(n) {
+    var enlaces = [];
+    if (n.wiki) enlaces.push('<a href="' + esc(n.wiki) + '"><strong>Leer la entrada</strong></a>');
+    enlaces.push('<a href="nodo.html?id=' + encodeURIComponent(n.id) + '">Ficha en APIs</a>');
+    aplicaciones(n).forEach(function (s) {
+      enlaces.push('<a href="' + esc(s.url) + '">' + esc(s.nombre) + '</a>');
+    });
+    return '<div class="nodo">'
+      + '<div class="cab"><h4>' + esc(n.nombre) + '</h4>'
+      + (n.wiki ? '' : '<span class="tag tag-mad">Entrada pendiente</span>') + '</div>'
+      + '<p class="func">' + esc(n.funcion) + '</p>'
+      + '<p class="nodo-enlaces">' + enlaces.join('') + '</p>'
+      + '</div>';
+  }
+
+  function pinta() {
+    var texto = sinTildes(q.value.trim());
+    var hallados = visibles.filter(function (n) {
+      if (!texto) return true;
+      var apps = aplicaciones(n).map(function (s) { return s.nombre; }).join(' ');
+      return sinTildes(n.nombre + ' ' + n.funcion + ' ' + apps).indexOf(texto) > -1;
+    });
+
+    if (!hallados.length) {
+      lista.innerHTML = '<p class="pendiente">Ningún intercambio coincide con esa búsqueda. '
+        + 'Pruebe con otra palabra o revise el <a href="apis.html">catálogo de APIs</a>.</p>';
+    } else {
+      lista.innerHTML = AMBITOS.map(function (amb) {
+        var grupo = hallados.filter(function (n) { return n.ambito === amb; });
+        if (!grupo.length) return '';
+        return '<div class="grupo-cat"><h3 class="grupo-cat__tit">' + esc(amb)
+          + ' <span class="grupo-cat__n">' + grupo.length + '</span></h3>'
+          + '<div class="grid-nodos">' + grupo.map(tarjeta).join('') + '</div></div>';
+      }).join('');
+    }
+
+    conteo.textContent = hallados.length === visibles.length
+      ? (visibles.length === 1 ? '1 intercambio' : visibles.length + ' intercambios')
+      : hallados.length + ' de ' + visibles.length + ' intercambios';
+
+    var p = new URLSearchParams();
+    if (q.value.trim()) p.set('q', q.value.trim());
+    var s = p.toString();
+    history.replaceState(null, '', s ? '?' + s : location.pathname);
+  }
+
+  q.addEventListener('input', pinta);
+  pinta();
+})();
+</script>
+</body>
+</html>

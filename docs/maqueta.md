@@ -18,8 +18,18 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/assets/cut-demo.js` | Extracto del catálogo CUT (Tarapacá, Maule y Ñuble completas, con códigos oficiales) y casos de prueba del ambiente de pruebas de su ficha |
 | `prototipos/assets/servicio.js` | Plantilla de la página de un servicio: arma cabecera, fuentes y panel lateral desde `SERVICIOS`. Ver [`plantillas.md`](plantillas.md) |
 | `prototipos/assets/sandbox.js` | Motor del ambiente de pruebas de una ficha: ejecuta el contrato OpenAPI contra datos ficticios |
-| `prototipos/wiki.html` | **Wiki.** Índice: cómo se usan las APIs, cómo se generan los códigos y en base a qué normas |
+| `prototipos/wiki.html` | **Wiki.** Portada: qué es la wiki, a quién está dirigida y cómo está ordenada |
+| `prototipos/wiki-recorrido.html` | Wiki · Cómo funciona un intercambio: entregar y preguntar, los cuatro pasos de una entrega, qué se revisa y la puerta |
+| `prototipos/wiki-consumir.html` | Wiki · Cómo se usa una API del catálogo |
+| `prototipos/wiki-conectar.html` | Wiki · Conectar un sistema: los tres casos, el paso a paso, práctica y operación, versiones |
+| `prototipos/wiki-ficha.html` | Wiki · Cómo leer una ficha: madurez, disponibilidad, procedencia y acceso |
+| `prototipos/wiki-intercambios.html` | Wiki · Índice de entradas, generado desde `NODOS` con buscador |
 | `prototipos/wiki-cut.html` | Entrada de wiki de los Códigos Únicos Territoriales |
+| `prototipos/wiki-codigos.html` | Wiki · Índice de códigos y datos maestros |
+| `prototipos/wiki-normas.html` | Wiki · Marco normativo |
+| `prototipos/wiki-glosario.html` | Wiki · Glosario de términos del sitio |
+| `prototipos/wiki-decisiones.html` | Wiki · Decisiones de arquitectura |
+| `prototipos/assets/wiki-nav.js` | Barra lateral común de la wiki (`WIKI_NAV`) e índice «En esta página». Ver «La wiki, ordenada como WikiGuías» |
 | `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a todos |
 | `prototipos/participar.html` | Cómo participar y qué está definido y qué no |
 | `prototipos/404.html` | Página de error. Usa rutas absolutas `/nodo-subdere/…` porque se sirve desde cualquier URL — **por eso se ve sin estilos si se abre con doble clic**, y bien una vez publicada |
@@ -59,6 +69,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 | `sandbox` | objeto | `{ script }`. La ficha tiene un ambiente de pruebas; `script` registra los datos y el responder. Requiere `espec.archivo` |
 | `espec.procedencia` | objeto | `{ responsable, fuente, copia, detalle, observaciones? }`. Reemplaza al texto libre `espec.origen`. `copia` es `exacta`, `instantanea`, `reconstruccion` o `sin-copia`, y dice qué relación tiene lo que muestra el catálogo con la fuente oficial. `observaciones` es `{ texto, url }` y apunta a la wiki, donde van las diferencias y las preguntas abiertas |
 | `dependencias` | lista | `{ nombre, id? }` — qué hay que tener implementado antes. `id` enlaza otra ficha; si falta, el módulo todavía no está en el catálogo |
+| `wiki` | ruta | Entrada del intercambio en la wiki (`wiki-cut.html`). Con ella se arma `wiki-intercambios.html`; un nodo visible sin este campo aparece como «Entrada pendiente» |
 
 **`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: hoy, el core SGM. Sin ese campo, el core se leería como un módulo más.
 
@@ -233,11 +244,11 @@ El nombre se mantiene por continuidad con lo ya conversado con el equipo y con l
 |---|---|
 | `index.html` | Global. El hero, «Qué propone» (una forma común de pedir y entregar información), las tres piezas con su enlace y lo que el municipio puede esperar |
 | `que-es.html` | Cómo funciona el intercambio que sostiene las tres piezas: publicar, revisar, autorizar, comprobante, la puerta y el paso de práctica a operación |
-| `apis.html` | Construir: los contratos publicados y cómo leer su estado |
+| `apis.html` | Construir: los contratos publicados. Cómo leer su estado se explica en `wiki-ficha.html` |
 | `catalogo.html` | Usar: las aplicaciones construidas sobre las APIs |
 | `wiki.html` | Entender: cómo se usa cada intercambio y por qué está definido así |
 
-Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, revisión previa, comprobante, credencial) ni la sección «Cómo está armado»: lo primero está en `que-es.html` y lo segundo en «Cómo leer el estado» de `apis.html`. La sección «Lo que el nodo no es» pasó a «Lo que el municipio puede esperar», con cuatro tarjetas en redacción afirmativa.
+Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, revisión previa, comprobante, credencial) ni la sección «Cómo está armado»: lo primero está en `que-es.html` y lo segundo en [`wiki-ficha.html`](../prototipos/wiki-ficha.html). Hasta el 29 de septiembre de 2026 las tablas de madurez y disponibilidad estaban en la sección «Cómo leer el estado» de `apis.html`; ahí quedan solo la frase que distingue contrato publicado de servicio disponible, el enlace a la wiki y el aviso final sobre el tamaño del catálogo. `que-es.html` conserva su explicación completa y enlaza a `wiki-recorrido.html` y `wiki-conectar.html` con «Más detalle en la wiki». La sección «Lo que el nodo no es» pasó a «Lo que el municipio puede esperar», con cuatro tarjetas en redacción afirmativa.
 
 `que-es.html` decía «el nodo conecta sistemas, no personas», lo que contradecía el catálogo de servicios. Quedó así: las entregas las hace el sistema del municipio, y las aplicaciones de servicios permiten probar algunas APIs desde una pantalla. No son un espejo de todo el catálogo de APIs, pero usan las mismas APIs publicadas, así que un sistema conectado obtiene los mismos resultados. No se destaca que el nodo no recibe planillas.
 
@@ -280,16 +291,58 @@ La versión del contrato de permisos de circulación pasó de `0.1.0-demo` a `0.
 
 ## Glosario y términos enlazados
 
-**29 de septiembre de 2026.** Los conceptos que el sitio usa en más de una página se definen una sola vez, en la sección «Glosario» de `wiki.html`. Cada entrada tiene su ancla (`wiki.html#<id>`). La primera mención del término en cada bloque de texto enlaza ahí, con subrayado punteado (clase `termino`) para que no se confunda con un enlace de navegación.
+**29 de septiembre de 2026.** Los conceptos que el sitio usa en más de una página se definen una sola vez, en el glosario de la wiki, `wiki-glosario.html` (hasta el mismo día era una sección de `wiki.html`). Cada entrada tiene su ancla (`wiki-glosario.html#<id>`). La primera mención del término en cada bloque de texto enlaza ahí, con subrayado punteado (clase `termino`) para que no se confunda con un enlace de navegación.
 
-- **En las páginas HTML** el enlace se escribe a mano: `<a class="termino" href="wiki.html#puerta-de-acceso">…</a>`.
+- **En las páginas HTML** el enlace se escribe a mano: `<a class="termino" href="wiki-glosario.html#puerta-de-acceso">…</a>`.
 - **En los textos de [`data.js`](../prototipos/assets/data.js)** se usa el marcado `[[id]]` o `[[id|texto visible]]`. Lo resuelve [`assets/terminos.js`](../prototipos/assets/terminos.js) contra el diccionario `TERMINOS`, al final de `data.js`. La ficha lo aplica a `descripcion`, `nota`, `espec.acceso`, `espec.procedencia.detalle` y `pruebas`; el catálogo lo quita en los tooltips. El texto se escapa antes de enlazar, así que `data.js` sigue sin poder inyectar HTML.
 
-Hoy hay un solo término, **puerta de acceso**, con **nombre provisional**: también se le dice Plataforma de Control (ver [`plataforma-control.md`](plataforma-control.md)). Cuando se defina el nombre, hay que cambiarlo en tres lugares:
+Hay trece términos, en orden alfabético y con un índice al inicio de la página: API, aplicación, Clave Única, comprobante, credencial, estándar (también contrato o especificación), nodo (dos sentidos), procedencia, puerta de acceso, servicio (dos sentidos, con la discusión sobre renombrar la pestaña), SGM, Términos y Condiciones (por definir) y zona de práctica (también *sandbox*; no existe todavía, y no es lo mismo que el ambiente de pruebas de las fichas). Todos están en `TERMINOS`, así que cualquiera se puede marcar en `data.js`.
+
+Uno solo tiene **nombre provisional**, **puerta de acceso**: también se le dice Plataforma de Control (ver [`plataforma-control.md`](plataforma-control.md)). Cuando se defina el nombre, hay que cambiarlo en tres lugares:
 
 - En `TERMINOS`. Los textos de `data.js` que usan `[[puerta-de-acceso]]` sin texto propio se actualizan solos.
 - En la entrada del glosario.
-- En los enlaces escritos a mano, que hoy están en `que-es.html`, `participar.html`, `wiki.html`, `wiki-cut.html` y `wiki-fiscalizacion.html`. Para ubicarlos: `grep -rn 'puerta-de-acceso' prototipos/`.
+- En los enlaces escritos a mano, que hoy están en `que-es.html`, `participar.html` y en casi todas las páginas de la wiki. Para ubicarlos: `grep -rn 'puerta-de-acceso' prototipos/`.
+
+## La wiki, ordenada como WikiGuías
+
+**29 de septiembre de 2026.** La wiki dejó de ser una sola página con secciones y copia el orden de [WikiGuías](https://wikiguias.digital.gob.cl/), la plataforma de guías técnicas de la Secretaría de Gobierno Digital:
+
+- **Portada de bienvenida.** `wiki.html` dice qué es la wiki, a quién está dirigida, cómo está ordenada y dónde pedir ayuda.
+- **Una página por enlace.** Cada sección de la antigua `wiki.html` pasó a su propia página: `wiki-consumir.html`, `wiki-codigos.html`, `wiki-normas.html`, `wiki-glosario.html` y `wiki-decisiones.html`. Después se sumaron `wiki-recorrido.html`, `wiki-conectar.html` y `wiki-ficha.html`, con contenido que antes solo estaba en `que-es.html`, `participar.html` y `apis.html`, y el índice `wiki-intercambios.html`.
+- **Barra lateral izquierda común** en las doce páginas de la wiki, con el mismo modelo que la de WikiGuías: encabezados de grupo, enlaces y divisores. Los grupos son Usar el nodo (recorrido, cómo se usa una API, conectar un sistema, cómo leer una ficha), Intercambios, Códigos y datos maestros, Marco normativo y Referencia. El menú es la lista `WIKI_NAV` de [`assets/wiki-nav.js`](../prototipos/assets/wiki-nav.js). En pantallas angostas se pliega en «Menú de la wiki».
+- **«En esta página»** a la derecha, armado con los `h2` de cada página. Solo aparece en pantallas anchas y cuando la página tiene más de un `h2`.
+
+No se copiaron los tags ni los botones de compartir e imprimir: todavía no hay contenido que los justifique, y el sitio no lleva dependencias.
+
+**El menú lateral solo lleva secciones fijas.** El catálogo de APIs y el de aplicaciones pueden crecer sin límite, así que las entradas de intercambio no se listan en la barra: van en [`wiki-intercambios.html`](../prototipos/wiki-intercambios.html), un índice que se arma solo desde `NODOS`. Muestra los nodos no ocultos agrupados por `AMBITOS`; cada tarjeta enlaza la entrada (campo `wiki`), la ficha y las aplicaciones de `SERVICIOS` que usan ese nodo, y tiene un buscador que ignora tildes. Un nodo visible sin `wiki` aparece con la etiqueta «Entrada pendiente». La base común del SGM y Adquisiciones, que están ocultas, no aparecen.
+
+Las entradas declaran a qué sección del menú pertenecen con `<main class="wiki-main" data-wiki-seccion="wiki-intercambios.html">`, para que la barra marque «Índice de entradas» aunque la entrada no esté en ella. Su miga es `Wiki / Intercambios / <nombre>`. **Para agregar una entrada** basta crear la página y poner su ruta en el campo `wiki` del nodo; no se toca `WIKI_NAV`.
+
+Cada página nueva de la wiki necesita, además del contenido, el marco `wiki-layout` (`<aside id="wiki-nav">`, `<main class="wiki-main">`, `<nav id="wiki-toc">`) y cargar `assets/wiki-nav.js` al final. `wiki-consumir.html` sirve de molde para una página de sección y `wiki-cut.html` para una entrada.
+
+### El tono de la wiki
+
+**29 de septiembre de 2026.** Toda la wiki se reescribió con el tono de la presentación «Gobierno Digital · Tres meses de gestión»: lenguaje llano, centrado en quien lee, sin perder precisión. Las reglas:
+
+- **El título dice el beneficio, no el mecanismo.** Cada bloque sigue la misma forma: una etiqueta corta en mayúsculas, el título, una frase que explica y, si hace falta, una lista breve y una línea de cierre.
+- **El término técnico se traduce en la misma frase** la primera vez que aparece. Los que se repiten van al glosario.
+- **Palabras de todos los días.** «Pedir» en vez de «consumir», «dirección» en vez de *endpoint* o URI, «revisar» en vez de «validar contra el esquema».
+- **Primera persona plural para lo que hace SUBDERE** («publicamos», «revisamos», «avisamos») y «usted» para el lector, como el resto del sitio.
+- **Las advertencias son cortas y dicen de quién depende** lo que falta.
+- **El detalle técnico se conserva, pero va después**: en tablas, en bloques de código o en un párrafo «Para quien programa» (clase `para-tecnico`). Las observaciones a los contratos del CUT y de permisos de circulación van en dos capas: primero el problema en palabras simples y después el detalle técnico.
+- **No cambian** los datos, las normas, los ejemplos, las marcas de pendiente ni lo que dice sobre qué se leyó y qué no.
+
+Antes y después:
+
+| Antes | Después |
+|---|---|
+| «Cómo se generan los Códigos Únicos Territoriales» | «Que todos los sistemas llamen igual a cada comuna» |
+| «Los códigos están declarados como número entero» | «Los códigos pueden perder el cero inicial», y debajo: «Para quien programa: los identificadores están declarados como `integer`» |
+| «En base a qué se define lo que se define» | «Detrás de cada exigencia, una ley que la respalda» |
+| «Qué revisar antes de consumir la API» | «Qué revisar antes de usar la API» |
+
+Para revisar que no se cuele jerga: `grep -rniE "endpoint|payload|consumir|schema|request" prototipos/wiki*.html`. Lo que aparezca solo puede estar en un bloque «Para quien programa» o en un nombre de archivo.
 
 ## Redacciones alternativas en discusión
 

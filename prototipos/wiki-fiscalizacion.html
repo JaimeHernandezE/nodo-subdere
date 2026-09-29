@@ -34,12 +34,16 @@
   </nav>
 </div></header>
 
+<div class="wrap wiki-layout">
+<aside class="wiki-nav" id="wiki-nav" aria-label="Menú de la wiki"><a href="wiki.html">Inicio de la wiki</a></aside>
+<main class="wiki-main" data-wiki-seccion="wiki-intercambios.html">
+
 <section style="padding-bottom:16px"><div class="wrap">
-  <p class="miga"><a href="wiki.html">Wiki</a> / Permisos de circulación</p>
+  <p class="miga"><a href="wiki.html">Wiki</a> / <a href="wiki-intercambios.html">Intercambios</a> / Permisos de circulación</p>
   <p class="eyebrow">Intercambios</p>
-  <h2>Permisos de circulación por patente</h2>
-  <p class="lead">El permiso de circulación lo cobra cada municipio y es una de sus fuentes de ingreso propias. Pero quien necesita comprobar que un vehículo lo tiene al día casi nunca es el municipio que lo cobró: es otro municipio, una institución que fiscaliza en la vía pública, o el propio dueño.</p>
-  <p class="lead">Ese desajuste —el que cobra y el que consulta no son el mismo— es lo que vuelve el permiso de circulación un buen caso de interoperabilidad, y no solo un trámite municipal más.</p>
+  <h2>Saber si un vehículo tiene su permiso al día, sin importar dónde lo pagó</h2>
+  <p class="lead">El permiso de circulación lo cobra cada municipio y es uno de sus ingresos propios. Pero quien necesita comprobar que un vehículo lo tiene al día casi nunca es el municipio que lo cobró: es otro municipio, una institución que fiscaliza en la calle, o el propio dueño.</p>
+  <p class="lead">Ese desajuste —el que cobra y el que consulta no son el mismo— es lo que hace del permiso de circulación un buen ejemplo de por qué conviene que los sistemas se hablen, y no solo un trámite municipal más.</p>
   <div class="acciones" style="margin-top:22px">
     <a class="btn btn-p" href="servicio-fiscalizacion.html">Abrir la consulta</a>
     <a class="btn btn-s" href="nodo.html?id=fiscalizacion" style="border-color:var(--line-l);color:var(--navy)">Ver la especificación</a>
@@ -48,36 +52,37 @@
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Qué se escribe en el campo</p>
-  <h2>Los dos formatos de patente, y el provisorio</h2>
-  <p class="lead">La patente es la llave de toda la consulta, así que conviene que el contrato diga exactamente qué acepta. Hay dos formatos vigentes conviviendo, más el de las patentes provisorias.</p>
+  <h2>Tres formas de patente, las tres aceptadas</h2>
+  <p class="lead">Toda la consulta parte de la patente, así que el contrato tiene que decir exactamente qué acepta. Hoy conviven dos formatos, más el de las patentes provisorias.</p>
   <div class="tabla-ancha"><table>
     <tr><th>Formato</th><th>Estructura</th><th>Ejemplo</th><th>Cuándo aparece</th></tr>
     <tr><td><strong>Antiguo</strong></td><td>Dos letras y cuatro dígitos</td><td><code>AB0251</code></td><td>Vehículos inscritos hasta el cambio de formato. Siguen circulando</td></tr>
     <tr><td><strong>Actual</strong></td><td>Cuatro letras y dos dígitos</td><td><code>BDPF18</code></td><td>Inscripciones recientes</td></tr>
     <tr><td><strong>Provisoria</strong></td><td><code>PR</code> y cuatro dígitos</td><td><code>PR0909</code></td><td>Vehículos sin inscripción definitiva, en poder de una automotora</td></tr>
   </table></div>
-  <p class="lead">En la propuesta de contrato eso queda escrito como expresión regular en el propio parámetro, así que un cliente puede validar antes de llamar y el servicio puede rechazar con un error claro en vez de un resultado vacío. Los ejemplos de la colección de referencia mostraban los tres tipos, pero sin decir en ninguna parte cuál era la regla.</p>
+  <p class="lead">Con la regla escrita en el contrato, un sistema puede revisar la patente antes de preguntar, y si está mal escrita el servicio responde con un mensaje claro en vez de una respuesta vacía. La colección de referencia traía ejemplos de los tres tipos, pero no decía en ninguna parte cuál era la regla.</p>
+  <p class="para-tecnico"><b>Para quien programa:</b> la regla queda como expresión regular en el propio parámetro.</p>
 </div></section>
 
 <section><div class="wrap">
-  <p class="eyebrow">El modelo</p>
+  <p class="eyebrow">Cómo se ordenan los datos</p>
   <h2>Un vehículo, varios permisos, una comuna por permiso</h2>
-  <p class="lead">La forma del dominio es simple y conviene no perderla de vista, porque es lo que ordena el contrato.</p>
+  <p class="lead">La forma de los datos es simple, y conviene tenerla presente porque es lo que ordena el contrato.</p>
   <div class="cols-3">
     <div class="card">
       <div class="num">01</div>
       <h3>El vehículo no cambia</h3>
-      <p>Marca, modelo, color, año y tipo están asociados a la patente y no al permiso. Por eso son una operación aparte: quien solo quiere identificar el vehículo no necesita traerse todo el historial de pagos.</p>
+      <p>Marca, modelo, color, año y tipo van con la patente, no con el permiso. Por eso se piden por separado: quien solo quiere identificar el vehículo no necesita traerse todo el historial de pagos.</p>
     </div>
     <div class="card">
       <div class="num">02</div>
       <h3>El permiso es anual y puede cambiar de comuna</h3>
-      <p>Cada año se paga un permiso, y no necesariamente en la misma comuna: el dueño puede cambiar de domicilio. El historial muestra esa migración, que es información relevante para el propio municipio.</p>
+      <p>Cada año se paga un permiso, y no necesariamente en la misma comuna: el dueño puede cambiarse de domicilio. El historial muestra esos cambios, que le sirven al propio municipio.</p>
     </div>
     <div class="card">
       <div class="num">03</div>
       <h3>El pago puede venir en cuotas</h3>
-      <p>Un permiso se paga en una o dos cuotas, cada una con su fecha y su medio. El estado del permiso —vigente o vencido— no se deduce de las cuotas: se declara.</p>
+      <p>Un permiso se paga en una o dos cuotas, cada una con su fecha y su medio de pago. Si el permiso está vigente o vencido no se calcula a partir de las cuotas: viene dicho.</p>
     </div>
   </div>
 </div></section>
@@ -85,58 +90,66 @@
 <section class="gris"><div class="wrap">
   <p class="eyebrow">El punto de la demostración</p>
   <h2>La comuna viaja como código, no como nombre</h2>
-  <p class="lead">En la colección de referencia la institución recaudadora venía como texto libre: <code>NUNOA</code>, <code>SAN FELIPE</code>, <code>LA REINA</code>, <code>MARCHIHUE</code>. Sin acentos, sin código, escritas a mano.</p>
-  <p class="lead">Eso obliga a cada consumidor a adivinar. <em>Nunoa</em> y <em>Ñuñoa</em> son la misma comuna para una persona y dos cadenas distintas para un programa. Y hay nombres de comuna repetidos en distintas regiones, así que ni siquiera un nombre bien escrito identifica un lugar.</p>
-  <p class="lead">En la propuesta de contrato la comuna es un objeto con su <strong>Código Único Territorial</strong> y su nombre. El código identifica; el nombre viaja solo para que la respuesta se pueda leer.</p>
-  <div class="aviso"><p>Este es el primer caso donde un estándar publicado por el Nodo se usa dentro de otro intercambio. No es un ejercicio: es la razón de tener un catálogo. Si cada servicio inventa su propia forma de nombrar una comuna, el catálogo es una lista de servicios y no un estándar. La entrada del CUT está en <a href="wiki-cut.html">cómo se generan los Códigos Únicos Territoriales</a>.</p></div>
+  <p class="lead">En la colección de referencia, la municipalidad que cobró venía escrita a mano: <code>NUNOA</code>, <code>SAN FELIPE</code>, <code>LA REINA</code>, <code>MARCHIHUE</code>. Sin tildes y sin código.</p>
+  <p class="lead">Eso obliga a cada sistema a adivinar. <em>Nunoa</em> y <em>Ñuñoa</em> son la misma comuna para una persona y dos palabras distintas para un programa. Además hay nombres de comuna repetidos en distintas regiones, así que ni siquiera un nombre bien escrito identifica un lugar.</p>
+  <p class="lead">En la propuesta de contrato, la comuna va con su <strong>Código Único Territorial</strong> y su nombre. El código identifica; el nombre va solo para que una persona pueda leer la respuesta.</p>
+  <div class="aviso"><p>Es la primera vez que un estándar publicado por el Nodo se usa dentro de otro intercambio. Esa es justamente la razón de tener un catálogo: si cada servicio inventa su propia forma de nombrar una comuna, el catálogo es una lista de servicios y no un estándar. Más en la entrada de los <a href="wiki-cut.html">Códigos Únicos Territoriales</a>.</p></div>
 </div></section>
 
 <section><div class="wrap">
   <p class="eyebrow">Qué cambió</p>
   <h2>De la colección de referencia a la propuesta de contrato</h2>
-  <p class="lead">La colección que entregó el equipo de Servicios Municipales es una exportación de las consultas que alguien hizo para probar el servicio. Sirve perfectamente para eso, y no para publicarse como estándar. Estas son las diferencias, que son también la agenda de la conversación.</p>
+  <p class="lead">La colección que entregó el equipo de Servicios Municipales es un registro de las consultas que alguien hizo para probar el servicio. Sirve muy bien para eso, pero no para publicarse como estándar. Estas son las diferencias, y también la agenda de la conversación.</p>
   <div class="tabla-ancha"><table>
-    <tr><th>En la colección de referencia</th><th>En la propuesta de contrato</th></tr>
+    <tr><th>Qué mejora</th><th>En la colección de referencia</th><th>En la propuesta de contrato</th></tr>
     <tr>
+      <td><strong>Una sola forma de preguntar por cualquier vehículo</strong></td>
       <td>La patente va dentro de la ruta: cuatro direcciones fijas, una por cada vehículo consultado</td>
       <td>La patente es un parámetro, con su formato declarado. Una sola operación sirve para cualquier vehículo</td>
     </tr>
     <tr>
+      <td><strong>Las respuestas se parecen entre sí</strong></td>
       <td>Dos envoltorios distintos: un objeto con <code>data</code> para unas operaciones, un arreglo pelado para otras</td>
       <td>Una sola forma de respuesta por tipo de recurso</td>
     </tr>
     <tr>
+      <td><strong>Cuando algo sale mal, se sabe qué fue</strong></td>
       <td>Solo se declara la respuesta correcta. No hay errores</td>
       <td>Tres errores declarados —patente inválida, sin autorización y no encontrado— con una forma común de <code>codigo</code> y <code>mensaje</code></td>
     </tr>
     <tr>
+      <td><strong>Queda claro quién puede entrar</strong></td>
       <td>Sin esquema de autenticación</td>
-      <td>Credencial de corta duración entregada por la <a class="termino" href="wiki.html#puerta-de-acceso">puerta de acceso</a>, declarada en el contrato</td>
+      <td>Credencial de corta duración entregada por la <a class="termino" href="wiki-glosario.html#puerta-de-acceso">puerta de acceso</a>, declarada en el contrato</td>
     </tr>
     <tr>
+      <td><strong>Las fechas no se malinterpretan</strong></td>
       <td>Fechas como texto en formato local</td>
       <td>Fechas ISO 8601. La conversión al formato que lee una persona la hace la pantalla, no el contrato</td>
     </tr>
     <tr>
+      <td><strong>La comuna se identifica sin adivinar</strong></td>
       <td>La comuna como nombre escrito a mano</td>
       <td>La comuna con su Código Único Territorial</td>
     </tr>
     <tr>
+      <td><strong>El contrato sirve en cualquier servidor</strong></td>
       <td>El servidor de pruebas queda escrito dentro del contrato</td>
       <td>Ruta base relativa. Dónde vive el servicio lo decide quien lo despliega</td>
     </tr>
     <tr>
+      <td><strong>No circulan datos de personas reales</strong></td>
       <td>Los ejemplos incluyen el nombre y el RUT del representante de una automotora</td>
       <td>La respuesta entrega la persona jurídica titular y no los datos de su representante. Todos los ejemplos son inventados</td>
     </tr>
   </table></div>
-  <div class="aviso"><p><b>La última fila es la que conviene resolver primero.</b> Una especificación viaja por correo, se sube a repositorios y se publica en catálogos. Los datos personales que traiga en sus ejemplos viajan con ella. Un contrato debería poder publicarse sin que nadie tenga que revisarlo antes: la única forma de lograrlo es que sus ejemplos sean inventados desde el principio.</p></div>
+  <div class="aviso"><p><b>La última fila es la que conviene resolver primero.</b> Una especificación viaja por correo, se sube a repositorios y se publica en catálogos, y los datos personales de sus ejemplos viajan con ella. Para que un contrato se pueda publicar sin que nadie tenga que revisarlo antes, sus ejemplos tienen que ser inventados desde el principio.</p></div>
 </div></section>
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Lo que falta</p>
   <h2>Preguntas para el equipo de Servicios Municipales</h2>
-  <p class="lead">La propuesta se escribió desde fuera, mirando las respuestas de ejemplo. Varias cosas no se pueden deducir de ahí y hay que preguntarlas.</p>
+  <p class="lead">Escribimos la propuesta desde fuera, mirando las respuestas de ejemplo. Hay cosas que no se pueden deducir de ahí y que tenemos que preguntar.</p>
   <ol class="lead" style="padding-left:20px">
     <li>¿Qué parte de este registro es de acceso público y qué parte exige acreditar un interés? Hoy la propuesta trata todo igual, y probablemente no corresponda.</li>
     <li>¿El servicio conoce los permisos de todos los municipios, o solo de los que usan la plataforma de Servicios Municipales? De eso depende qué significa que una patente no aparezca.</li>
@@ -146,6 +159,10 @@
   </ol>
 </div></section>
 
+</main>
+<nav class="wiki-toc" id="wiki-toc" aria-label="En esta página"></nav>
+</div>
+
 <footer><div class="wrap">
   <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
   <div class="pie-txt">
@@ -154,5 +171,6 @@
   </div>
 </div></footer>
 
+<script src="assets/wiki-nav.js"></script>
 </body>
 </html>

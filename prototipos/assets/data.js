@@ -39,6 +39,9 @@
               Sin este campo, la ficha dice «Sin monitoreo».
               La fuente principal es estado/status.json, que genera un
               monitor externo; ver estado/status.example.json.
+     wiki     dirección de la entrada del intercambio en la wiki. El índice
+              wiki-intercambios.html se arma con este campo; un nodo visible
+              sin él aparece como «Entrada pendiente».
 
    Campos opcionales, presentes solo cuando el nodo ya tiene contrato publicado:
      espec    { archivo?, formato, validador, registrada, procedencia, acceso, expuesto? }
@@ -155,6 +158,7 @@ const NODOS = [
     clase: "intercambio",
     actualizado: "2026-09-27",
     acceso_tipo: "credencial",
+    wiki: "wiki-fiscalizacion.html",
     sandbox: { script: "assets/fiscalizacion-demo.js" },
     funcion: "Consultar el permiso de circulación de un vehículo a partir de su patente: el vehículo, los permisos pagados por año y la institución que los recaudó.",
     descripcion: "El permiso de circulación lo cobra cada municipio, pero quien necesita comprobarlo casi nunca es el municipio que lo cobró: es otro municipio, un control policial, o el propio dueño del vehículo. Este intercambio la resuelve con una consulta por patente que devuelve el vehículo, sus permisos y quién los recaudó, identificando a la institución por su Código Único Territorial.",
@@ -198,6 +202,7 @@ const NODOS = [
     clase: "intercambio",
     actualizado: "2026-09-15",
     acceso_tipo: "abierto",
+    wiki: "wiki-cut.html",
     monitoreo: { alcance: "interno" },
     funcion: "Regiones, provincias y comunas con su Código Único Territorial, para que todos los sistemas llamen igual a cada lugar.",
     descripcion: "Casi cualquier intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se está hablando. Si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien. Este nodo entrega la lista oficial vigente, con el código que le corresponde a cada lugar.",
@@ -312,7 +317,7 @@ const AMBITOS = ["SGM", "Transversal"];
 
 /* ---------------------------------------------------------------------
    TERMINOS — conceptos del sitio que tienen definición en el glosario
-   de la wiki (wiki.html#<id>).
+   de la wiki (wiki-glosario.html#<id>).
 
    En los textos de NODOS se marcan así:
      [[id]]              muestra `nombre` y lo enlaza a su definición
@@ -327,10 +332,62 @@ const AMBITOS = ["SGM", "Transversal"];
    Al definir el nombre basta con cambiarlo aquí y en el glosario.
    --------------------------------------------------------------------- */
 const TERMINOS = {
+  "api": {
+    nombre: "API",
+    wiki: "wiki-glosario.html#api"
+  },
+  "aplicacion": {
+    nombre: "aplicación",
+    wiki: "wiki-glosario.html#aplicacion"
+  },
+  "clave-unica": {
+    nombre: "Clave Única",
+    wiki: "wiki-glosario.html#clave-unica"
+  },
+  "comprobante": {
+    nombre: "comprobante",
+    wiki: "wiki-glosario.html#comprobante"
+  },
+  "credencial": {
+    nombre: "credencial",
+    wiki: "wiki-glosario.html#credencial"
+  },
+  "estandar": {
+    nombre: "estándar",
+    alias: ["contrato", "especificación"],
+    wiki: "wiki-glosario.html#estandar"
+  },
+  "nodo": {
+    nombre: "nodo",
+    wiki: "wiki-glosario.html#nodo"
+  },
+  "procedencia": {
+    nombre: "procedencia",
+    wiki: "wiki-glosario.html#procedencia"
+  },
   "puerta-de-acceso": {
     nombre: "puerta de acceso",
     provisional: true,
     alias: ["Plataforma de Control"],
-    wiki: "wiki.html#puerta-de-acceso"
+    wiki: "wiki-glosario.html#puerta-de-acceso"
+  },
+  "servicio": {
+    nombre: "servicio",
+    wiki: "wiki-glosario.html#servicio"
+  },
+  "sgm": {
+    nombre: "SGM",
+    alias: ["Sistema de Gestión Municipal"],
+    wiki: "wiki-glosario.html#sgm"
+  },
+  "terminos-y-condiciones": {
+    nombre: "Términos y Condiciones",
+    alias: ["Uso de Términos y Condiciones"],
+    wiki: "wiki-glosario.html#terminos-y-condiciones"
+  },
+  "zona-de-practica": {
+    nombre: "zona de práctica",
+    alias: ["sandbox"],
+    wiki: "wiki-glosario.html#zona-de-practica"
   }
 };
