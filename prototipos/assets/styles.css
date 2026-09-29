@@ -146,6 +146,81 @@ p{color:var(--body)}
 .tag-mad{background:var(--amb-bg);color:var(--amb-md);border-color:#F6C9D1}
 .tag-dev{background:#ECFDF5;color:#065F46;border-color:#A7F3D0}
 .tag-inst{background:#fff;color:var(--muted);border-color:var(--line-l)}
+.tag-eval{background:#FFF8E6;color:#7A4B00;border-color:#F5DDA3}
+.tag-oper{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tag-contrato{background:#fff;color:var(--navy);border-color:#CFE2F1;font-family:ui-monospace,Consolas,monospace;font-size:11px}
+.tag-sin{background:#fff;color:var(--muted);border-style:dashed}
+.tag-acceso{background:#fff;color:var(--body);border-color:var(--line-l)}
+.tag-sandbox{background:var(--azul-l);color:var(--azul-d);border-color:#CFE2F1;font-weight:600}
+
+/* ---------- ficha: aplicación vinculada ---------- */
+.apps-vinculadas{display:grid;gap:12px;margin:10px 0 0}
+.app-vinculada{display:grid;grid-template-columns:1fr auto;gap:6px 18px;align-items:center;padding:16px 20px;
+  border:1px solid #CFE2F1;border-radius:10px;background:var(--azul-l);color:var(--ink);transition:border-color .15s,box-shadow .15s}
+.app-vinculada:hover{text-decoration:none;border-color:var(--azul);box-shadow:0 1px 4px rgba(15,42,71,.08)}
+.app-vinculada strong{font-family:var(--font-tit);color:var(--navy);font-size:16.5px}
+.app-vinculada p{grid-column:1;margin:0;font-size:14.5px;color:var(--body)}
+.app-vinculada__ir{grid-column:2;grid-row:1 / span 2;font-size:14px;font-weight:600;color:var(--azul);white-space:nowrap}
+@media (max-width:640px){.app-vinculada{grid-template-columns:1fr}.app-vinculada__ir{grid-column:1;grid-row:auto}}
+
+/* ---------- ficha: ambiente de pruebas ---------- */
+.sb{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;margin:14px 0 0;
+  border:1px solid var(--line-l);border-radius:10px;padding:18px;background:#fff}
+@media (max-width:760px){.sb{grid-template-columns:1fr}}
+.sb-form{display:flex;flex-direction:column;gap:6px;min-width:0}
+.sb-lbl{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:8px}
+.sb-lbl:first-child{margin-top:0}
+.sb-donde{text-transform:none;letter-spacing:0;font-weight:400}
+.sb-in{width:100%;padding:9px 11px;border:1px solid var(--line-l);border-radius:6px;font-size:14px;font-family:ui-monospace,Consolas,monospace;color:var(--ink);background:#fff}
+select.sb-in{font-family:inherit}
+.sb-in:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px var(--azul-l)}
+.sb-err{margin:0;font-size:12.5px;color:var(--rojo-d);min-height:0}
+.sb-err:empty{display:none}
+.sb-check{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--body);margin:10px 0 4px}
+.sb-form .btn{align-self:flex-start;cursor:pointer;margin-top:4px}
+.sb-salida{min-width:0}
+.sb-salida .ejemplo{margin:4px 0 12px}
+.sb-etq{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0}
+.sb-ms{text-transform:none;letter-spacing:0;font-weight:400}
+.sb-tit{margin-top:26px}
+.sb-casos td{vertical-align:top;font-size:14px}
+.sb-casos td:last-child{white-space:nowrap}
+.op-probar{margin-top:14px}
+.descargas a{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.descargas button.btn-copiar{justify-self:start;text-align:left;word-break:break-all;font-family:ui-monospace,Consolas,monospace;color:var(--azul)}
+
+/* ---------- términos del glosario ----------
+   Subrayado punteado: «esto tiene definición», distinto de un enlace de navegación. */
+a.termino{color:inherit;text-decoration:underline dotted var(--azul);text-underline-offset:3px;text-decoration-thickness:1.5px}
+a.termino:hover{color:var(--azul);text-decoration-style:solid}
+.glosario{margin:26px 0 0;display:grid;gap:16px}
+.glosario__entrada{background:#fff;border:1px solid var(--line-l);border-radius:10px;padding:20px 24px;scroll-margin-top:24px;transition:border-color .3s,box-shadow .3s}
+.glosario__entrada:target{border-color:var(--azul);box-shadow:0 0 0 3px var(--azul-l)}
+.glosario dt{font-family:var(--font-tit);font-size:19px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 6px}
+.glosario dd{margin:0}
+.glosario dd p{font-size:15.5px;margin:0 0 10px;max-width:72ch}
+.glosario dd p:last-child{margin-bottom:0}
+.glosario__alias{color:var(--muted)}
+
+/* ---------- disponibilidad ----------
+   Viene del monitoreo (estado/status.json) o de un sondeo directo, nunca de la ficha. */
+.disp{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.disp::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line-l);flex:none}
+.disp--up{color:#166534}
+.disp--up::before{background:#16A34A;box-shadow:0 0 0 3px #DCFCE7}
+.disp--degradado{color:#7A4B00}
+.disp--degradado::before{background:#D97706;box-shadow:0 0 0 3px #FEF3C7}
+.disp--caido{color:var(--rojo-d)}
+.disp--caido::before{background:var(--rojo);box-shadow:0 0 0 3px var(--amb-bg)}
+.disp--interno::before{background:var(--navy-l)}
+.disp--sin::before{background:transparent;border:1.5px solid var(--line)}
+.disp--verificando::before{background:var(--hair);animation:disp-pulso 1.2s ease-in-out infinite}
+@keyframes disp-pulso{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.disp--verificando::before{animation:none}}
+
+.nodo .pie-tarjeta{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--hair);font-size:12px;color:var(--muted)}
+.nodo .meta + .meta{margin-top:8px}
 
 /* ---------- ficha ---------- */
 .miga{font-size:13px;color:var(--muted);padding:20px 0 0}
@@ -176,6 +251,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:
 .contrato{display:grid;grid-template-columns:118px 1fr;gap:10px 18px;margin:18px 0 0;padding:18px 20px;background:var(--grey);border:1px solid var(--hair);border-radius:8px}
 .contrato dt{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700;padding-top:2px}
 .contrato dd{margin:0;font-size:14.5px;color:var(--ink)}
+.contrato .contrato-sec{grid-column:1 / -1;margin-top:8px;padding-top:14px;border-top:1px solid var(--line-l);color:var(--navy)}
 .tabla-ancha{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tabla-ancha table{min-width:420px}
 .res .tabla-ancha{max-width:100%}

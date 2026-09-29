@@ -20,8 +20,6 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> El catálogo parte con un solo intercambio, los Códigos Únicos Territoriales. No es un sitio publicado ni un compromiso institucional.</div></div>
-
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
   <nav class="nav">
@@ -37,9 +35,8 @@
 <section style="padding-bottom:18px"><div class="wrap">
   <p class="eyebrow">Catálogo de APIs</p>
   <h2>Los intercambios publicados</h2>
-  <p class="lead">Cada nodo es un intercambio en el que participa el municipio. La ficha dice qué entrega, con quién conversa, en qué estado está y —cuando ya hay contrato publicado— muestra la especificación operación por operación.</p>
-  <p class="lead">Esta es la vista para quien va a construir: cada ficha dice si ya hay contrato publicado y, cuando lo hay, muestra la especificación operación por operación. Las herramientas hechas sobre estas interfaces, para usarlas desde una pantalla y sin programar, están en el <a href="catalogo.html">catálogo de servicios</a>.</p>
-
+  <p class="lead">Cada nodo es un intercambio en el que participa el municipio. La ficha dice qué entrega, con quién conversa, en qué estado está y muestra la especificación operación por operación.</p>
+  
   <div class="filtros">
     <input class="buscador" id="q" type="search" placeholder="Buscar por nombre o institución…" aria-label="Buscar intercambios">
   </div>
@@ -51,13 +48,24 @@
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Cómo leer el estado</p>
   <h2>Contrato publicado y servicio disponible: dos estados distintos</h2>
-  <p class="lead">Son dos cosas distintas y la ficha las separa. Un contrato publicado ya sirve para diseñar y construir contra él, aunque el servicio todavía no responda desde fuera. Decir lo contrario sería la forma más rápida de que nadie vuelva a confiar en este catálogo.</p>
+  <p class="lead">Son dos cosas distintas y la ficha las separa. Un contrato publicado ya sirve para diseñar y construir contra él, aunque el servicio todavía no responda desde fuera.</p>
   <table>
     <tr><th>Estado</th><th>Qué quiere decir</th></tr>
     <tr><td><span class="tag tag-mad">Deseable</span></td><td>Alguien lo necesita y está anotado. Nadie ha revisado todavía si es viable ni ha comprometido nada.</td></tr>
-    <tr><td><span class="tag">En evaluación</span></td><td>Se está viendo qué tan difícil es hacerlo y si la institución del otro lado quiere.</td></tr>
+    <tr><td><span class="tag tag-eval">En evaluación</span></td><td>Se está evaluando la viabilidad y la necesidad del intercambio.</td></tr>
     <tr><td><span class="tag tag-dev">En desarrollo</span></td><td>Ya está escrito qué entrega y hay trabajo andando, pero todavía no se puede usar desde fuera.</td></tr>
-    <tr><td><span class="tag">Operativo</span></td><td>Funciona y hay municipios usándolo.</td></tr>
+    <tr><td><span class="tag tag-oper">Operativo</span></td><td>Funciona y hay municipios usándolo.</td></tr>
+  </table>
+
+  <h3 style="margin-top:34px">Disponibilidad</h3>
+  <p>La disponibilidad no la escribe nadie a mano: sale del monitoreo del servicio. Si un nodo no tiene monitoreo, la tarjeta lo dice en vez de suponer que está arriba.</p>
+  <table>
+    <tr><th>Indicador</th><th>Qué quiere decir</th></tr>
+    <tr><td><span class="disp disp--up">Disponible</span></td><td>El monitoreo lo encontró respondiendo en su última verificación. Al pasar el cursor se ve cuándo fue y el porcentaje de los últimos 30 días.</td></tr>
+    <tr><td><span class="disp disp--degradado">Degradado</span></td><td>Responde, pero lento o con errores en parte de las consultas.</td></tr>
+    <tr><td><span class="disp disp--caido">Caído</span></td><td>No respondió en la última verificación.</td></tr>
+    <tr><td><span class="disp disp--interno">Solo red interna</span></td><td>El servicio existe, pero solo responde dentro de la red de SUBDERE. Desde fuera no se puede usar ni medir.</td></tr>
+    <tr><td><span class="disp disp--sin">Sin monitoreo</span></td><td>No hay un servicio que medir todavía, o no está conectado al monitoreo.</td></tr>
   </table>
   <div class="aviso"><p>El catálogo parte con muy pocos intercambios a propósito. Es preferible una entrada completa —con su contrato, su pantalla y su entrada de wiki— que una lista larga de intenciones. Los siguientes se agregan cuando alcanzan ese mismo nivel.</p></div>
 </div></section>
@@ -65,12 +73,13 @@
 <footer><div class="wrap">
   <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
   <div class="pie-txt">
-    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div><b>Nodo SUBDERE</b> · Última actualización: <span id="pieFecha">septiembre de 2026</span></div>
     <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
   </div>
 </div></footer>
 
 <script src="assets/data.js"></script>
+<script src="assets/terminos.js"></script>
 <script>
 (function(){
   var grid = document.getElementById('grid');
@@ -96,6 +105,112 @@
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
+  var CLASE_MADUREZ = {
+    'Deseable': 'tag-mad',
+    'En evaluación': 'tag-eval',
+    'En desarrollo': 'tag-dev',
+    'Operativo': 'tag-oper'
+  };
+  var ACCESO = {
+    'abierto': 'Abierto',
+    'credencial': 'Con credencial',
+    'clave-unica': 'Clave Única'
+  };
+  var MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var MESES_L = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
+                 'septiembre','octubre','noviembre','diciembre'];
+
+  // Se parte el ISO a mano: new Date('AAAA-MM-DD') es UTC y en Chile retrocede un día.
+  function fecha(iso, larga){
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    if (!m) return '';
+    var mes = +m[2] - 1;
+    return larga ? (+m[3]) + ' de ' + MESES_L[mes] + ' de ' + m[1]
+                 : (+m[3]) + ' ' + MESES[mes] + ' ' + m[1];
+  }
+  function fechaHora(iso){
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.toLocaleString('es-CL', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  function contrato(n){
+    if (!n.espec || !n.espec.archivo) return '<span class="tag tag-sin">Sin contrato</span>';
+    var v = /OpenAPI\s*([\d.]+)/i.exec(n.espec.formato || '');
+    return '<span class="tag tag-contrato" title="Contrato publicado">'
+      + (v ? 'OpenAPI ' + esc(v[1]) : 'Contrato') + '</span>';
+  }
+
+  // ---------- disponibilidad ----------
+  // id → { clase, texto, detalle }. Se completa de forma asíncrona.
+  var DISP = {};
+  VISIBLES.forEach(function(n){
+    DISP[n.id] = { clase: 'verificando', texto: 'Verificando…', detalle: '' };
+  });
+
+  function disponibilidad(n){
+    var d = DISP[n.id];
+    return '<span class="disp disp--'+d.clase+'"'
+      + (d.detalle ? ' title="'+esc(d.detalle)+'"' : '')
+      + '>'+esc(d.texto)+'</span>';
+  }
+
+  var DESDE_JSON = {
+    operativo: { clase: 'up', texto: 'Disponible' },
+    degradado: { clase: 'degradado', texto: 'Degradado' },
+    caido:     { clase: 'caido', texto: 'Caído' }
+  };
+
+  function sinMonitor(n){
+    var m = n.monitoreo;
+    if (m && m.alcance === 'interno')
+      return { clase: 'interno', texto: 'Solo red interna',
+               detalle: 'Responde solo dentro de la red de SUBDERE; desde fuera no se puede medir.' };
+    return { clase: 'sin', texto: 'Sin monitoreo', detalle: 'Este nodo no está conectado al monitoreo.' };
+  }
+
+  function sondea(n){
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var t = setTimeout(function(){ if (ctl) ctl.abort(); }, 5000);
+    var inicio = Date.now();
+    return fetch(n.monitoreo.salud, { mode: 'cors', cache: 'no-store', signal: ctl && ctl.signal })
+      .then(function(r){
+        var ms = Date.now() - inicio;
+        return r.ok
+          ? { clase: 'up', texto: 'Responde', detalle: 'Sondeo directo desde este navegador: respondió en ' + ms + ' ms.' }
+          : { clase: 'caido', texto: 'Sin respuesta', detalle: 'Sondeo directo: el servicio devolvió ' + r.status + '.' };
+      })
+      .catch(function(){
+        return { clase: 'caido', texto: 'Sin respuesta', detalle: 'Sondeo directo: no respondió en 5 segundos o no permite consultas desde el navegador.' };
+      })
+      .then(function(res){ clearTimeout(t); return res; });
+  }
+
+  function resuelveDisponibilidad(){
+    return fetch('estado/status.json', { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(st){
+        var servicios = (st && st.servicios) || {};
+        VISIBLES.forEach(function(n){
+          var s = servicios[n.id];
+          var base = s && DESDE_JSON[s.estado];
+          if (!base) { DISP[n.id] = sinMonitor(n); return; }
+          var partes = [];
+          if (s.verificado) partes.push('Última verificación: ' + fechaHora(s.verificado));
+          if (typeof s.uptime30d === 'number') partes.push('Disponibilidad 30 días: ' + s.uptime30d.toFixed(2).replace('.', ',') + ' %');
+          DISP[n.id] = { clase: base.clase, texto: base.texto, detalle: partes.join(' · ') };
+        });
+      })
+      .catch(function(){
+        return Promise.all(VISIBLES.map(function(n){
+          var m = n.monitoreo;
+          if (m && m.salud && m.alcance === 'publico')
+            return sondea(n).then(function(res){ DISP[n.id] = res; });
+          DISP[n.id] = sinMonitor(n);
+        }));
+      });
+  }
+
   function tarjeta(n){
     var inst = n.instituciones.slice(0,2).map(function(i){
       return '<span class="tag tag-inst">'+esc(i)+'</span>'; }).join('');
@@ -103,13 +218,27 @@
       ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
     var claseTag = (n.clase === 'plataforma')
       ? '<span class="tag tag-plataforma">Base</span>' : '';
+    var acceso = ACCESO[n.acceso_tipo]
+      ? '<span class="tag tag-acceso"'+(n.espec && n.espec.acceso ? ' title="'+esc(textoPlano(n.espec.acceso))+'"' : '')+'>'
+        + ACCESO[n.acceso_tipo] + '</span>' : '';
+    var sandbox = n.sandbox
+      ? '<span class="tag tag-sandbox" title="La ficha tiene un ambiente de pruebas que responde con datos ficticios.">Se puede probar</span>' : '';
+    var actualizado = n.actualizado
+      ? '<span>Actualizado el <time datetime="'+esc(n.actualizado)+'">'+fecha(n.actualizado)+'</time></span>' : '<span></span>';
     return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
       + '<div class="cab"><h4>'+esc(n.nombre)+'</h4>'
-      + '<span class="'+(n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad')+'">'+esc(n.madurez)+'</span></div>'
+      + '<span class="tag '+(CLASE_MADUREZ[n.madurez] || '')+'">'+esc(n.madurez)+'</span></div>'
       + '<p class="func">'+esc(n.funcion)+'</p>'
+      + '<div class="meta">' + contrato(n) + acceso + sandbox + '</div>'
       + '<div class="meta"><span class="tag tag-ambito">'+esc(n.ambito)+'</span>'
-      + claseTag + inst + mas + '</div></a>';
+      + claseTag + inst + mas + '</div>'
+      + '<div class="pie-tarjeta">' + actualizado + disponibilidad(n) + '</div></a>';
   }
+
+  var ULTIMA = VISIBLES.reduce(function(max, n){
+    return (n.actualizado && n.actualizado > max) ? n.actualizado : max;
+  }, '');
+  if (ULTIMA) document.getElementById('pieFecha').textContent = fecha(ULTIMA, true);
 
   function slugAmb(a){
     return String(a).toLowerCase().replace(/\s+/g, '-');
@@ -140,14 +269,16 @@
           + '</div>';
       }).join('');
     }
-    conteo.textContent = lista.length === VISIBLES.length
+    conteo.textContent = (lista.length === VISIBLES.length
       ? (VISIBLES.length === 1 ? '1 intercambio en el catálogo' : VISIBLES.length + ' intercambios en el catálogo')
-      : lista.length + ' de ' + VISIBLES.length + ' intercambios';
+      : lista.length + ' de ' + VISIBLES.length + ' intercambios')
+      + (ULTIMA ? ' · catálogo actualizado el ' + fecha(ULTIMA, true) : '');
     guardaEstado();
   }
 
   q.addEventListener('input', pinta);
   pinta();
+  resuelveDisponibilidad().then(pinta);
 })();
 </script>
 </body>

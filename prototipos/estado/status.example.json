@@ -1,0 +1,11 @@
+{
+  "_comentario": "Ejemplo del formato que lee apis.html. No son datos reales. El monitor externo (Upptime, Uptime Kuma u otro) debe publicar un archivo con esta forma en estado/status.json. Las claves de 'servicios' son los id de NODOS en assets/data.js. estado: operativo | degradado | caido. uptime30d: porcentaje 0-100. Fechas en ISO 8601 con zona horaria. Un nodo ausente se muestra como 'Sin monitoreo' (o 'Solo red interna' si su monitoreo.alcance es interno).",
+  "generado": "2026-09-29T10:00:00-03:00",
+  "servicios": {
+    "cut": {
+      "estado": "operativo",
+      "uptime30d": 99.82,
+      "verificado": "2026-09-29T09:55:00-03:00"
+    }
+  }
+}

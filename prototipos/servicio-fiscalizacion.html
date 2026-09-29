@@ -20,8 +20,6 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Demostración.</b> Los datos de esta pantalla son inventados. Ninguna patente, vehículo ni empresa corresponde a un registro real.</div></div>
-
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
   <nav class="nav">
@@ -69,7 +67,7 @@
 <footer><div class="wrap">
   <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
   <div class="pie-txt">
-    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div><b>Nodo SUBDERE</b> · Última actualización: septiembre de 2026</div>
     <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
   </div>
 </div></footer>
@@ -165,7 +163,7 @@
   function pintaVehiculo(pat, r) {
     if (!r.vehiculo) {
       caja.innerHTML = '<p class="pendiente">No hay ningún vehículo inscrito con la patente <b>'
-        + esc(pat) + '</b>' + (conServicio ? '.' : ' en los datos de demostración.') + '</p>';
+        + esc(pat) + '</b>' + (conServicio ? '.' : ' en los datos de prueba.') + '</p>';
       estado.textContent = '';
       return;
     }
@@ -194,7 +192,7 @@
   function pintaProvisoria(pat, lista) {
     if (!lista || !lista.length) {
       caja.innerHTML = '<p class="pendiente">No hay permisos provisionales para <b>' + esc(pat) + '</b>'
-        + (conServicio ? '.' : ' en los datos de demostración.') + '</p>';
+        + (conServicio ? '.' : ' en los datos de prueba.') + '</p>';
       estado.textContent = '';
       return;
     }
@@ -219,14 +217,14 @@
 
     fuente.innerHTML = conServicio
       ? '<span class="fuente" data-vivo="1">Conectado al servicio</span> Las respuestas vienen de la API, en vivo.'
-      : '<span class="fuente">Datos de demostración</span> '
-        + 'Esta pantalla está funcionando con <b>cinco vehículos y dos patentes provisorias inventados</b>, '
-        + 'que viven en el propio sitio. Para probar contra un servicio real, agregue '
-        + '<code>?api=https://…</code> a la dirección de esta página.';
+      : '<span class="fuente">Datos de prueba</span> '
+        + 'Responde con <b>seis vehículos y dos patentes provisorias ficticios</b>, los mismos del '
+        + '<a href="nodo.html?id=fiscalizacion#probar">ambiente de pruebas de la API</a>. '
+        + 'Para consultar un servicio propio, agregue <code>?api=https://…</code> a la dirección de esta página.';
 
     if (!pat) {
       caja.innerHTML = '';
-      estado.textContent = conServicio ? '' : 'Pruebe con BDPF18, CHCR68, AB0251, DLYP38, KR4419 o PR0909';
+      estado.textContent = conServicio ? '' : 'Pruebe con BDPF18, CHCR68, AB0251, DLYP38, FGHJ27, KR4419 o PR0909';
       return;
     }
 

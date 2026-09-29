@@ -14,7 +14,9 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/servicio-cut.html` | Buscador de códigos territoriales |
 | `prototipos/servicio-fiscalizacion.html` | Consulta de permiso de circulación por patente |
 | `prototipos/wiki-fiscalizacion.html` | Entrada de wiki de los permisos de circulación |
-| `prototipos/assets/fiscalizacion-demo.js` | Datos inventados de la pantalla de permisos. Se borra cuando el servicio sea alcanzable |
+| `prototipos/assets/fiscalizacion-demo.js` | Datos ficticios y casos de prueba de permisos de circulación. Los usan el ambiente de pruebas de la ficha y la aplicación de consulta |
+| `prototipos/assets/cut-demo.js` | Extracto del catálogo CUT (Tarapacá, Maule y Ñuble completas, con códigos oficiales) y casos de prueba del ambiente de pruebas de su ficha |
+| `prototipos/assets/sandbox.js` | Motor del ambiente de pruebas de una ficha: ejecuta el contrato OpenAPI contra datos ficticios |
 | `prototipos/wiki.html` | **Wiki.** Índice: cómo se usan las APIs, cómo se generan los códigos y en base a qué normas |
 | `prototipos/wiki-cut.html` | Entrada de wiki de los Códigos Únicos Territoriales |
 | `prototipos/nodo.html?id=<slug>` | Ficha de un nodo. Una sola plantilla sirve a todos |
@@ -52,7 +54,9 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 | `origen` | texto | De dónde salió el nodo, para poder auditar el catálogo |
 | `nota` | texto | Advertencia destacada en la ficha, opcional |
 | `oculto` | booleano | `true` = existe en el modelo y no se lista. Ver más abajo |
-| `descargables` | lista | `{ archivo, que }` — solo demostración. Nombres y una línea de contenido. No son archivos reales ni se descargan |
+| `descargables` | lista | `{ archivo, que, url?, generar? }`. Con `url` el archivo existe y se descarga; con `generar: "sandbox"` se arma en el navegador con los datos de prueba. Sin ninguno de los dos, se lista como ejemplo |
+| `sandbox` | objeto | `{ script }`. La ficha tiene un ambiente de pruebas; `script` registra los datos y el responder. Requiere `espec.archivo` |
+| `espec.procedencia` | objeto | `{ responsable, fuente, copia, detalle, observaciones? }`. Reemplaza al texto libre `espec.origen`. `copia` es `exacta`, `instantanea`, `reconstruccion` o `sin-copia`, y dice qué relación tiene lo que muestra el catálogo con la fuente oficial. `observaciones` es `{ texto, url }` y apunta a la wiki, donde van las diferencias y las preguntas abiertas |
 | `dependencias` | lista | `{ nombre, id? }` — qué hay que tener implementado antes. `id` enlaza otra ficha; si falta, el módulo todavía no está en el catálogo |
 
 **`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: hoy, el core SGM. Sin ese campo, el core se leería como un módulo más.
@@ -85,7 +89,7 @@ El catálogo tiene **dos intercambios visibles**: los Códigos Únicos Territori
 | Nodo | Estado en el catálogo |
 |---|---|
 | `cut` — Códigos Únicos Territoriales | Visible |
-| `fiscalizacion` — Permisos de circulación por patente | Visible. Demostración |
+| `fiscalizacion` — Permisos de circulación por patente | Visible. Con ambiente de pruebas y aplicación vinculada |
 | `sgm-core` — Base común del SGM | **Oculto.** Sigue en el modelo; su ficha se alcanza por enlace directo |
 | `adquisiciones` | **Oculto**, en las mismas condiciones |
 
@@ -161,7 +165,7 @@ Se agregó como segundo caso completo el 27 de septiembre de 2026, para conversa
 
 El insumo fue `fiscalizacion_stag.yml`, una colección de consultas del equipo de Servicios Municipales exportada a OpenAPI. No es un contrato: las patentes van dentro de la ruta —cuatro direcciones fijas, una por vehículo consultado—, no hay parámetros, no hay errores declarados, no hay autenticación, hay dos envoltorios de respuesta distintos y el servidor de pruebas quedó escrito adentro.
 
-Lo que se publica en el catálogo es **una propuesta de contrato reconstruida**, no la colección. Eso está dicho en tres lugares para que nadie lo confunda: en la descripción del propio archivo YAML, en el campo `espec.origen` del nodo y en la nota de la ficha. La comparación entre una y otra es el contenido de [`wiki-fiscalizacion.html`](../prototipos/wiki-fiscalizacion.html), y es también la agenda de la conversación con Servicios Municipales.
+Lo que se publica en el catálogo es **una propuesta de contrato reconstruida**, no la colección. Eso está dicho en la descripción del propio archivo YAML, en la procedencia del nodo (`espec.procedencia.copia: "reconstruccion"`) y en la nota de la ficha, que es la única advertencia de demostración que se mantiene (ver «Ambiente de pruebas y aplicación vinculada»). La comparación entre una y otra es el contenido de [`wiki-fiscalizacion.html`](../prototipos/wiki-fiscalizacion.html), y es también la agenda de la conversación con Servicios Municipales.
 
 ### El dato personal que no viajó
 
@@ -193,7 +197,7 @@ El hero usa el gradiente oficial `#25306B → #006BB9`, con el azul empujado al 
 **Dos ajustes de accesibilidad**, porque los colores de marca están pensados para impreso:
 
 - El rojo `#FF1D3D` sobre blanco da 3,8:1 y no alcanza el mínimo para texto pequeño. Los números de las tarjetas usan `--rojo-tx` (`#D6102B`, 5,3:1). El rojo pleno se reserva para elementos gráficos —el subrayado de la página actual, el borde de los avisos— donde el mínimo no aplica.
-- La banda de «maqueta para revisión» pasó a gris neutro, para que el rojo signifique una sola cosa en el sitio.
+- La banda gris de avisos (`.alerta`) es neutra, para que el rojo signifique una sola cosa en el sitio. Desde el 29 de septiembre de 2026 ya no se usa para decir «maqueta para revisión» (ver «Marcas de maqueta, badges y disponibilidad»).
 
 Todos los pares de color del sitio se verificaron contra el mínimo 4,5:1 de la W3C, que es lo que exigen las *Recomendaciones e indicaciones para sitios web institucionales*.
 
@@ -235,6 +239,56 @@ El nombre se mantiene por continuidad con lo ya conversado con el equipo y con l
 Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, revisión previa, comprobante, credencial) ni la sección «Cómo está armado»: lo primero está en `que-es.html` y lo segundo en «Cómo leer el estado» de `apis.html`. La sección «Lo que el nodo no es» pasó a «Lo que el municipio puede esperar», con cuatro tarjetas en redacción afirmativa.
 
 `que-es.html` decía «el nodo conecta sistemas, no personas», lo que contradecía el catálogo de servicios. Quedó así: las entregas las hace el sistema del municipio, y las aplicaciones de servicios permiten probar algunas APIs desde una pantalla. No son un espejo de todo el catálogo de APIs, pero usan las mismas APIs publicadas, así que un sistema conectado obtiene los mismos resultados. No se destaca que el nodo no recibe planillas.
+
+## Marcas de maqueta, badges y disponibilidad
+
+**29 de septiembre de 2026.** El sitio se escribe como versión definitiva, así que se retiraron las marcas de maqueta, que solo le servían al equipo:
+
+- La banda «Maqueta para revisión» salió de todas las páginas. Quedan solo los avisos que le dicen algo al lector: «Estado de la ficha» en `nodo.html`, que describe el estado del contrato, y el de `wiki-fiscalizacion.html`, que explica que el contrato comentado es una propuesta.
+- El pie dice «Última actualización» en vez de «Maqueta de trabajo». En `apis.html` la fecha es la más reciente de los campos `actualizado` de los nodos visibles.
+
+**Tarjetas de `apis.html`.** Cada tarjeta muestra:
+
+- La madurez, con un color para cada uno de los cuatro estados.
+- El contrato (`OpenAPI 3.0.3` o `Sin contrato`).
+- El modo de acceso (`Abierto`, `Con credencial`, `Clave Única`).
+- `Se puede probar` cuando la ficha tiene ambiente de pruebas.
+- La fecha de la última actualización de la ficha.
+- La disponibilidad.
+
+Los campos nuevos (`actualizado`, `acceso_tipo`, `sandbox`, `monitoreo`) están documentados en la cabecera de [`data.js`](../prototipos/assets/data.js).
+
+**Disponibilidad.** Nunca se escribe a mano. La página lee `prototipos/estado/status.json`, que debe publicar un monitor externo (Upptime, Uptime Kuma u otro) con la forma de [`estado/status.example.json`](../prototipos/estado/status.example.json). Si ese archivo no existe, sondea desde el navegador los nodos que declaran `monitoreo.salud` con `alcance: "publico"`. Los demás se muestran como «Solo red interna» o «Sin monitoreo». Hoy no hay monitor ni endpoint público de salud: CUT aparece como «Solo red interna» y Permisos de circulación como «Sin monitoreo». Elegir y configurar el monitor queda pendiente.
+
+## Ambiente de pruebas y aplicación vinculada
+
+**29 de septiembre de 2026.** Quienes revisan el sitio ya saben que los datos son ficticios. Por eso la ficha de Permisos de circulación conserva una sola advertencia, la nota «Demostración» bajo «Para qué sirve», y en lugar de las demás ofrece herramientas que funcionan con esos datos.
+
+- **Probar la API.** Es una consola dentro de la ficha. Se elige una operación, se completan los parámetros y se envía; muestra la petición HTTP y la respuesta con su código y su cuerpo JSON. Todo lo que no depende de los datos lo decide el contrato: sin credencial la respuesta es 401, una patente que no calza con el `pattern` da 400, y los cuerpos de error son los ejemplos del YAML. Los parámetros de consulta se validan antes de enviar, porque el contrato no define un error para ellos. El motor está en [`sandbox.js`](../prototipos/assets/sandbox.js) y sirve para cualquier nodo: basta con declarar `sandbox.script` y registrar un `responder` que busque en los datos.
+- **Casos de prueba.** Son diez, y cada uno ejercita una situación distinta: vigente en dos cuotas, cambio de comuna, filtro `desde_anio`, formato antiguo, vencido, anulado, lista vacía, provisoria, 404, 400 y 401. Para el caso «anulado» se agregó el vehículo `FGHJ27`, que usa el estado `ANULADO` que el contrato ya declaraba.
+- **Botón por operación.** Cada operación de «Qué se le puede pedir» tiene un botón «Probar esta operación» que la carga en la consola.
+- **Descargables reales.** El YAML del contrato se descarga desde su archivo. Los datos de prueba se arman como JSON en el navegador, a partir del mismo objeto que usa la consola.
+- **Aplicaciones que la usan.** Es una sección nueva de la ficha, justo después de «Para qué sirve». Lista los servicios de `SERVICIOS` cuyo `nodo` es el de la ficha y lleva a cada aplicación. Si no hay ninguno, la sección no aparece.
+- **La aplicación de consulta** dejó la banda «Demostración». Ahora dice que responde con los datos de prueba y enlaza al ambiente de pruebas de la API.
+
+El renderizador de contratos (`openapi.js`) mostraba siempre el ejemplo derivado del esquema, aunque la respuesta trajera uno propio. Por eso el 400 aparecía con `NO_ENCONTRADO`. Ahora usa primero el ejemplo de la respuesta.
+
+**CUT.** La ficha del CUT tiene el mismo ambiente de pruebas, con [`cut-demo.js`](../prototipos/assets/cut-demo.js). Sus datos no son ficticios sino un extracto del catálogo oficial: tres regiones completas, Tarapacá, Maule (la del ejemplo del contrato) y Ñuble (la más nueva, con códigos de cinco dígitos). Lo que no está en el extracto responde 404. El contrato del CUT no pide credencial ni define una respuesta 400, así que la consola no muestra credencial y un código no numérico se detiene en el formulario en vez de enviarse. El motor aplica esa regla a cualquier contrato: un parámetro de ruta mal formado solo se envía si el contrato dice qué responde. El error 404 usa `{ "error": "No encontrada" }`, tomado de la descripción de esa respuesta, porque el contrato no trae un ejemplo. El campo opcional `abreviatura` no se incluye: el catálogo no tiene la lista oficial.
+
+La versión del contrato de permisos de circulación pasó de `0.1.0-demo` a `0.1.0`, y su descripción ya no advierte que es una demostración: dice que es una propuesta de contrato con ejemplos ficticios.
+
+## Glosario y términos enlazados
+
+**29 de septiembre de 2026.** Los conceptos que el sitio usa en más de una página se definen una sola vez, en la sección «Glosario» de `wiki.html`. Cada entrada tiene su ancla (`wiki.html#<id>`). La primera mención del término en cada bloque de texto enlaza ahí, con subrayado punteado (clase `termino`) para que no se confunda con un enlace de navegación.
+
+- **En las páginas HTML** el enlace se escribe a mano: `<a class="termino" href="wiki.html#puerta-de-acceso">…</a>`.
+- **En los textos de [`data.js`](../prototipos/assets/data.js)** se usa el marcado `[[id]]` o `[[id|texto visible]]`. Lo resuelve [`assets/terminos.js`](../prototipos/assets/terminos.js) contra el diccionario `TERMINOS`, al final de `data.js`. La ficha lo aplica a `descripcion`, `nota`, `espec.acceso`, `espec.procedencia.detalle` y `pruebas`; el catálogo lo quita en los tooltips. El texto se escapa antes de enlazar, así que `data.js` sigue sin poder inyectar HTML.
+
+Hoy hay un solo término, **puerta de acceso**, con **nombre provisional**: también se le dice Plataforma de Control (ver [`plataforma-control.md`](plataforma-control.md)). Cuando se defina el nombre, hay que cambiarlo en tres lugares:
+
+- En `TERMINOS`. Los textos de `data.js` que usan `[[puerta-de-acceso]]` sin texto propio se actualizan solos.
+- En la entrada del glosario.
+- En los enlaces escritos a mano, que hoy están en `que-es.html`, `participar.html`, `wiki.html`, `wiki-cut.html` y `wiki-fiscalizacion.html`. Para ubicarlos: `grep -rn 'puerta-de-acceso' prototipos/`.
 
 ## Redacciones alternativas en discusión
 

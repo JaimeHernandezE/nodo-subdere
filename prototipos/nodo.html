@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div class="alerta"><div class="wrap"><b>Maqueta para revisión.</b> <span id="avisoFicha">Ficha de ejemplo.</span></div></div>
+<div class="alerta"><div class="wrap"><b>Estado de la ficha.</b> <span id="avisoFicha">Ficha de ejemplo.</span></div></div>
 
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
@@ -41,14 +41,16 @@
 <footer><div class="wrap">
   <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
   <div class="pie-txt">
-    <div><b>Nodo SUBDERE</b> · Maqueta de trabajo, septiembre de 2026</div>
+    <div><b>Nodo SUBDERE</b> · Última actualización: septiembre de 2026</div>
     <div>División de Políticas y Estudios · Subsecretaría de Desarrollo Regional y Administrativo</div>
   </div>
 </div></footer>
 
 <script src="assets/js-yaml.min.js"></script>
 <script src="assets/openapi.js"></script>
+<script src="assets/sandbox.js"></script>
 <script src="assets/data.js"></script>
+<script src="assets/terminos.js"></script>
 <script>
 (function(){
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
@@ -85,7 +87,16 @@
   var tieneArchivo = !!(n.espec && n.espec.archivo);
   var tieneEspec = !!n.espec;
   var expuesto = !!(n.espec && n.espec.expuesto);
-  if (tieneArchivo && expuesto) {
+  var conSandbox = tieneArchivo && !!(n.sandbox && n.sandbox.script);
+  if (conSandbox && !expuesto) {
+    document.getElementById('avisoFicha').innerHTML =
+      'El servicio todavía no está publicado, pero el contrato se puede probar completo en el '
+      + '<a href="#probar">ambiente de pruebas</a> de esta ficha.';
+  } else if (conSandbox) {
+    document.getElementById('avisoFicha').innerHTML =
+      'Hay un servicio funcionando detrás de este contrato, pero todavía no se puede usar desde fuera. '
+      + 'Mientras tanto, se puede probar completo en el <a href="#probar">ambiente de pruebas</a> de esta ficha.';
+  } else if (tieneArchivo && expuesto) {
     document.getElementById('avisoFicha').textContent =
       'Este nodo ya dice qué entrega, y además hay un servicio funcionando detrás. Lo que todavía no está comprometido es que se pueda usar desde fuera.';
   } else if (tieneArchivo) {
@@ -101,7 +112,7 @@
 
   function pendiente(txt){ return '<div class="pendiente">' + txt + '</div>'; }
 
-  var nota = n.nota ? '<div class="aviso"><p>' + esc(n.nota) + '</p></div>' : '';
+  var nota = n.nota ? '<div class="aviso"><p>' + conTerminos(n.nota) + '</p></div>' : '';
   var clase = n.clase || 'intercambio';
   var etiquetaClase = clase === 'plataforma'
     ? '<span class="tag tag-plataforma">Base · está siempre</span> '
@@ -109,6 +120,28 @@
 
   // El estándar no se transcribe: se declara de dónde viene y, si hay archivo local, se renderiza.
   // Ver docs/adr-2026-09-estandar-legible-por-maquina.md
+  var COPIA = {
+    'exacta':         { texto: 'Copia exacta',           clase: 'tag-dev' },
+    'instantanea':    { texto: 'Instantánea',            clase: 'tag-eval' },
+    'reconstruccion': { texto: 'Propuesta reconstruida', clase: 'tag-mad' },
+    'sin-copia':      { texto: 'Sin copia en el catálogo', clase: 'tag-sin' }
+  };
+  function procedencia(p){
+    if (!p) return '';
+    var copia = COPIA[p.copia];
+    return '<dt class="contrato-sec">Procedencia</dt>'
+      + (p.responsable ? '<dt>Responsable</dt><dd>' + esc(p.responsable) + '</dd>' : '')
+      + (p.fuente ? '<dt>Fuente oficial</dt><dd>' + esc(p.fuente) + '</dd>' : '')
+      + (copia || p.detalle
+          ? '<dt>Lo que se ve acá</dt><dd>'
+            + (copia ? '<span class="tag ' + copia.clase + '">' + copia.texto + '</span> ' : '')
+            + (p.detalle ? conTerminos(p.detalle) : '') + '</dd>'
+          : '')
+      + '<dt>Observaciones</dt><dd>' + (p.observaciones
+          ? '<a href="' + esc(p.observaciones.url) + '">' + esc(p.observaciones.texto) + ' →</a>'
+          : 'Todavía no hay una entrada de wiki para este contrato.') + '</dd>';
+  }
+
   var estandar;
   if (!tieneEspec) {
     estandar = pendiente('Todavía no está escrito. Acá va a decir qué datos se intercambian, en qué forma, qué se puede pedir y qué versión rige. Se publica antes de construir nada.');
@@ -122,15 +155,18 @@
       + (tieneArchivo
           ? '<dt>Archivo</dt><dd><a href="' + esc(n.espec.archivo) + '" rel="noopener"><code>'
             + esc(n.espec.archivo.split('/').pop()) + '</code></a></dd>'
-          : '<dt>Archivo</dt><dd>Vive fuera de esta maqueta. El catálogo no guarda una copia, a propósito: así no se desactualiza. Más abajo dice dónde está.</dd>')
+          : '<dt>Archivo</dt><dd>El catálogo no guarda una copia, a propósito: así no se desactualiza. Está en la fuente oficial, indicada más abajo.</dd>')
       + '<dt>Publicado el</dt><dd>' + esc(n.espec.registrada) + '</dd>'
-      + '<dt>Quién puede usarlo</dt><dd>' + esc(n.espec.acceso) + '</dd>'
-      + '</dl>'
-      + '<div class="aviso aviso-neutro"><p>' + esc(n.espec.origen) + '</p></div>';
+      + '<dt>Quién puede usarlo</dt><dd>' + conTerminos(n.espec.acceso) + '</dd>'
+      + procedencia(n.espec.procedencia)
+      + '</dl>';
   }
 
   var operaciones;
-  if (tieneArchivo && expuesto) {
+  if (conSandbox) {
+    operaciones = '<p class="lead-op">Lo que sigue se lee del archivo registrado; el catálogo no lo edita. Cada operación se puede ejecutar en el <a href="#probar">ambiente de pruebas</a>.</p>'
+      + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
+  } else if (tieneArchivo && expuesto) {
     operaciones = '<p class="lead-op">Lo que sigue se lee del archivo original cada vez que se abre esta página. El catálogo no guarda una copia, así que no puede quedar desactualizado.</p>'
       + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
   } else if (tieneArchivo) {
@@ -143,8 +179,29 @@
   }
 
   var pruebas = n.pruebas
-    ? '<p>' + esc(n.pruebas) + '</p>'
+    ? '<p>' + conTerminos(n.pruebas) + '</p>'
     : pendiente('Todavía no existe. La idea es que cualquiera pueda practicar acá con datos inventados, sin aceptar términos y condiciones, antes de pedir acceso de verdad.');
+  if (conSandbox) pruebas += '<div id="sandbox"><p class="sin-params">Preparando el ambiente de pruebas…</p></div>';
+
+  var MADUREZ = { 'Deseable': 'tag-mad', 'En evaluación': 'tag-eval', 'En desarrollo': 'tag-dev', 'Operativo': 'tag-oper' };
+  var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  function fechaLarga(iso){
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    return m ? (+m[3]) + ' de ' + MESES[+m[2] - 1] + ' de ' + m[1] : '';
+  }
+
+  // Las aplicaciones del catálogo de servicios construidas sobre este nodo.
+  var apps = (typeof SERVICIOS !== 'undefined' ? SERVICIOS : []).filter(function(s){ return s.nodo === n.id; });
+  var aplicaciones = apps.length
+    ? '<h2>Aplicaciones que la usan</h2>'
+      + '<p>Para usar este intercambio a través de una aplicación.</p>'
+      + '<div class="apps-vinculadas">' + apps.map(function(s){
+          return '<a class="app-vinculada" href="' + esc(s.url) + '">'
+            + '<strong>' + esc(s.nombre) + '</strong>'
+            + '<span class="app-vinculada__ir">Abrir la aplicación →</span>'
+            + '<p>' + esc(s.funcion) + '</p></a>';
+        }).join('') + '</div>'
+    : '';
 
   var listaDep = n.dependencias || [];
   var dependencias = '<h2>Depende de</h2>'
@@ -161,12 +218,22 @@
       : '<p>No declara dependencias de otros módulos.</p>');
 
   var listaDesc = n.descargables || [];
+  var deEjemplo = listaDesc.filter(function(d){ return !d.url && !d.generar; }).length;
   var descargables = '<aside class="panel">'
     + '<p class="panel-tit">Descargables</p>'
-    + '<p class="nota-ej"><strong>Son de ejemplo.</strong> Ninguno se descarga todavía.</p>'
+    + (deEjemplo === listaDesc.length && deEjemplo
+        ? '<p class="nota-ej"><strong>Son de ejemplo.</strong> Ninguno se descarga todavía.</p>'
+        : deEjemplo
+          ? '<p class="nota-ej">Los que aparecen sin enlace son de ejemplo y todavía no se descargan.</p>'
+          : '')
     + (listaDesc.length
-      ? '<ul class="descargas">' + listaDesc.map(function(d){
-          return '<li><code>' + esc(d.archivo) + '</code><span>' + esc(d.que) + '</span></li>';
+      ? '<ul class="descargas">' + listaDesc.map(function(d, i){
+          var nombre = d.url
+            ? '<a href="' + esc(d.url) + '" download>' + esc(d.archivo) + '</a>'
+            : d.generar === 'sandbox'
+              ? '<button type="button" class="btn-copiar" data-generar="' + i + '">' + esc(d.archivo) + '</button>'
+              : '<code>' + esc(d.archivo) + '</code>';
+          return '<li>' + nombre + '<span>' + esc(d.que) + '</span></li>';
         }).join('') + '</ul>'
       : '<p class="nota-ej">Este nodo todavía no tiene archivos de ejemplo.</p>')
     + '</aside>';
@@ -180,37 +247,91 @@
     + '</div>'
 
     + '<div class="ficha-grid"><div>'
-    + '<h2>Para qué sirve</h2><p>' + esc(n.descripcion) + '</p>'
+    + '<h2>Para qué sirve</h2><p>' + conTerminos(n.descripcion) + '</p>'
     + nota
+    + aplicaciones
     + '<h2>Qué entrega, y en qué forma</h2>' + estandar
     + dependencias
     + '<h2>Qué se le puede pedir</h2>' + operaciones
-    + '<h2>Dónde practicar</h2>' + pruebas
+    + '<h2 id="probar">' + (conSandbox ? 'Probar la API' : 'Dónde practicar') + '</h2>' + pruebas
     + '</div>'
 
     + '<div class="ficha-lado"><aside class="panel"><dl>'
     + '<dt>Tipo</dt><dd>' + (clase === 'plataforma'
         ? 'Base — está siempre, no se elige'
         : 'Intercambio — el municipio entrega o pregunta') + '</dd>'
-    + '<dt>En qué estado está</dt><dd><span class="' + (n.madurez === 'En desarrollo' ? 'tag tag-dev' : 'tag tag-mad') + '">' + esc(n.madurez) + '</span></dd>'
+    + '<dt>En qué estado está</dt><dd><span class="tag ' + (MADUREZ[n.madurez] || '') + '">' + esc(n.madurez) + '</span></dd>'
     + '<dt>¿Es viable?</dt><dd>' + esc(n.factibilidad) + '</dd>'
     + '<dt>En qué dirección va</dt><dd>' + esc(n.intercambio) + '</dd>'
     + '<dt>Quiénes participan</dt><dd><ul>'
     + n.instituciones.map(function(i){ return '<li>' + esc(i) + '</li>'; }).join('')
     + '</ul></dd>'
     + '<dt>De dónde salió</dt><dd>' + esc(n.origen) + '</dd>'
-    + '<dt>Revisado por última vez</dt><dd>15 de septiembre de 2026</dd>'
+    + (n.actualizado ? '<dt>Actualizado por última vez</dt><dd>' + fechaLarga(n.actualizado) + '</dd>' : '')
     + '</dl></aside>'
     + descargables
     + '</div></div></div>';
 
+  // La ficha se arma después de cargar la página: el navegador no alcanza a saltar al ancla solo.
+  function vaAlAncla(){
+    var el = location.hash && document.getElementById(location.hash.slice(1));
+    if (el) el.scrollIntoView();
+  }
+  vaAlAncla();
+
   if (!tieneArchivo) return;
+
+  // El script del ambiente de pruebas se carga solo en las fichas que lo declaran.
+  var sandboxListo = !conSandbox ? Promise.resolve(null) : new Promise(function(ok, falla){
+    var s = document.createElement('script');
+    s.src = n.sandbox.script;
+    s.onload = function(){ ok(Sandbox.config(n.id)); };
+    s.onerror = function(){ falla(new Error('no se pudo cargar ' + n.sandbox.script)); };
+    document.body.appendChild(s);
+  });
+
+  Array.prototype.forEach.call(cont.querySelectorAll('[data-generar]'), function(b){
+    b.addEventListener('click', function(){
+      sandboxListo.then(function(cfg){ if (cfg) Sandbox.descargaDatos(cfg); });
+    });
+  });
+
+  function montaSandbox(doc){
+    return sandboxListo.then(function(cfg){
+      var caja = document.getElementById('sandbox');
+      if (!cfg) { caja.innerHTML = pendiente('El ambiente de pruebas no está disponible en este momento.'); return; }
+      var consola = Sandbox.monta(caja, doc, cfg);
+      if (!consola) return;
+      // Un botón por operación del contrato, que la carga en la consola.
+      Array.prototype.forEach.call(document.querySelectorAll('#ops details.op'), function(d){
+        var ruta = d.querySelector('.ruta').textContent;
+        if (consola.rutas.indexOf(ruta) < 0) return;
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn-copiar op-probar';
+        b.textContent = 'Probar esta operación';
+        b.addEventListener('click', function(){
+          consola.selecciona(ruta);
+          document.getElementById('probar').scrollIntoView({ behavior: 'smooth' });
+        });
+        d.querySelector('.op-cuerpo').appendChild(b);
+      });
+    }).catch(function(e){
+      document.getElementById('sandbox').innerHTML = pendiente('El ambiente de pruebas no se pudo cargar (' + esc(e.message) + ').');
+    });
+  }
 
   var destino = document.getElementById('ops');
   fetch(n.espec.archivo)
     .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-    .then(function(txt){ destino.innerHTML = OpenAPI.render(jsyaml.load(txt)); })
+    .then(function(txt){
+      var doc = jsyaml.load(txt);
+      destino.innerHTML = OpenAPI.render(doc);
+      return (conSandbox ? montaSandbox(doc) : Promise.resolve()).then(vaAlAncla);
+    })
     .catch(function(e){
+      var sb = document.getElementById('sandbox');
+      if (sb) sb.innerHTML = pendiente('El ambiente de pruebas necesita leer el contrato, y no se pudo.');
       destino.innerHTML = '<div class="pendiente">'
         + 'No se pudo leer la especificación (' + esc(e.message) + ').<br><br>'
         + 'Si abriste la página con doble clic, es esperable: el navegador no deja que un '

@@ -96,7 +96,9 @@ var OpenAPI = (function () {
     var respuestas = Object.keys(o.op.responses || {}).map(function (codigo) {
       var r = deref(doc, o.op.responses[codigo]);
       var media = r.content && (r.content['application/json'] || r.content[Object.keys(r.content)[0]]);
-      var ej = media ? ejemplo(doc, media.schema) : null;
+      var ej = !media ? null
+        : media.example !== undefined ? media.example
+        : ejemplo(doc, media.schema);
       var claseCodigo = codigo.charAt(0) === '2' ? 'rc-ok' : 'rc-err';
       return '<div class="respuesta">'
         + '<div class="rc"><span class="codigo ' + claseCodigo + '">' + esc(codigo) + '</span>'

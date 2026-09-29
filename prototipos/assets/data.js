@@ -23,21 +23,53 @@
      oculto   true = el nodo existe en el modelo pero no aparece en los
               listados. Su ficha sigue siendo alcanzable por enlace directo.
               Se usa para lo que está en preparación y todavía no se muestra.
+     actualizado  fecha ISO (AAAA-MM-DD) del último cambio de la ficha. No es
+              la fecha de registro del contrato (espec.registrada).
+     acceso_tipo  abierto | credencial | clave-unica — resumen del modo de
+              acceso, para el badge. El detalle sigue en espec.acceso.
+     sandbox  { script } — la ficha tiene un ambiente de pruebas que ejecuta el
+              contrato con datos ficticios. `script` registra los datos y el
+              responder con Sandbox.registra(id, …); ver assets/sandbox.js.
+              Requiere espec.archivo: las operaciones salen del contrato.
+     monitoreo    { salud?, alcance } — de dónde sale la disponibilidad.
+              alcance  publico | interno
+              salud    URL que responde si el servicio está arriba. Solo se
+                       anota si existe; el catálogo no la inventa. Se sondea
+                       desde el navegador únicamente si alcance = publico.
+              Sin este campo, la ficha dice «Sin monitoreo».
+              La fuente principal es estado/status.json, que genera un
+              monitor externo; ver estado/status.example.json.
 
    Campos opcionales, presentes solo cuando el nodo ya tiene contrato publicado:
-     espec    { archivo?, formato, validador, registrada, origen, acceso, expuesto? }
+     espec    { archivo?, formato, validador, registrada, procedencia, acceso, expuesto? }
      pruebas  texto
 
-   descargables  lista de { archivo, que } — solo demostración; no son archivos reales
+   espec.procedencia — de dónde viene el contrato y cuánto se le puede creer:
+     responsable    quién responde por el contrato
+     fuente         dónde está la versión que rige
+     copia          exacta | instantanea | reconstruccion | sin-copia
+                    qué relación tiene lo que muestra el catálogo con la fuente
+     detalle        una frase que precisa `copia`
+     observaciones  { texto, url }? — dónde están las diferencias y las preguntas
+                    abiertas. Van en la wiki, no en el contrato.
+
+   descargables  lista de { archivo, que, url?, generar? }
+                url      el archivo existe y se descarga desde ahí
+                generar  "sandbox" = se arma en el navegador con los datos de prueba
+                Sin url ni generar, la ficha lo lista como ejemplo, sin descarga.
    dependencias lista de { nombre, id? } — qué hay que tener implementado antes.
                 id apunta a otra ficha del catálogo; si falta, todavía no está publicado
 
    `espec.archivo` es opcional. Si existe, la ficha lo lee y lo renderiza.
    `espec.expuesto` distingue contrato registrado de servicio alcanzable.
-   Si solo hay metadato (formato, origen, acceso), la ficha lo muestra sin
+   Si solo hay metadato (formato, procedencia, acceso), la ficha lo muestra sin
    transcribir operaciones. Ver docs/adr-2026-09-estandar-legible-por-maquina.md.
 
-   Cuando faltan, la ficha muestra el bloque «Pendiente» correspondiente. */
+   Cuando faltan, la ficha muestra el bloque «Pendiente» correspondiente.
+
+   Los textos (descripcion, nota, espec.acceso, procedencia.detalle, pruebas) pueden
+   enlazar un término del glosario con [[id]] o [[id|texto]]. Ver TERMINOS
+   al final del archivo. */
 
 const NODOS = [
   {
@@ -46,8 +78,10 @@ const NODOS = [
     nombre: "Base común del SGM",
     ambito: "SGM",
     clase: "plataforma",
+    actualizado: "2026-09-15",
+    acceso_tipo: "clave-unica",
     funcion: "Lo que todo módulo del SGM necesita por debajo: quién es quién, qué puede hacer cada uno, y el registro de lo que se hizo.",
-    descripcion: "No es un módulo que el municipio decida usar: es lo que está debajo de todos. Se ocupa de entrar con Clave Única, de saber qué puede hacer cada funcionario, de mantener separados los datos de cada municipio, de guardar los parámetros que fija la norma, de dejar registro de cada acto y de conectar con Mercado Público, la firma electrónica y los documentos. Un municipio que use solamente Adquisiciones igual está usando esto. No hay que confundirlo con la puerta de entrada del nodo, que es otra cosa: esta es la base del sistema, aquella controla quién llama.",
+    descripcion: "No es un módulo que el municipio decida usar: es lo que está debajo de todos. Se ocupa de entrar con Clave Única, de saber qué puede hacer cada funcionario, de mantener separados los datos de cada municipio, de guardar los parámetros que fija la norma, de dejar registro de cada acto y de conectar con Mercado Público, la firma electrónica y los documentos. Un municipio que use solamente Adquisiciones igual está usando esto. No hay que confundirlo con la [[puerta-de-acceso|puerta de entrada del nodo]], que es otra cosa: esta es la base del sistema, aquella controla quién llama.",
     instituciones: ["SUBDERE — SGM", "Municipios", "Proveedores de sistemas de gestión municipal"],
     intercambio: "Transversal",
     madurez: "En desarrollo",
@@ -58,8 +92,13 @@ const NODOS = [
       formato: "Descripción funcional; la versión técnica final está pendiente",
       validador: "https://spec.openapis.org/oas/v3.1.0",
       registrada: "15 de septiembre de 2026",
-      origen: "Está descrito en la documentación de arquitectura del SGM, dentro del repositorio del proyecto. El catálogo no guarda una copia.",
-      acceso: "Dos caminos: las personas entran con Clave Única y los sistemas con una credencial propia. Los dos pasan por la misma puerta."
+      procedencia: {
+        responsable: "SUBDERE — SGM",
+        fuente: "Documentación de arquitectura del SGM, en el repositorio del proyecto",
+        copia: "sin-copia",
+        detalle: "El catálogo no guarda una copia: la descripción se consulta en su fuente."
+      },
+      acceso: "Dos caminos: las personas entran con Clave Única y los sistemas con una credencial propia. Los dos pasan por la [[puerta-de-acceso|misma puerta]]."
     },
     pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md en el corpus de licitación).",
     descargables: [
@@ -73,8 +112,10 @@ const NODOS = [
     nombre: "Adquisiciones",
     ambito: "SGM",
     clase: "intercambio",
+    actualizado: "2026-09-16",
+    acceso_tipo: "clave-unica",
     funcion: "Todo el ciclo de una compra municipal, desde que alguien la pide hasta que se paga.",
-    descripcion: "Es el primer módulo del SGM que entra al catálogo. Cubre las modalidades de compra de la Ley 19.886 —Compra Ágil primero, y después Convenio Marco, Licitación Pública y Trato Directo—, todas descritas en el mismo lugar. La pantalla del propio SGM y el sistema de un municipio piden exactamente lo mismo y entran por la misma puerta: nadie tiene un camino privilegiado. Eso sí, «solo Adquisiciones» no viene solo: se apoya en la base común y necesita saber si hay presupuesto y cómo se contabiliza.",
+    descripcion: "Es el primer módulo del SGM que entra al catálogo. Cubre las modalidades de compra de la Ley 19.886 —Compra Ágil primero, y después Convenio Marco, Licitación Pública y Trato Directo—, todas descritas en el mismo lugar. La pantalla del propio SGM y el sistema de un municipio piden exactamente lo mismo y entran por la [[puerta-de-acceso|misma puerta]]: nadie tiene un camino privilegiado. Eso sí, «solo Adquisiciones» no viene solo: se apoya en la base común y necesita saber si hay presupuesto y cómo se contabiliza.",
     instituciones: ["SUBDERE — SGM", "Municipios", "Proveedores de sistemas de gestión municipal", "ChileCompra / Mercado Público"],
     intercambio: "El municipio consulta",
     madurez: "En desarrollo",
@@ -92,8 +133,13 @@ const NODOS = [
       validador: "https://spec.openapis.org/oas/v3.1.0",
       registrada: "16 de septiembre de 2026",
       expuesto: false,
-      origen: "Copia armada a partir de la descripción del módulo de Adquisiciones (versión 0.1.0), que en la documentación del SGM está repartida en varios archivos. La fuente vigente está en sgm-docs/modulos/adquisiciones/openapi/adquisiciones.openapi.yaml, en el repositorio del SGM. Si esa descripción cambia, hay que volver a armar esta copia: el catálogo no la edita.",
-      acceso: "Dos caminos: las personas entran con Clave Única desde la pantalla del SGM, y los sistemas con una credencial propia. Los dos pasan por la misma puerta, sin atajos."
+      procedencia: {
+        responsable: "SUBDERE — SGM",
+        fuente: "sgm-docs/modulos/adquisiciones/openapi/adquisiciones.openapi.yaml, en el repositorio del SGM",
+        copia: "instantanea",
+        detalle: "Armada con la versión 0.1.0, que en la documentación del SGM está repartida en varios archivos. Si la fuente cambia, hay que volver a armarla: el catálogo no la edita."
+      },
+      acceso: "Dos caminos: las personas entran con Clave Única desde la pantalla del SGM, y los sistemas con una credencial propia. Los dos pasan por la [[puerta-de-acceso|misma puerta]], sin atajos."
     },
     pruebas: "Todavía no hay ambiente de pruebas. El sandbox previsto es el de SGM (sandbox-desarrolladores.md), con el mismo contrato que en producción.",
     descargables: [
@@ -107,8 +153,11 @@ const NODOS = [
     nombre: "Permisos de circulación por patente",
     ambito: "Transversal",
     clase: "intercambio",
+    actualizado: "2026-09-27",
+    acceso_tipo: "credencial",
+    sandbox: { script: "assets/fiscalizacion-demo.js" },
     funcion: "Consultar el permiso de circulación de un vehículo a partir de su patente: el vehículo, los permisos pagados por año y la institución que los recaudó.",
-    descripcion: "El permiso de circulación lo cobra cada municipio, pero quien necesita comprobarlo casi nunca es el municipio que lo cobró: es otro municipio, una policía en un control, o el propio dueño del vehículo. Hoy esa comprobación depende de a quién se le pregunte. Este intercambio la resuelve con una consulta por patente que devuelve el vehículo, sus permisos y quién los recaudó, identificando a la institución por su Código Único Territorial y no por el nombre escrito a mano.",
+    descripcion: "El permiso de circulación lo cobra cada municipio, pero quien necesita comprobarlo casi nunca es el municipio que lo cobró: es otro municipio, un control policial, o el propio dueño del vehículo. Este intercambio la resuelve con una consulta por patente que devuelve el vehículo, sus permisos y quién los recaudó, identificando a la institución por su Código Único Territorial.",
     instituciones: [
       "SUBDERE — SEM",
       "Municipios",
@@ -121,20 +170,35 @@ const NODOS = [
     nota: "Demostración. La especificación que se publica acá es una propuesta reconstruida para mostrar qué forma tendría este intercambio como estándar, no el contrato del servicio. No hay compromiso de disponibilidad ni de contenido, y los datos de la pantalla son inventados.",
     espec: {
       archivo: "estandares/fiscalizacion.openapi.yaml",
-      formato: "OpenAPI 3.0.3 — propuesta de contrato, escrita para esta demostración",
+      formato: "OpenAPI 3.0.3 — propuesta de contrato",
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "27 de septiembre de 2026",
       expuesto: false,
-      origen: "La escribió el equipo del Nodo SUBDERE a partir de una colección de referencia de Servicios Municipales. No es el contrato publicado del servicio: es una propuesta de cómo se vería publicado. Las diferencias respecto de la colección de origen están en la wiki.",
-      acceso: "Credencial de corta duración entregada por la puerta de acceso. A diferencia de los códigos territoriales, acá circulan datos de un vehículo y de su titular, así que la consulta queda registrada."
+      procedencia: {
+        responsable: "Equipo del Nodo SUBDERE, mientras Servicios Municipales no publique el contrato",
+        fuente: "Colección de referencia del equipo de Servicios Municipales de SUBDERE, septiembre de 2026",
+        copia: "reconstruccion",
+        detalle: "Propuesta de cómo se vería el contrato publicado, escrita a partir de la colección. No es la colección ni el contrato del servicio.",
+        observaciones: { texto: "Diferencias con la colección y preguntas para el equipo que opera el servicio", url: "wiki-fiscalizacion.html" }
+      },
+      acceso: "Credencial de corta duración entregada por la [[puerta-de-acceso]]. A diferencia de los códigos territoriales, acá circulan datos de un vehículo y de su titular, así que la consulta queda registrada."
     },
-    pruebas: "No hay ambiente de pruebas. La pantalla de demostración funciona con datos inventados que viven en el propio sitio, y se descarta apenas el servicio sea alcanzable."
+    pruebas: "Las tres operaciones responden aquí mismo, con un conjunto fijo de vehículos ficticios. Las validaciones y los errores son los del contrato: una patente mal escrita devuelve 400, una que no existe devuelve 404 y una consulta sin credencial devuelve 401. La credencial de prueba viene puesta.",
+    descargables: [
+      { archivo: "fiscalizacion.openapi.yaml", url: "estandares/fiscalizacion.openapi.yaml",
+        que: "El contrato en el formato que lee una máquina. Se importa tal cual en Postman, Insomnia o un generador de clientes." },
+      { archivo: "fiscalizacion.datos-prueba.json", generar: "sandbox",
+        que: "Todos los vehículos y permisos del ambiente de pruebas, para montar un simulador propio o escribir pruebas automáticas." }
+    ]
   },
   {
     id: "cut",
     nombre: "Códigos Únicos Territoriales (CUT)",
     ambito: "Transversal",
     clase: "intercambio",
+    actualizado: "2026-09-15",
+    acceso_tipo: "abierto",
+    monitoreo: { alcance: "interno" },
     funcion: "Regiones, provincias y comunas con su Código Único Territorial, para que todos los sistemas llamen igual a cada lugar.",
     descripcion: "Casi cualquier intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se está hablando. Si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien. Este nodo entrega la lista oficial vigente, con el código que le corresponde a cada lugar. Conviene que sea el primero justamente porque casi todos los demás lo necesitan.",
     instituciones: ["SUBDERE — SEM", "Municipios", "Proveedores de sistemas de gestión municipal"],
@@ -149,13 +213,21 @@ const NODOS = [
       formato: "OpenAPI 3.0.3 — el formato estándar para describir un servicio web",
       validador: "https://spec.openapis.org/oas/v3.0.3",
       registrada: "15 de septiembre de 2026",
-      origen: "Especificación de referencia entregada por Juan Helo, septiembre de 2026. Este archivo es una copia exacta, sin ningún cambio: el catálogo no la edita. Las observaciones sobre el contrato están en la wiki, no aquí.",
+      procedencia: {
+        responsable: "SUBDERE — SEM",
+        fuente: "Especificación de referencia entregada por Juan Helo, septiembre de 2026",
+        copia: "exacta",
+        detalle: "Sin ningún cambio: el catálogo no la edita.",
+        observaciones: { texto: "Observaciones sobre el contrato", url: "wiki-cut.html" }
+      },
       acceso: "Sin credencial. Son datos públicos y solo se consultan, así que cualquiera puede construir y probar contra esto sin aceptar términos y condiciones."
     },
-    pruebas: "Todavía no hay ambiente de pruebas abierto: el servicio responde solo dentro de la red de SEM. Exponerlo es el requisito para que un tercero pueda construir contra el estándar sin el Uso de Términos y Condiciones y sin datos reales, que es lo que este nodo debería demostrar antes que ningún otro.",
+    sandbox: { script: "assets/cut-demo.js" },
+    pruebas: "Todas las operaciones responden aquí mismo, sin credencial, con un extracto del catálogo: tres regiones completas (Tarapacá, Maule y Ñuble) con sus provincias y comunas. Los códigos son los oficiales; lo que no está en el extracto responde 404. El servicio real sigue respondiendo solo dentro de la red de SEM.",
     descargables: [
-      { archivo: "cut-operaciones.pdf", que: "Listado de ejemplo de las consultas: regiones, provincias y comunas, y qué devuelve cada una." },
-      { archivo: "cut.openapi.yaml", que: "Descripción de ejemplo de esas consultas. Es la copia de la especificación de referencia, no un archivo nuevo." }
+      { archivo: "cut.openapi.yaml", url: "estandares/cut.openapi.yaml", que: "El contrato en el formato que lee una máquina. Es la copia exacta de la especificación de referencia." },
+      { archivo: "cut.datos-prueba.json", generar: "sandbox", que: "Las regiones, provincias y comunas del ambiente de pruebas, para montar un simulador propio o escribir pruebas automáticas." },
+      { archivo: "cut-operaciones.pdf", que: "Listado de ejemplo de las consultas: regiones, provincias y comunas, y qué devuelve cada una." }
     ]
   },
 ];
@@ -191,7 +263,7 @@ const SERVICIOS = [
       "Consultar una patente provisoria de automotora"
     ],
     estado: "En construcción",
-    nota: "Pantalla de demostración, con datos inventados."
+    nota: "Responde con los mismos datos de prueba que el ambiente de pruebas de la API."
   },
   {
     id: "buscador-cut",
@@ -210,3 +282,29 @@ const SERVICIOS = [
 ];
 
 const AMBITOS = ["SGM", "Transversal"];
+
+
+/* ---------------------------------------------------------------------
+   TERMINOS — conceptos del sitio que tienen definición en el glosario
+   de la wiki (wiki.html#<id>).
+
+   En los textos de NODOS se marcan así:
+     [[id]]              muestra `nombre` y lo enlaza a su definición
+     [[id|texto]]        muestra `texto` y lo enlaza a su definición
+   Solo la primera mención de cada campo. Lo resuelve assets/terminos.js.
+
+   Campos:
+     nombre       cómo se escribe el término en minúscula, dentro de una frase
+     provisional  true = el nombre todavía no está definido
+     alias        otros nombres con que se le conoce
+     wiki         dirección de la entrada del glosario
+   Al definir el nombre basta con cambiarlo aquí y en el glosario.
+   --------------------------------------------------------------------- */
+const TERMINOS = {
+  "puerta-de-acceso": {
+    nombre: "puerta de acceso",
+    provisional: true,
+    alias: ["Plataforma de Control"],
+    wiki: "wiki.html#puerta-de-acceso"
+  }
+};

@@ -2,21 +2,17 @@ openapi: 3.0.3
 
 info:
   title: Permisos de circulación — consulta por patente
-  version: 0.1.0-demo
+  version: 0.1.0
   description: |
     Consulta del permiso de circulación de un vehículo a partir de su patente:
     los datos del vehículo, los permisos pagados por año y la institución que
     los recaudó.
 
-    **Esta especificación es una propuesta reconstruida para demostración.**
-    No es el contrato publicado del servicio. Se escribió a partir de una
-    colección de referencia del equipo de Servicios Municipales para mostrar
-    qué forma tendría este intercambio si se publicara como estándar. Las
-    diferencias respecto de esa colección están documentadas en la wiki del
-    Nodo SUBDERE y no en este archivo.
+    Propuesta de contrato escrita por el equipo del Nodo SUBDERE a partir de
+    una colección de referencia de Servicios Municipales. Las diferencias con
+    esa colección están en la wiki del Nodo SUBDERE, no en este archivo.
 
-    Los ejemplos usan datos inventados. Ningún vehículo, patente, empresa ni
-    persona de este documento corresponde a un registro real.
+    Los ejemplos usan datos ficticios.
 
 servers:
   - url: /api/bum/v1
