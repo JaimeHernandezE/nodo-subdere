@@ -34,9 +34,8 @@
 
 <section style="padding-bottom:18px"><div class="wrap">
   <p class="eyebrow">Catálogo de servicios</p>
-  <h2>Aplicaciones al alcance de cualquier funcionario</h2>
-  <p class="lead">Un servicio es una pantalla construida sobre una o más APIs del catálogo, que resuelve una tarea concreta. No hay que instalar nada ni escribir código: se entra, se busca y se usa.</p>
-  <p class="lead">Es la contracara del <a href="apis.html">catálogo de APIs</a>. Aquel dice qué se puede consumir desde un sistema; este dice qué se puede hacer hoy desde una pantalla. Cada servicio indica sobre qué API está construido, porque quien lo necesite dentro de su propio sistema va a querer llegar a lo mismo por la interfaz.</p>
+  <h2>Aplicaciones al alcance de cualquier usuario</h2>
+  <p class="lead">Cada servicio es una pantalla que resuelve una tarea concreta, sin instalar nada ni escribir código. Además, cada uno está construido sobre una API del <a href="apis.html">catálogo de APIs</a> y la indica, para quien quiera hacer lo mismo desde su propio sistema.</p>
 
   <div class="filtros">
     <input class="buscador" id="q" type="search" placeholder="Buscar un servicio o una tarea…" aria-label="Buscar servicios">
@@ -47,10 +46,10 @@
 </div></section>
 
 <section class="gris"><div class="wrap">
-  <p class="eyebrow">Cómo crece</p>
-  <h2>Cómo va a crecer la lista</h2>
-  <p class="lead">Un servicio solo puede existir cuando la API sobre la que se apoya ya entrega algo. Hoy una sola del catálogo está en ese punto, así que hay un solo servicio. No es una lista incompleta: es el estado real, y va a crecer al ritmo del otro catálogo.</p>
-  <p class="lead">La regla que ordena esto: <strong>el servicio no tiene atajos.</strong> Consume la misma interfaz pública que usaría el sistema de un municipio o el de un proveedor. Si una pantalla de SUBDERE pudiera llegar a datos que la interfaz no expone, el catálogo de APIs dejaría de describir lo que de verdad se puede construir.</p>
+  <p class="eyebrow">Cómo se construye</p>
+  <h2>Mismas reglas para todos</h2>
+  <p class="lead">Un servicio pide los datos a la misma API, y con las mismas reglas de acceso, que usa cualquier otro sistema: el de un municipio, el de un proveedor o el Sistema de Gestión Municipal (SGM) que desarrolla SUBDERE.</p>
+  <p class="lead">Así, todo lo que hace una pantalla de este catálogo lo puede hacer también cualquier sistema que se conecte a la API, y el catálogo de APIs muestra exactamente lo que se puede construir.</p>
   <table>
     <tr><th>Estado</th><th>Qué quiere decir</th></tr>
     <tr><td><span class="tag tag-mad">Deseable</span></td><td>Se sabe que hace falta y está anotado. Todavía no hay nada construido.</td></tr>
@@ -88,7 +87,6 @@
   }
 
   function tarjeta(s) {
-    var n = nodoDe(s.nodo);
     var tagEstado = s.estado === 'En construcción' ? 'tag tag-dev'
                   : s.estado === 'Disponible' ? 'tag' : 'tag tag-mad';
     var tareas = (s.tareas || []).map(function (t) {
@@ -99,9 +97,7 @@
       + '<span class="' + tagEstado + '">' + esc(s.estado) + '</span></div>'
       + '<p class="func">' + esc(s.funcion) + '</p>'
       + (tareas ? '<ul class="tareas">' + tareas + '</ul>' : '')
-      + '<div class="meta">'
-      + (n ? '<span class="tag tag-ambito">Sobre la API de ' + esc(n.nombre) + '</span>' : '')
-      + '</div></a>';
+      + '</a>';
   }
 
   function pinta() {

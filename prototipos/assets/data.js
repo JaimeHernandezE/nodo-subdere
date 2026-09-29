@@ -241,14 +241,24 @@ const NODOS = [
    Se listan aparte porque responden a otra pregunta: el catálogo de APIs
    dice qué se puede consumir; este dice qué se puede usar hoy.
 
-   Campos:
-     id       slug de la URL
-     nombre   cómo se llama la herramienta, no el nodo del que consume
-     nodo     id del nodo de APIs sobre el que está construida
-     url      página del servicio dentro de este sitio
-     tareas   qué resuelve, en frases que el usuario reconozca
-     estado   Disponible | En construcción | Deseable
-     nota     advertencia destacada, opcional
+   Campos (la plantilla de la página los pinta con assets/servicio.js;
+   el detalle de cada sección está en docs/plantillas.md):
+     id             slug; la página lo declara en <main data-servicio="…">
+     nombre         cómo se llama la herramienta, no el nodo del que consume
+     nodo           id del nodo de APIs sobre el que está construida
+     url            página del servicio dentro de este sitio
+     funcion        una línea, para la tarjeta del catálogo
+     descripcion    párrafo de entrada de la página
+     tareas         qué resuelve, en frases que el usuario reconozca
+     estado         Disponible | En construcción | Deseable
+     actualizado    fecha ISO de la última revisión de la ficha
+     fuentes_intro  frase antes de la tabla de fuentes, opcional
+     fuentes        [{ dato, origen }] — qué institución genera cada dato
+     wiki           { texto, url }? — entrada de la wiki. Si falta, se usa
+                    procedencia.observaciones del nodo
+     nota           advertencia destacada bajo la descripción, opcional.
+                    Lo que depende de la conexión (datos de prueba o en
+                    vivo) lo dice la propia pantalla, no este campo.
    --------------------------------------------------------------------- */
 const SERVICIOS = [
   {
@@ -257,13 +267,22 @@ const SERVICIOS = [
     nodo: "fiscalizacion",
     url: "servicio-fiscalizacion.html",
     funcion: "Escribir una patente y ver si el vehículo tiene su permiso de circulación al día, en qué comuna se pagó y cuánto.",
+    descripcion: "Escriba la patente de un vehículo para ver si su permiso de circulación está vigente, en qué comuna se pagó y cuánto. Sirve también para patentes provisorias de automotora.",
     tareas: [
       "Comprobar si un vehículo tiene el permiso vigente",
       "Ver el historial de permisos por año y su institución recaudadora",
       "Consultar una patente provisoria de automotora"
     ],
     estado: "En construcción",
-    nota: "Responde con los mismos datos de prueba que el ambiente de pruebas de la API."
+    actualizado: "2026-09-29",
+    fuentes_intro: "La pantalla reúne en una sola consulta información que nace en instituciones distintas.",
+    fuentes: [
+      { dato: "La patente y los datos del vehículo", origen: "Registro Civil, que asigna la patente e inscribe el vehículo" },
+      { dato: "El permiso de circulación y sus pagos", origen: "La municipalidad que lo cobró, que puede cambiar de un año a otro" },
+      { dato: "Los permisos de una patente provisoria", origen: "La municipalidad que los emitió a la automotora" },
+      { dato: "La consulta que junta todo lo anterior", origen: "Servicio del equipo de Servicios Municipales de SUBDERE" }
+    ],
+    wiki: { texto: "Permisos de circulación", url: "wiki-fiscalizacion.html" }
   },
   {
     id: "buscador-cut",
@@ -271,13 +290,20 @@ const SERVICIOS = [
     nodo: "cut",
     url: "servicio-cut.html",
     funcion: "Buscar el Código Único Territorial de una comuna, provincia o región, o averiguar a qué lugar corresponde un código.",
+    descripcion: "Escriba el nombre de una comuna, provincia o región para obtener su Código Único Territorial. O escriba un código para ver a qué lugar corresponde. Funciona en las dos direcciones con el mismo campo.",
     tareas: [
       "Escribir el nombre de una comuna y obtener su código",
       "Escribir un código y ver a qué comuna, provincia y región corresponde",
       "Copiar el código en su forma canónica, con los ceros a la izquierda"
     ],
     estado: "En construcción",
-    nota: "Consulta la API del CUT. Mientras el servicio no esté alcanzable desde fuera de la red de SUBDERE, la pantalla funciona con una muestra de demostración y lo dice en pantalla."
+    actualizado: "2026-09-29",
+    fuentes_intro: "La lista es una sola y oficial mantenida por SUBDERE.",
+    fuentes: [
+      { dato: "Los códigos y los nombres de regiones, provincias y comunas", origen: "SUBDERE, que mantiene el Código Único Territorial (versión 2018)" },
+      { dato: "La consulta que los entrega", origen: "Servicio del equipo SEM de SUBDERE" }
+    ],
+    wiki: { texto: "Códigos Únicos Territoriales", url: "wiki-cut.html" }
   }
 ];
 

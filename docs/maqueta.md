@@ -16,6 +16,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/wiki-fiscalizacion.html` | Entrada de wiki de los permisos de circulación |
 | `prototipos/assets/fiscalizacion-demo.js` | Datos ficticios y casos de prueba de permisos de circulación. Los usan el ambiente de pruebas de la ficha y la aplicación de consulta |
 | `prototipos/assets/cut-demo.js` | Extracto del catálogo CUT (Tarapacá, Maule y Ñuble completas, con códigos oficiales) y casos de prueba del ambiente de pruebas de su ficha |
+| `prototipos/assets/servicio.js` | Plantilla de la página de un servicio: arma cabecera, fuentes y panel lateral desde `SERVICIOS`. Ver [`plantillas.md`](plantillas.md) |
 | `prototipos/assets/sandbox.js` | Motor del ambiente de pruebas de una ficha: ejecuta el contrato OpenAPI contra datos ficticios |
 | `prototipos/wiki.html` | **Wiki.** Índice: cómo se usan las APIs, cómo se generan los códigos y en base a qué normas |
 | `prototipos/wiki-cut.html` | Entrada de wiki de los Códigos Únicos Territoriales |
@@ -37,7 +38,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 
 ## El modelo del catálogo
 
-`prototipos/assets/data.js` es la maqueta del modelo. Los campos:
+`prototipos/assets/data.js` es la maqueta del modelo. Cómo usan estos campos las plantillas de API y de servicio, y qué edita el mantenedor, está en [`plantillas.md`](plantillas.md). Los campos:
 
 | Campo | Tipo | Nota |
 |---|---|---|

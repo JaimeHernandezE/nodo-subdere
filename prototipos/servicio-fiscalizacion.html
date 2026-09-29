@@ -32,37 +32,21 @@
   </nav>
 </div></header>
 
-<section style="padding-bottom:10px"><div class="wrap">
-  <p class="miga"><a href="catalogo.html">Servicios</a> / Consulta de permiso de circulación</p>
-  <p class="eyebrow">Servicio</p>
-  <h2>Consulta de permiso de circulación</h2>
-  <p class="lead">Escriba la patente de un vehículo para ver si su permiso de circulación está vigente, en qué comuna se pagó y cuánto. Sirve también para patentes provisorias de automotora.</p>
-
+<main data-servicio="consulta-permiso-circulacion">
+<div id="herramienta">
   <div style="margin-top:22px">
     <label for="b" class="eyebrow" style="display:block;margin-bottom:8px">Patente</label>
     <input class="buscar-grande" id="b" type="search" autocomplete="off" spellcheck="false"
            style="text-transform:uppercase;letter-spacing:2px;max-width:340px"
            placeholder="BDPF18" aria-describedby="pista">
-    <p class="pista" id="pista">Sin guiones ni puntos. Admite los dos formatos: dos letras y cuatro dígitos, o cuatro letras y dos dígitos. Para una provisoria, <code>PR</code> y cuatro dígitos.</p>
+    <p class="pista" id="pista">Sin guiones ni puntos. Para una provisoria, <code>PR</code> y cuatro dígitos.</p>
+    <p class="pista" id="ejemplos" hidden></p>
   </div>
 
   <p class="conteo" id="estado"></p>
   <div id="res" aria-live="polite"></div>
-</div></section>
-
-<section class="gris"><div class="wrap">
-  <p class="eyebrow">De dónde salen estos datos</p>
-  <h2>La pantalla no tiene una base propia</h2>
-  <p class="lead">Este servicio consulta la <a href="nodo.html?id=fiscalizacion">API de permisos de circulación</a> por la misma interfaz pública que usaría el sistema de un municipio o el de una institución que fiscaliza. No tiene acceso privilegiado ni una copia paralela del registro.</p>
-  <p class="lead" id="estado-fuente"></p>
-  <div class="tabla-ancha"><table>
-    <tr><th>Qué consulta</th><th>Operación de la API</th></tr>
-    <tr><td>Los datos del vehículo</td><td><code>GET /vehiculos/{patente}</code></td></tr>
-    <tr><td>Sus permisos por año, con la comuna que los recaudó</td><td><code>GET /vehiculos/{patente}/permisos</code></td></tr>
-    <tr><td>Los permisos de una patente provisoria</td><td><code>GET /permisos-provisionales/{patente}</code></td></tr>
-  </table></div>
-  <div class="aviso"><p><b>La comuna viaja como código, no como nombre.</b> Cada permiso identifica a la institución recaudadora con su Código Único Territorial —<code>13101</code>, no <code>SANTIAGO</code>—, que es lo que permite cruzar esta información con cualquier otra del Estado sin adivinar. Es el <a href="wiki-cut.html">estándar del CUT</a> usado por otro intercambio, que es exactamente para lo que existe. La entrada de wiki de este servicio, con lo que cambió respecto de la colección de referencia, está en <a href="wiki-fiscalizacion.html">permisos de circulación</a>.</p></div>
-</div></section>
+</div>
+</main>
 
 <footer><div class="wrap">
   <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
@@ -72,6 +56,9 @@
   </div>
 </div></footer>
 
+<script src="assets/data.js"></script>
+<script src="assets/terminos.js"></script>
+<script src="assets/servicio.js"></script>
 <script src="assets/fiscalizacion-demo.js"></script>
 <script>
 (function () {
@@ -216,15 +203,12 @@
     var pat = campo.value.trim().toUpperCase().replace(/[\s.\-]/g, '');
 
     fuente.innerHTML = conServicio
-      ? '<span class="fuente" data-vivo="1">Conectado al servicio</span> Las respuestas vienen de la API, en vivo.'
-      : '<span class="fuente">Datos de prueba</span> '
-        + 'Responde con <b>seis vehículos y dos patentes provisorias ficticios</b>, los mismos del '
-        + '<a href="nodo.html?id=fiscalizacion#probar">ambiente de pruebas de la API</a>. '
-        + 'Para consultar un servicio propio, agregue <code>?api=https://…</code> a la dirección de esta página.';
+      ? '<p><b>Conectado a un servicio.</b> Las respuestas vienen del servidor indicado en la dirección de esta página, en vivo.</p>'
+      : '<p><b>Los datos de esta pantalla son ficticios.</b> Ninguna patente, vehículo, pago ni empresa corresponde a un registro real.</p>';
 
     if (!pat) {
       caja.innerHTML = '';
-      estado.textContent = conServicio ? '' : 'Pruebe con BDPF18, CHCR68, AB0251, DLYP38, FGHJ27, KR4419 o PR0909';
+      estado.textContent = '';
       return;
     }
 
@@ -264,6 +248,22 @@
       history.replaceState(null, '', s ? '?' + s : location.pathname);
     }, 200);
   });
+
+  if (!conServicio) {
+    var ejemplos = document.getElementById('ejemplos');
+    var pats = ['BDPF18', 'CHCR68', 'AB0251', 'DLYP38', 'FGHJ27', 'KR4419', 'PR0909'];
+    ejemplos.innerHTML = 'Pruebe con ' + pats.map(function (p) {
+      return '<button type="button" class="ej-pat" data-pat="' + p + '">' + p + '</button>';
+    }).join(' ');
+    ejemplos.hidden = false;
+    ejemplos.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-pat]');
+      if (!b) return;
+      campo.value = b.getAttribute('data-pat');
+      campo.dispatchEvent(new Event('input'));
+      campo.focus();
+    });
+  }
 
   campo.value = params.get('p') || '';
   consulta();

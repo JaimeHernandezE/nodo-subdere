@@ -32,36 +32,26 @@
   </nav>
 </div></header>
 
-<section style="padding-bottom:10px"><div class="wrap">
-  <p class="miga"><a href="catalogo.html">Servicios</a> / Buscador de códigos territoriales</p>
-  <p class="eyebrow">Servicio</p>
-  <h2>Buscador de códigos territoriales</h2>
-  <p class="lead">Escriba el nombre de una comuna, provincia o región para obtener su Código Único Territorial. O escriba un código para ver a qué lugar corresponde. Funciona en las dos direcciones con el mismo campo.</p>
+<main data-servicio="buscador-cut">
+<div id="herramienta">
+  <div class="cut-esquema" role="img" aria-label="El código 07101 se lee así: 07 es la región del Maule, 071 la provincia de Talca y 07101 la comuna de Talca.">
+    <div class="cut-seg cut-reg"><code>07</code><b>Región</b><span>07 · Maule</span></div>
+    <div class="cut-seg cut-prov"><code>1</code><b>Provincia</b><span>071 · Talca</span></div>
+    <div class="cut-seg cut-com"><code>01</code><b>Comuna</b><span>07101 · Talca</span></div>
+  </div>
+  <p class="pista">Cada código empieza por el de su región y su provincia: dos dígitos son una región, tres una provincia y cinco una comuna. Los ceros a la izquierda son parte del código, pero si los omite igual se encuentra.</p>
 
   <div style="margin-top:22px">
     <label for="b" class="eyebrow" style="display:block;margin-bottom:8px">Comuna, provincia, región o código</label>
     <input class="buscar-grande" id="b" type="search" autocomplete="off"
-           placeholder="Talca, Maule, 13101…" aria-describedby="pista">
-    <p class="pista" id="pista">Dos dígitos se leen como región, tres como provincia y cinco como comuna. Los ceros a la izquierda son parte del código, pero si los omite igual se encuentra.</p>
+           placeholder="Talca, Maule, 13101…" aria-describedby="ejemplos">
+    <p class="pista" id="ejemplos"></p>
   </div>
 
   <p class="conteo" id="estado"></p>
   <div id="res" aria-live="polite"></div>
-</div></section>
-
-<section class="gris"><div class="wrap">
-  <p class="eyebrow">De dónde salen estos datos</p>
-  <h2>La pantalla no tiene una lista propia</h2>
-  <p class="lead">Este buscador consulta la <a href="nodo.html?id=cut">API de Códigos Únicos Territoriales</a> por la misma interfaz pública que usaría el sistema de un municipio o el de un proveedor. No tiene acceso privilegiado ni una copia paralela de la lista: si la API cambia, esta pantalla cambia con ella.</p>
-  <p class="lead" id="estado-fuente"></p>
-  <div class="tabla-ancha"><table>
-    <tr><th>Qué consulta</th><th>Operación de la API</th></tr>
-    <tr><td>La lista de regiones, provincias y comunas, al abrir la página</td><td><code>GET /regiones</code> · <code>GET /provincias</code> · <code>GET /comunas</code></td></tr>
-    <tr><td>El detalle de una comuna con su provincia y región</td><td><code>GET /comunas/{id}/full</code></td></tr>
-    <tr><td>El detalle de una provincia con su región</td><td><code>GET /provincias/{id}</code></td></tr>
-  </table></div>
-  <div class="aviso"><p><b>Un detalle que esta pantalla corrige a mano.</b> La API entrega los códigos como número entero, así que Iquique llega como <code>1101</code> y no como <code>01101</code>. Acá se muestran con sus ceros a la izquierda, que es la forma canónica. Que cada cliente tenga que rellenarlos por su cuenta es una de las observaciones al contrato: está en <a href="wiki-cut.html">la entrada de wiki del CUT</a>.</p></div>
-</div></section>
+</div>
+</main>
 
 <footer><div class="wrap">
   <div class="marca"><img src="assets/logo-subdere-blanco.png" alt="Subsecretaría de Desarrollo Regional y Administrativo · Gobierno de Chile" width="98" height="88"></div>
@@ -71,6 +61,9 @@
   </div>
 </div></footer>
 
+<script src="assets/data.js"></script>
+<script src="assets/terminos.js"></script>
+<script src="assets/servicio.js"></script>
 <script>
 (function () {
   'use strict';
@@ -265,20 +258,14 @@
     if (!datos) return;
 
     fuente.innerHTML = envivo
-      ? '<span class="fuente" data-vivo="1">Conectado al servicio</span> '
-        + 'La lista que se está buscando viene de la API, en vivo.'
-      : '<span class="fuente">Muestra de demostración</span> '
-        + 'El servicio no está alcanzable desde acá, así que la pantalla funciona con '
-        + '<b>' + MUESTRA.comunas.length + ' comunas de ejemplo</b> tomadas de los documentos '
-        + 'publicados por SUBDERE. El catálogo real tiene 346. Para probar contra un servicio '
-        + 'propio, agregue <code>?api=http://localhost:8000</code> a la dirección de esta página.';
+      ? '<p><b>Conectado al servicio.</b> La lista en que se busca viene del servicio, en vivo.</p>'
+      : '<p><b>Esta pantalla busca en una muestra de ' + MUESTRA.comunas.length + ' comunas.</b> '
+        + 'Los códigos son los oficiales, pero la lista completa tiene 346 comunas.</p>';
 
     var texto = campo.value.trim();
     if (!texto) {
       caja.innerHTML = '';
-      estado.textContent = envivo
-        ? datos.comunas.length + ' comunas disponibles para buscar'
-        : 'Muestra de demostración: ' + datos.comunas.length + ' comunas';
+      estado.textContent = envivo ? datos.comunas.length + ' comunas disponibles para buscar' : '';
       return;
     }
 
@@ -288,8 +275,8 @@
       var ayuda = /^\d+$/.test(texto)
         ? (texto.length > 5
             ? 'Ese código es demasiado largo. Son dos dígitos para una región, tres para una provincia y cinco para una comuna.'
-            : 'Ningún lugar tiene ese código' + (envivo ? '.' : ' en la muestra de demostración.'))
-        : 'Ningún lugar coincide con ese nombre' + (envivo ? '.' : ' en la muestra de demostración.');
+            : 'Ningún lugar tiene ese código' + (envivo ? '.' : ' en la muestra.'))
+        : 'Ningún lugar coincide con ese nombre' + (envivo ? '.' : ' en la muestra.');
       caja.innerHTML = '<p class="pendiente">' + ayuda + '</p>';
       estado.textContent = '';
       return;
@@ -322,6 +309,19 @@
       b.setAttribute('data-ok', '1');
       setTimeout(function () { b.textContent = antes; b.removeAttribute('data-ok'); }, 1400);
     });
+  });
+
+  var ejemplos = document.getElementById('ejemplos');
+  ejemplos.innerHTML = 'Pruebe con ' + ['Talca', 'Magallanes', 'Los Ríos', '13101', '1101', '07', '141']
+    .map(function (t) {
+      return '<button type="button" class="ej-pat" data-ej="' + esc(t) + '">' + esc(t) + '</button>';
+    }).join(' ');
+  ejemplos.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-ej]');
+    if (!b) return;
+    campo.value = b.getAttribute('data-ej');
+    campo.dispatchEvent(new Event('input'));
+    campo.focus();
   });
 
   campo.value = params.get('q') || '';
