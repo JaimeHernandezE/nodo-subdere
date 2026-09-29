@@ -272,7 +272,7 @@ const SERVICIOS = [
     nodo: "fiscalizacion",
     url: "servicio-fiscalizacion.html",
     funcion: "Escribir una patente y ver si el vehículo tiene su permiso de circulación al día, en qué comuna se pagó y cuánto.",
-    descripcion: "Escriba la patente de un vehículo para ver si su permiso de circulación está vigente, en qué comuna se pagó y cuánto. Sirve también para patentes provisorias de automotora.",
+    descripcion: "Escribe la patente de un vehículo para ver si su permiso de circulación está vigente, en qué comuna se pagó y cuánto. Sirve también para patentes provisorias de automotora.",
     tareas: [
       "Comprobar si un vehículo tiene el permiso vigente",
       "Ver el historial de permisos por año y su institución recaudadora",
@@ -295,7 +295,7 @@ const SERVICIOS = [
     nodo: "cut",
     url: "servicio-cut.html",
     funcion: "Buscar el Código Único Territorial de una comuna, provincia o región, o averiguar a qué lugar corresponde un código.",
-    descripcion: "Escriba el nombre de una comuna, provincia o región para obtener su Código Único Territorial. O escriba un código para ver a qué lugar corresponde. Funciona en las dos direcciones con el mismo campo.",
+    descripcion: "Escribe el nombre de una comuna, provincia o región para obtener su Código Único Territorial. O escribe un código para ver a qué lugar corresponde. Funciona en las dos direcciones con el mismo campo.",
     tareas: [
       "Escribir el nombre de una comuna y obtener su código",
       "Escribir un código y ver a qué comuna, provincia y región corresponde",

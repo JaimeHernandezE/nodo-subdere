@@ -90,7 +90,7 @@ var Sandbox = (function () {
       +   '<button type="button" class="btn btn-p" id="sbEnviar">Enviar</button>'
       + '</div>'
       + '<div class="sb-salida" id="sbSalida" aria-live="polite">'
-      +   '<p class="sin-params">Elija una operación y envíela, o use uno de los casos de prueba de abajo.</p>'
+      +   '<p class="sin-params">Elige una operación y envíala, o usa uno de los casos de prueba de abajo.</p>'
       + '</div>'
       + '</div>'
       + (cfg.casos && cfg.casos.length

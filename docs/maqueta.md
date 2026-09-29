@@ -328,7 +328,7 @@ Cada página nueva de la wiki necesita, además del contenido, el marco `wiki-la
 - **El título dice el beneficio, no el mecanismo.** Cada bloque sigue la misma forma: una etiqueta corta en mayúsculas, el título, una frase que explica y, si hace falta, una lista breve y una línea de cierre.
 - **El término técnico se traduce en la misma frase** la primera vez que aparece. Los que se repiten van al glosario.
 - **Palabras de todos los días.** «Pedir» en vez de «consumir», «dirección» en vez de *endpoint* o URI, «revisar» en vez de «validar contra el esquema».
-- **Primera persona plural para lo que hace SUBDERE** («publicamos», «revisamos», «avisamos») y «usted» para el lector, como el resto del sitio.
+- **Primera persona plural para lo que hace SUBDERE** («publicamos», «revisamos», «avisamos») y «tú» para el lector, en todo el sitio: «busca», «revisa», «si tu sistema cumple», «te avisamos». Se tutea solo cuando la frase le habla al lector; «su» sigue valiendo para terceros («el municipio y su sistema»).
 - **Las advertencias son cortas y dicen de quién depende** lo que falta.
 - **El detalle técnico se conserva, pero va después**: en tablas, en bloques de código o en un párrafo «Para quien programa» (clase `para-tecnico`). Las observaciones a los contratos del CUT y de permisos de circulación van en dos capas: primero el problema en palabras simples y después el detalle técnico.
 - **No cambian** los datos, las normas, los ejemplos, las marcas de pendiente ni lo que dice sobre qué se leyó y qué no.
@@ -360,16 +360,16 @@ Deliberadamente **no** va en un recuadro de advertencia: un bloque amarillo ensu
 grep -rn 'class="alt"' prototipos/
 ```
 
-Hoy hay seis:
+Hoy hay cinco:
 
 1. En la portada, tarjeta «SUBDERE se ocupa del resto del Estado»: cuánto se compromete del lado de SUBDERE hacia el resto del Estado.
 2. En la portada, tarjeta «Abierto a cualquier proveedor»: si la zona de práctica queda totalmente abierta o pide algún registro, porque hará falta seguridad y control de uso para no saturar los servidores.
 3. En `que-es.html`, sección «Qué revisa»: qué hace el nodo con lo que las municipalidades envían a otros organismos del Estado, que todavía no está levantado.
 4. En `que-es.html`, sección «Por dónde pasa todo»: «servicio» nombra dos cosas —el sistema detrás de cada API y la pestaña «Servicios», que reúne aplicaciones—. Una opción es renombrar la pestaña a «Aplicaciones».
 5. En `que-es.html`, caso C de «Casos»: cómo se avisa a las entidades conectadas cuando cambia un estándar y cuánto dura el período de gracia de la versión anterior. El compromiso de avisar con antelación y dar un período de gracia es nuevo: la nota de arquitectura del estándar legible por máquina solo dice que cada versión queda registrada y no se corrige.
-6. En `participar.html`, tarjeta «Quiero usar el nodo»: si conviene mencionar en esta etapa el uso de partes del SGM —sus motores— sin el sistema completo, que todavía no está plenamente definido.
+La primera y la tercera dependen del mismo levantamiento y se resuelven juntas. La tarjeta «Recibo información de municipios» de `participar.html` depende de ese mismo levantamiento y lo marca como pendiente.
 
-La primera y la tercera dependen del mismo levantamiento y se resuelven juntas.
+**29 de septiembre de 2026.** Salió la alternativa de `participar.html`, tarjeta «Quiero usar el nodo», sobre mencionar el uso de partes del SGM sin el sistema completo: se quitó junto con la mención a Adquisiciones, que está oculto en el catálogo. La página se reescribió con el tono de la wiki; la tabla de práctica y operación quedó solo en `que-es.html` y `wiki-conectar.html`, y el canal de contacto figura como pendiente.
 
 `que-es.html` ya no trata la relación de SUBDERE con el resto del Estado: el párrafo que la justificaba se retiró y el tema quedó en la tarjeta de la portada.
 

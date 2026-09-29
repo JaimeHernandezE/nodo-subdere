@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Consulta de permiso de circulación · Nodo SUBDERE</title>
-<meta name="description" content="Escriba una patente y vea si el vehículo tiene su permiso de circulación al día, en qué comuna se pagó y cuánto.">
+<meta name="description" content="Escribe una patente y ve si el vehículo tiene su permiso de circulación al día, en qué comuna se pagó y cuánto.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nodo SUBDERE">
@@ -232,7 +232,7 @@
 
   function error() {
     caja.innerHTML = '<p class="pendiente">No se pudo consultar el servicio. '
-      + 'Si está apuntando a un servidor propio con <code>?api=</code>, revise que esté arriba '
+      + 'Si estás apuntando a un servidor propio con <code>?api=</code>, revisa que esté arriba '
       + 'y que acepte llamadas desde este origen.</p>';
     estado.textContent = '';
   }
@@ -252,7 +252,7 @@
   if (!conServicio) {
     var ejemplos = document.getElementById('ejemplos');
     var pats = ['BDPF18', 'CHCR68', 'AB0251', 'DLYP38', 'FGHJ27', 'KR4419', 'PR0909'];
-    ejemplos.innerHTML = 'Pruebe con ' + pats.map(function (p) {
+    ejemplos.innerHTML = 'Prueba con ' + pats.map(function (p) {
       return '<button type="button" class="ej-pat" data-pat="' + p + '">' + p + '</button>';
     }).join(' ');
     ejemplos.hidden = false;

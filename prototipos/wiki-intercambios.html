@@ -114,7 +114,7 @@
 
     if (!hallados.length) {
       lista.innerHTML = '<p class="pendiente">Ningún intercambio coincide con esa búsqueda. '
-        + 'Pruebe con otra palabra o revise el <a href="apis.html">catálogo de APIs</a>.</p>';
+        + 'Prueba con otra palabra o revisa el <a href="apis.html">catálogo de APIs</a>.</p>';
     } else {
       lista.innerHTML = AMBITOS.map(function (amb) {
         var grupo = hallados.filter(function (n) { return n.ambito === amb; });

@@ -39,7 +39,7 @@
     <div class="cut-seg cut-prov"><code>1</code><b>Provincia</b><span>071 · Talca</span></div>
     <div class="cut-seg cut-com"><code>01</code><b>Comuna</b><span>07101 · Talca</span></div>
   </div>
-  <p class="pista">Cada código empieza por el de su región y su provincia: dos dígitos son una región, tres una provincia y cinco una comuna. Los ceros a la izquierda son parte del código, pero si los omite igual se encuentra.</p>
+  <p class="pista">Cada código empieza por el de su región y su provincia: dos dígitos son una región, tres una provincia y cinco una comuna. Los ceros a la izquierda son parte del código, pero si los omites igual se encuentra.</p>
 
   <div style="margin-top:22px">
     <label for="b" class="eyebrow" style="display:block;margin-bottom:8px">Comuna, provincia, región o código</label>
@@ -312,7 +312,7 @@
   });
 
   var ejemplos = document.getElementById('ejemplos');
-  ejemplos.innerHTML = 'Pruebe con ' + ['Talca', 'Magallanes', 'Los Ríos', '13101', '1101', '07', '141']
+  ejemplos.innerHTML = 'Prueba con ' + ['Talca', 'Magallanes', 'Los Ríos', '13101', '1101', '07', '141']
     .map(function (t) {
       return '<button type="button" class="ej-pat" data-ej="' + esc(t) + '">' + esc(t) + '</button>';
     }).join(' ');
