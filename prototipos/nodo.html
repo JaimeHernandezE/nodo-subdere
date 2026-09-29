@@ -164,11 +164,9 @@
 
   var operaciones;
   if (conSandbox) {
-    operaciones = '<p class="lead-op">Lo que sigue se lee del archivo registrado; el catálogo no lo edita. Cada operación se puede ejecutar en el <a href="#probar">ambiente de pruebas</a>.</p>'
-      + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
+    operaciones = '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
   } else if (tieneArchivo && expuesto) {
-    operaciones = '<p class="lead-op">Lo que sigue se lee del archivo original cada vez que se abre esta página. El catálogo no guarda una copia, así que no puede quedar desactualizado.</p>'
-      + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
+    operaciones = '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';
   } else if (tieneArchivo) {
     operaciones = '<p class="lead-op">Lo que sigue se lee del archivo registrado. Es un borrador de lo que el servicio va a ofrecer, no algo que ya se pueda pedir. El catálogo no lo edita.</p>'
       + '<div id="ops"><p class="sin-params">Leyendo la especificación…</p></div>';

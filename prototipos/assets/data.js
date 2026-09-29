@@ -200,7 +200,7 @@ const NODOS = [
     acceso_tipo: "abierto",
     monitoreo: { alcance: "interno" },
     funcion: "Regiones, provincias y comunas con su Código Único Territorial, para que todos los sistemas llamen igual a cada lugar.",
-    descripcion: "Casi cualquier intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se está hablando. Si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien. Este nodo entrega la lista oficial vigente, con el código que le corresponde a cada lugar. Conviene que sea el primero justamente porque casi todos los demás lo necesitan.",
+    descripcion: "Casi cualquier intercambio entre un municipio y una institución empieza por dejar claro de qué comuna se está hablando. Si cada sistema tiene su propia lista, con sus abreviaturas y sus nombres escritos a su manera, los datos no calzan aunque todo lo demás esté bien. Este nodo entrega la lista oficial vigente, con el código que le corresponde a cada lugar.",
     instituciones: ["SUBDERE — SEM", "Municipios", "Proveedores de sistemas de gestión municipal"],
     intercambio: "El municipio consulta",
     madurez: "En desarrollo",
