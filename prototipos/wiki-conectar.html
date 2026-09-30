@@ -41,8 +41,7 @@
   <p class="eyebrow">Usar el nodo</p>
   <h2>Conectarse sin cambiar de sistema</h2>
   <p class="lead">Al nodo no le importa quién hizo el sistema del municipio, solo que cumpla lo publicado. Aquí explicamos qué se puede hacer hoy para conectarse, qué falta y qué pasa cuando cambian las reglas.</p>
-  <p class="lead">Hay dos situaciones que conviene no mezclar: <strong>construir y practicar</strong>, que no le pide permiso a nadie, y <strong>trabajar con datos de un municipio</strong>, que sí.</p>
-</div></section>
+ </div></section>
 
 <section class="gris"><div class="wrap">
   <p class="eyebrow">Tres casos</p>
@@ -60,8 +59,8 @@
     </div>
     <div class="card">
       <div class="num num-letra">C</div>
-      <h3>Cuando cambia un estándar</h3>
-      <p>Cuando publiquemos una versión nueva de un estándar, avisaremos con antelación a quienes estén conectados, y la versión anterior seguirá funcionando un tiempo, para que cada sistema se actualice sin cortar sus entregas.</p>
+      <h3>Cuando sale una versión nueva</h3>
+      <p>Cada API informa en su propio contrato su versión, su fecha de publicación y el plazo de gracia vigente. Cuando sale una versión nueva, la anterior sigue funcionando hasta que vence ese plazo, así cada sistema sabe cuánto tiempo tiene para actualizarse sin cortar sus entregas. <a href="#versiones">Más sobre versiones</a>.</p>
     </div>
   </div>
 </div></section>
@@ -70,7 +69,7 @@
   <p class="eyebrow">Paso a paso</p>
   <h2>Qué hacer para conectar tu sistema</h2>
   <ol class="pasos">
-    <li><strong>Busca el intercambio en el <a href="apis.html">catálogo de APIs</a>.</strong> Cada tarjeta dice en qué etapa va y si está funcionando; qué significa cada etiqueta está en <a href="wiki-ficha.html">cómo leer una ficha</a>.</li>
+    <li><strong>Busca el intercambio en el <a href="apis.html">catálogo de APIs</a>.</strong> Cada tarjeta dice qué entrega, cómo se entra y si está funcionando; qué significa cada etiqueta está en <a href="wiki-ficha.html">cómo leer una ficha</a>.</li>
     <li><strong>Lee la ficha.</strong> Dice qué entrega el servicio, qué se le puede pedir, de qué otros módulos depende y cómo se entra.</li>
     <li><strong>Descarga el contrato.</strong> Es el archivo que describe qué se puede pedir y qué se recibe, en un formato que leen los programas. Se abre tal cual en herramientas de prueba como Postman o Insomnia.</li>
     <li><strong>Practica donde se pueda.</strong> Algunas fichas tienen un ambiente de pruebas que responde con datos inventados, dentro del mismo navegador.</li>
@@ -100,6 +99,7 @@
   <ul class="lead">
     <li><strong>Ninguna versión se borra ni se corrige.</strong> Si algo cambia, registramos una versión nueva.</li>
     <li><strong>Siempre se sabe cuál rige</strong>, y se puede ver qué cambió entre una y otra.</li>
+    <li><strong>La API lo dice sola.</strong> Cada API publicada informa, dentro de su propio contrato, su versión, su fecha de publicación y el plazo de gracia vigente.</li>
     <li><strong>Quienes estén conectados reciben aviso con antelación</strong>, y la versión anterior sigue funcionando durante un período de gracia.</li>
   </ul>
   <p class="pendiente">Por definir: qué cambio obliga a una versión mayor, cómo se avisa a quienes están conectados y cuánto dura el período de gracia. Es la política de versionado que la nota de arquitectura deja pendiente (X-109).</p>

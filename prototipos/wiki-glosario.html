@@ -41,134 +41,121 @@
   <p class="eyebrow">Referencia</p>
   <h2>Las palabras del nodo, explicadas una sola vez</h2>
   <p class="lead">Aquí están las palabras que usamos en más de una página. Cuando una aparece subrayada con puntos en otra parte del sitio, el enlace trae hasta aquí.</p>
-  <ul class="terminos-indice" aria-label="Términos del glosario">
-    <li><a href="#api">API</a></li>
-    <li><a href="#aplicacion">Aplicación</a></li>
-    <li><a href="#clave-unica">Clave Única</a></li>
-    <li><a href="#comprobante">Comprobante</a></li>
-    <li><a href="#credencial">Credencial</a></li>
-    <li><a href="#estandar">Estándar</a></li>
-    <li><a href="#nodo">Nodo</a></li>
-    <li><a href="#procedencia">Procedencia</a></li>
-    <li><a href="#puerta-de-acceso">Puerta de acceso</a></li>
-    <li><a href="#servicio">Servicio</a></li>
-    <li><a href="#sgm">SGM</a></li>
-    <li><a href="#terminos-y-condiciones">Términos y Condiciones</a></li>
-    <li><a href="#zona-de-practica">Zona de práctica</a></li>
-  </ul>
-  <dl class="glosario">
-    <div class="glosario__entrada" id="api">
-      <dt>API</dt>
-      <dd>
+  <div class="filtros">
+    <input class="buscador" id="q" type="search" placeholder="Buscar un término o una palabra de su definición…" aria-label="Buscar en el glosario">
+  </div>
+  <p class="conteo" id="conteo" aria-live="polite"></p>
+  <div class="glosario" id="glosario">
+    <details class="glosario__entrada" id="api">
+      <summary>API</summary>
+      <div class="glosario__def">
         <p>Una dirección en internet a la que un sistema le pide datos y recibe la respuesta al instante, sin que ninguna persona tenga que intervenir. Es la forma en que dos sistemas se hablan.</p>
         <p>El <a href="apis.html">catálogo de APIs</a> reúne las que ofrece el nodo, cada una con su ficha.</p>
         <p><a href="wiki-consumir.html">Cómo se usa una API →</a></p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="aplicacion">
-      <dt>Aplicación</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="aplicacion">
+      <summary>Aplicación</summary>
+      <div class="glosario__def">
         <p>Una pantalla del <a href="catalogo.html">catálogo de servicios</a> que resuelve una tarea concreta, sin instalar nada ni escribir código. Por ejemplo, buscar el código de una comuna o revisar el permiso de circulación de un vehículo.</p>
         <p>Cada aplicación le pide los datos a una API del catálogo, con las mismas reglas que cualquier otro sistema. Lo que hace una aplicación lo puede hacer también un sistema conectado.</p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="clave-unica">
-      <dt>Clave Única</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="clave-unica">
+      <summary>Clave Única</summary>
+      <div class="glosario__def">
         <p>La clave con la que las personas se identifican ante el Estado en internet. Es la forma en que una persona entra al nodo; los sistemas, en cambio, entran con una <a href="#credencial">credencial</a>.</p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="comprobante">
-      <dt>Comprobante</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="comprobante">
+      <summary>Comprobante</summary>
+      <div class="glosario__def">
         <p>El registro que queda cuando un municipio entrega un informe: qué se envió, cuándo, a quién y con qué versión de las reglas se revisó.</p>
         <p>Lo emite el servicio que recibe la entrega, y se consulta después en el mismo lugar para todos los intercambios.</p>
         <p><a href="wiki-recorrido.html">Ver el recorrido de una entrega →</a></p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="credencial">
-      <dt>Credencial</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="credencial">
+      <summary>Credencial</summary>
+      <div class="glosario__def">
         <p>La identificación con la que un sistema pide datos a nombre de un municipio. Con ella, el sistema le pide a la <a href="#puerta-de-acceso">puerta de acceso</a> un permiso de entrada que dura poco y se renueva cada vez.</p>
         <p>Se entrega cuando el municipio acepta los <a href="#terminos-y-condiciones">Términos y Condiciones</a> con SUBDERE. Sin ella no se trabaja con datos reales.</p>
         <p><span class="tag tag-dev">Por definir</span></p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="estandar">
-      <dt>Estándar</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="estandar">
+      <summary>Estándar</summary>
+      <div class="glosario__def">
         <p class="glosario__alias">También le decimos <strong>contrato</strong> y, en lenguaje técnico, <strong>especificación</strong>.</p>
         <p>La descripción publicada de antemano de qué se entrega o se pide en un intercambio, y en qué forma. Está escrita para que la entienda tanto una persona como un programa, y así se puede revisar automáticamente si un sistema la cumple.</p>
         <p>Cada versión queda registrada y ninguna se corrige: si algo cambia, se publica una nueva. El catálogo muestra el estándar tal como lo entregó su responsable, sin editarlo.</p>
         <p class="para-tecnico"><b>Para quien programa:</b> los intercambios por internet se describen en OpenAPI; el contenido de un informe, en JSON Schema.</p>
         <p><a href="wiki-conectar.html#versiones">Cómo cambian las versiones →</a></p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="nodo">
-      <dt>Nodo</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="nodo">
+      <summary>Nodo</summary>
+      <div class="glosario__def">
         <p>Tiene dos sentidos en el sitio:</p>
         <p><strong>El Nodo SUBDERE</strong> es el punto donde se cruzan los intercambios entre los municipios y otras instituciones. Publica el estándar de cada uno y los ofrece por una sola puerta.</p>
         <p><strong>Un nodo</strong>, en minúscula, es cada intercambio del catálogo de APIs, con su ficha. Cuando una ficha dice «este nodo», habla de ese intercambio.</p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="procedencia">
-      <dt>Procedencia</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="procedencia">
+      <summary>Procedencia</summary>
+      <div class="glosario__def">
         <p>El apartado de cada ficha que dice de dónde sale el contrato: quién responde por él, dónde está la versión que rige y si lo que muestra el catálogo es una copia exacta, una foto tomada en una fecha, una propuesta nuestra o nada más que un enlace.</p>
         <p><a href="wiki-ficha.html#procedencia">Qué significa cada etiqueta →</a></p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="puerta-de-acceso">
-      <dt>
-        Puerta de acceso
-        <span class="tag tag-mad">Nombre provisional</span>
-      </dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="puerta-de-acceso">
+      <summary>Puerta de acceso <span class="tag tag-mad">Nombre provisional</span></summary>
+      <div class="glosario__def">
         <p class="glosario__alias">También se le dice <strong>Plataforma de Control</strong>.</p>
         <p>El único camino por el que un sistema o una persona llega a una API del catálogo. Revisa quién pide, cuánto puede pedir y deja constancia.</p>
         <p>Tiene dos partes. Una sabe <strong>quién es cada municipio o sistema</strong> y le entrega un permiso temporal. La otra <strong>revisa ese permiso en cada pedido</strong>, limita cuánto se puede pedir y lo anota. Las personas entran con <a href="#clave-unica">Clave Única</a> y los sistemas con una <a href="#credencial">credencial</a> del municipio; los dos pasan por aquí, y nadie tiene atajos.</p>
         <p>No decide nada sobre el contenido: revisar lo que se envía, devolver observaciones y emitir el comprobante lo hace cada servicio. Tampoco es la base común del SGM: esa es la base del sistema, y esta controla quién entra.</p>
         <p><span class="tag tag-dev">Diseñada, no construida</span></p>
         <p><a href="wiki-recorrido.html">Ver el paso por la puerta →</a> · <a href="../docs/plataforma-control.md">Leer la nota técnica →</a></p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="servicio">
-      <dt>Servicio</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="servicio">
+      <summary>Servicio</summary>
+      <div class="glosario__def">
         <p>Tiene dos sentidos en el sitio:</p>
         <p><strong>El servicio detrás de una API</strong> es el sistema que atiende ese intercambio: revisa lo que se le envía, devuelve observaciones, recibe la entrega y emite el comprobante, o responde cuando le preguntan.</p>
         <p><strong>La pestaña «Servicios»</strong> reúne <a href="#aplicacion">aplicaciones</a>: pantallas que usan esos servicios.</p>
         <p class="pendiente">Por discutir con el equipo: una opción para evitar la confusión es renombrar la pestaña a «Aplicaciones».</p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="sgm">
-      <dt>SGM</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="sgm">
+      <summary>SGM</summary>
+      <div class="glosario__def">
         <p class="glosario__alias"><strong>Sistema de Gestión Municipal.</strong></p>
         <p>El sistema para municipios que desarrolla SUBDERE. Es el primer sistema conectado al nodo y el primero en cumplir sus estándares, así que sirve de referencia: con él comprobamos que cada estándar funciona antes de que se conecten otros.</p>
         <p>No tiene atajos: entra por la misma <a href="#puerta-de-acceso">puerta</a> que el sistema de cualquier municipio o proveedor.</p>
         <p><a href="https://jaimehernandeze.github.io/sgm-nueva-arquitectura/">Conocer el SGM →</a></p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="terminos-y-condiciones">
-      <dt>Términos y Condiciones</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="terminos-y-condiciones">
+      <summary>Términos y Condiciones</summary>
+      <div class="glosario__def">
         <p class="glosario__alias">En el sitio también aparece como <strong>Uso de Términos y Condiciones</strong>.</p>
         <p>Lo que un municipio acepta con SUBDERE para trabajar con sus datos reales a través del nodo. Al aceptarlo recibe una <a href="#credencial">credencial</a> a su nombre. Para practicar con datos inventados no hace falta.</p>
         <p><span class="tag tag-dev">Por definir</span> Todavía no está redactado.</p>
-      </dd>
-    </div>
-    <div class="glosario__entrada" id="zona-de-practica">
-      <dt>Zona de práctica</dt>
-      <dd>
+      </div>
+    </details>
+    <details class="glosario__entrada" id="zona-de-practica">
+      <summary>Zona de práctica</summary>
+      <div class="glosario__def">
         <p class="glosario__alias">En lenguaje técnico, <strong>sandbox</strong>.</p>
         <p>Un espacio con datos inventados donde cualquiera puede probar un servicio sin pedir permiso ni aceptar Términos y Condiciones. La idea es que cada servicio publicado tenga el suyo, y que responda igual que el real.</p>
         <p>No es lo mismo que el ambiente de pruebas que hoy tienen algunas fichas, como la del CUT o la de permisos de circulación: esos funcionan dentro del navegador y sirven para conocer el contrato, no para conectar un sistema.</p>
         <p><span class="tag tag-dev">Por construir</span> Todavía no existe ninguna.</p>
-      </dd>
-    </div>
-  </dl>
+      </div>
+    </details>
+  </div>
+  <p class="pendiente" id="sinResultados" hidden>Ningún término coincide con esa búsqueda.</p>
 </div></section>
 
 </main>
@@ -179,5 +166,54 @@
 <script src="assets/pie.js"></script>
 
 <script src="assets/wiki-nav.js"></script>
+<script>
+(function(){
+  var q = document.getElementById('q');
+  var conteo = document.getElementById('conteo');
+  var vacio = document.getElementById('sinResultados');
+  var entradas = Array.prototype.slice.call(document.querySelectorAll('.glosario__entrada'));
+
+  function norm(s){
+    return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+  var textos = entradas.map(function(e){ return norm(e.textContent); });
+
+  // Al buscar se abren las coincidencias; al borrar la búsqueda vuelven a cerrarse.
+  function filtra(){
+    var t = norm(q.value.trim());
+    var n = 0;
+    entradas.forEach(function(e, i){
+      var ok = !t || textos[i].indexOf(t) > -1;
+      e.hidden = !ok;
+      if (t) e.open = ok;
+      else e.open = false;
+      if (ok) n++;
+    });
+    vacio.hidden = n > 0;
+    conteo.textContent = t
+      ? n + ' de ' + entradas.length + ' términos'
+      : entradas.length + ' términos';
+  }
+
+  // Los enlaces a #termino, desde esta página o desde otra, abren la entrada.
+  function abreDestino(){
+    var id = decodeURIComponent(location.hash.slice(1));
+    var e = id && document.getElementById(id);
+    if (!e || !e.classList.contains('glosario__entrada')) return;
+    if (e.hidden) { q.value = ''; filtra(); }
+    e.open = true;
+    e.scrollIntoView({ block: 'start' });
+  }
+
+  q.addEventListener('input', filtra);
+  window.addEventListener('hashchange', abreDestino);
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest && ev.target.closest('a[href^="#"]');
+    if (a && a.getAttribute('href') === location.hash) abreDestino();
+  });
+  filtra();
+  abreDestino();
+})();
+</script>
 </body>
 </html>

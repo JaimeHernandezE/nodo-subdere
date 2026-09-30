@@ -204,13 +204,20 @@ select.sb-in{font-family:inherit}
    Subrayado punteado: «esto tiene definición», distinto de un enlace de navegación. */
 a.termino{color:inherit;text-decoration:underline dotted var(--azul);text-underline-offset:3px;text-decoration-thickness:1.5px}
 a.termino:hover{color:var(--azul);text-decoration-style:solid}
-.glosario{margin:26px 0 0;display:grid;gap:16px}
-.glosario__entrada{background:#fff;border:1px solid var(--line-l);border-radius:10px;padding:20px 24px;scroll-margin-top:24px;transition:border-color .3s,box-shadow .3s}
+.glosario{margin:16px 0 0;display:grid;gap:10px}
+.glosario__entrada{background:#fff;border:1px solid var(--line-l);border-radius:10px;scroll-margin-top:24px;transition:border-color .3s,box-shadow .3s}
+.glosario__entrada[hidden]{display:none}
 .glosario__entrada:target{border-color:var(--azul);box-shadow:0 0 0 3px var(--azul-l)}
-.glosario dt{font-family:var(--font-tit);font-size:19px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 6px}
-.glosario dd{margin:0}
-.glosario dd p{font-size:15.5px;margin:0 0 10px;max-width:72ch}
-.glosario dd p:last-child{margin-bottom:0}
+.glosario__entrada>summary{font-family:var(--font-tit);font-size:18px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:14px 22px;cursor:pointer;list-style:none}
+.glosario__entrada>summary::-webkit-details-marker{display:none}
+.glosario__entrada>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--navy-l);border-bottom:2px solid var(--navy-l);
+  transform:rotate(45deg);transition:transform .15s}
+.glosario__entrada[open]>summary::after{transform:rotate(-135deg)}
+.glosario__entrada>summary:hover{color:var(--azul-d)}
+.glosario__def{padding:0 22px 18px}
+.glosario__def p{font-size:15.5px;margin:0 0 10px;max-width:72ch}
+.glosario__def p:last-child{margin-bottom:0}
 .glosario__alias{color:var(--muted)}
 
 /* ---------- wiki: barra lateral, contenido e índice ----------
@@ -244,9 +251,6 @@ a.termino:hover{color:var(--azul);text-decoration-style:solid}
 .para-tecnico b{color:var(--body);font-weight:600}
 .nodo-enlaces{display:flex;gap:6px 16px;flex-wrap:wrap;margin:0;font-size:14px}
 .wiki-main .nodo:hover{border-color:var(--line-l);box-shadow:none}
-.terminos-indice{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:18px 0 0;padding:0}
-.terminos-indice a{display:inline-block;font-size:13.5px;padding:5px 12px;border:1px solid var(--line-l);border-radius:999px;background:#fff;color:var(--navy)}
-.terminos-indice a:hover{border-color:var(--azul);text-decoration:none}
 @media (max-width:1180px){
   .wiki-layout{grid-template-columns:220px minmax(0,1fr)}
   .wiki-toc{display:none}
