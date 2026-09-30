@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ficha de nodo · Nodo SUBDERE</title>
-<meta name="description" content="Ficha de un nodo: para qué sirve, quiénes participan, en qué estado está y qué entrega.">
+<meta name="description" content="Ficha de un nodo: para qué sirve, quiénes participan, qué entrega y cómo se usa.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nodo SUBDERE">
 <meta property="og:title" content="Ficha de nodo · Nodo SUBDERE">
-<meta property="og:description" content="Ficha de un nodo: para qué sirve, quiénes participan, en qué estado está y qué entrega.">
+<meta property="og:description" content="Ficha de un nodo: para qué sirve, quiénes participan, qué entrega y cómo se usa.">
 <meta property="og:url" content="https://jaimehernandeze.github.io/nodo-subdere/nodo.html">
 <meta property="og:image" content="https://jaimehernandeze.github.io/nodo-subdere/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -19,8 +19,6 @@
 <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-
-<div class="alerta"><div class="wrap"><b>Estado de la ficha.</b> <span id="avisoFicha">Ficha de ejemplo.</span></div></div>
 
 <header class="topbar"><div class="wrap">
   <a class="brand" href="index.html" style="color:#fff"><span>Subdere</span><b>Nodo SUBDERE</b></a>
@@ -78,32 +76,10 @@
     mg.parentNode.insertBefore(av, mg.nextSibling);
   }
 
-  // Hay contrato registrado ≠ hay servicio expuesto. Solo el CUT tiene ambos hoy.
   var tieneArchivo = !!(n.espec && n.espec.archivo);
   var tieneEspec = !!n.espec;
   var expuesto = !!(n.espec && n.espec.expuesto);
   var conSandbox = tieneArchivo && !!(n.sandbox && n.sandbox.script);
-  if (conSandbox && !expuesto) {
-    document.getElementById('avisoFicha').innerHTML =
-      'El servicio todavía no está publicado, pero el contrato se puede probar completo en el '
-      + '<a href="#probar">ambiente de pruebas</a> de esta ficha.';
-  } else if (conSandbox) {
-    document.getElementById('avisoFicha').innerHTML =
-      'Hay un servicio funcionando detrás de este contrato, pero todavía no se puede usar desde fuera. '
-      + 'Mientras tanto, se puede probar completo en el <a href="#probar">ambiente de pruebas</a> de esta ficha.';
-  } else if (tieneArchivo && expuesto) {
-    document.getElementById('avisoFicha').textContent =
-      'Este nodo ya dice qué entrega, y además hay un servicio funcionando detrás. Lo que todavía no está comprometido es que se pueda usar desde fuera.';
-  } else if (tieneArchivo) {
-    document.getElementById('avisoFicha').textContent =
-      'Este nodo ya dice qué entrega, pero es un borrador: el servicio no está funcionando y todavía no se puede practicar.';
-  } else if (tieneEspec) {
-    document.getElementById('avisoFicha').textContent =
-      'Este nodo ya dice qué entrega y en qué forma. Eso no significa que se pueda usar todavía, ni que exista dónde practicar.';
-  } else {
-    document.getElementById('avisoFicha').textContent =
-      'Ficha de ejemplo. Todavía no está escrito qué entrega este nodo ni cómo.';
-  }
 
   function pendiente(txt){ return '<div class="pendiente">' + txt + '</div>'; }
 
@@ -176,7 +152,6 @@
     : pendiente('Todavía no existe. La idea es que cualquiera pueda practicar acá con datos inventados, sin aceptar términos y condiciones, antes de pedir acceso de verdad.');
   if (conSandbox) pruebas += '<div id="sandbox"><p class="sin-params">Preparando el ambiente de pruebas…</p></div>';
 
-  var MADUREZ = { 'Deseable': 'tag-mad', 'En evaluación': 'tag-eval', 'En desarrollo': 'tag-dev', 'Operativo': 'tag-oper' };
   var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   function fechaLarga(iso){
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
@@ -253,8 +228,6 @@
     + '<dt>Tipo</dt><dd>' + (clase === 'plataforma'
         ? 'Base — está siempre, no se elige'
         : 'Intercambio — el municipio entrega o pregunta') + '</dd>'
-    + '<dt>En qué estado está</dt><dd><span class="tag ' + (MADUREZ[n.madurez] || '') + '">' + esc(n.madurez) + '</span></dd>'
-    + '<dt>¿Es viable?</dt><dd>' + esc(n.factibilidad) + '</dd>'
     + '<dt>En qué dirección va</dt><dd>' + esc(n.intercambio) + '</dd>'
     + '<dt>Quiénes participan</dt><dd><ul>'
     + n.instituciones.map(function(i){ return '<li>' + esc(i) + '</li>'; }).join('')

@@ -281,6 +281,19 @@ a.termino:hover{color:var(--azul);text-decoration-style:solid}
   margin-top:14px;padding-top:12px;border-top:1px solid var(--hair);font-size:12px;color:var(--muted)}
 .nodo .meta + .meta{margin-top:8px}
 
+/* ---------- anatomía de la tarjeta ---------- */
+.anatomia{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:36px;align-items:start;margin:26px 0 22px}
+.anatomia .nodo:hover{border-color:var(--line-l);box-shadow:none}
+.anatomia .nodo .anota{vertical-align:middle}
+.anota{display:inline-flex;align-items:center;justify-content:center;flex:none;width:20px;height:20px;border-radius:50%;
+  background:var(--navy);color:#fff;font:700 11px/1 var(--font-tit,inherit);margin-right:4px}
+.anatomia__lista{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.anatomia__lista li{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:1.6;color:var(--body)}
+.anatomia__lista li .anota{margin-top:3px}
+.anatomia__lista b{color:var(--navy)}
+.anatomia__lista .tag,.anatomia__lista .disp{vertical-align:middle}
+@media (max-width:820px){.anatomia{grid-template-columns:1fr;gap:24px}}
+
 /* ---------- ficha ---------- */
 .miga{font-size:13px;color:var(--muted);padding:20px 0 0}
 .miga a{color:var(--muted)}

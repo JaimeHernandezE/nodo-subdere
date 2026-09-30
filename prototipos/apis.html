@@ -46,11 +46,40 @@
 </div></section>
 
 <section class="gris"><div class="wrap">
-  <p class="eyebrow">Cómo leer el estado</p>
-  <h2>Contrato publicado y servicio disponible: dos estados distintos</h2>
-  <p class="lead">Son dos cosas distintas y la ficha las separa. Un contrato publicado ya sirve para diseñar y construir contra él, aunque el servicio todavía no responda desde fuera.</p>
-  <p class="lead">Qué quiere decir cada etiqueta —la etapa, la disponibilidad, de dónde sale el contrato y cómo se entra— está explicado en la wiki: <a href="wiki-ficha.html">cómo leer una ficha</a>.</p>
-  <div class="aviso"><p>El catálogo parte con muy pocos intercambios a propósito. Es preferible una entrada completa —con su contrato, su pantalla y su entrada de wiki— que una lista larga de intenciones. Los siguientes se agregan cuando alcanzan ese mismo nivel.</p></div>
+  <p class="eyebrow">Cómo leer una tarjeta</p>
+  <h2>Qué dice cada parte de la tarjeta</h2>
+  <div class="anatomia">
+    <div class="nodo" aria-hidden="true">
+      <div class="cab"><h4><span class="anota">1</span> Nombre del intercambio</h4></div>
+      <p class="func"><span class="anota">2</span> Qué entrega el intercambio, en una frase.</p>
+      <div class="meta"><span class="anota">3</span>
+        <span class="tag tag-contrato">OpenAPI 3.1</span>
+        <span class="tag tag-acceso">Con credencial</span>
+        <span class="tag tag-sandbox">Se puede probar</span>
+      </div>
+      <div class="pie-tarjeta">
+        <span><span class="anota">4</span> Actualizado el 15 sep 2026</span>
+        <span><span class="disp disp--up">Disponible</span> <span class="anota">5</span></span>
+      </div>
+    </div>
+    <ol class="anatomia__lista">
+      <li><span class="anota">1</span><div><b>Nombre del intercambio.</b> Lleva a la ficha completa.</div></li>
+      <li><span class="anota">2</span><div><b>Qué entrega.</b> La función del intercambio, dicha en una frase.</div></li>
+      <li><span class="anota">3</span><div><b>Contrato, acceso y pruebas.</b>
+        <span class="tag tag-contrato">OpenAPI</span> es el formato del contrato: la descripción de qué se puede pedir y qué se recibe.
+        La siguiente etiqueta dice cómo se entra: <span class="tag tag-acceso">Abierto</span>, <span class="tag tag-acceso">Con credencial</span> o <span class="tag tag-acceso">Clave Única</span>.
+        <span class="tag tag-sandbox">Se puede probar</span> indica que la ficha tiene un ambiente de pruebas con datos ficticios.</div></li>
+      <li><span class="anota">4</span><div><b>Fecha de actualización.</b> Es el último cambio de la ficha. No es la fecha del contrato ni la del servicio.</div></li>
+      <li><span class="anota">5</span><div><b>Disponibilidad.</b> La mide un monitor, no la escribimos a mano.
+        <span class="disp disp--up">Disponible</span> respondió en la última revisión;
+        <span class="disp disp--degradado">Degradado</span> responde lento o con errores;
+        <span class="disp disp--caido">Caído</span> no respondió;
+        <span class="disp disp--interno">Solo red interna</span> responde solo dentro de la red de SUBDERE;
+        <span class="disp disp--sin">Sin monitoreo</span> no está conectado al monitor.
+        Al pasar el cursor se ve cuándo fue la última revisión y qué porcentaje del tiempo funcionó en los últimos 30 días.</div></li>
+    </ol>
+  </div>
+  <p class="lead">El detalle de procedencia del contrato y de cada modo de acceso está en la wiki: <a href="wiki-ficha.html">cómo leer una ficha</a>.</p>
 </div></section>
 
 <footer id="pie"></footer>
@@ -83,12 +112,6 @@
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
-  var CLASE_MADUREZ = {
-    'Deseable': 'tag-mad',
-    'En evaluación': 'tag-eval',
-    'En desarrollo': 'tag-dev',
-    'Operativo': 'tag-oper'
-  };
   var ACCESO = {
     'abierto': 'Abierto',
     'credencial': 'Con credencial',
@@ -190,12 +213,6 @@
   }
 
   function tarjeta(n){
-    var inst = n.instituciones.slice(0,2).map(function(i){
-      return '<span class="tag tag-inst">'+esc(i)+'</span>'; }).join('');
-    var mas = n.instituciones.length > 2
-      ? '<span class="tag tag-inst">+'+(n.instituciones.length-2)+'</span>' : '';
-    var claseTag = (n.clase === 'plataforma')
-      ? '<span class="tag tag-plataforma">Base</span>' : '';
     var acceso = ACCESO[n.acceso_tipo]
       ? '<span class="tag tag-acceso"'+(n.espec && n.espec.acceso ? ' title="'+esc(textoPlano(n.espec.acceso))+'"' : '')+'>'
         + ACCESO[n.acceso_tipo] + '</span>' : '';
@@ -204,12 +221,9 @@
     var actualizado = n.actualizado
       ? '<span>Actualizado el <time datetime="'+esc(n.actualizado)+'">'+fecha(n.actualizado)+'</time></span>' : '<span></span>';
     return '<a class="nodo" href="nodo.html?id='+esc(n.id)+'">'
-      + '<div class="cab"><h4>'+esc(n.nombre)+'</h4>'
-      + '<span class="tag '+(CLASE_MADUREZ[n.madurez] || '')+'">'+esc(n.madurez)+'</span></div>'
+      + '<div class="cab"><h4>'+esc(n.nombre)+'</h4></div>'
       + '<p class="func">'+esc(n.funcion)+'</p>'
       + '<div class="meta">' + contrato(n) + acceso + sandbox + '</div>'
-      + '<div class="meta"><span class="tag tag-ambito">'+esc(n.ambito)+'</span>'
-      + claseTag + inst + mas + '</div>'
       + '<div class="pie-tarjeta">' + actualizado + disponibilidad(n) + '</div></a>';
   }
 

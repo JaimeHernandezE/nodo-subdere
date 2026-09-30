@@ -40,23 +40,10 @@
   <p class="miga"><a href="wiki.html">Wiki</a> / Cómo leer una ficha</p>
   <p class="eyebrow">Usar el nodo</p>
   <h2>Saber de un vistazo si una API ya se puede usar</h2>
-  <p class="lead">Cada API del <a href="apis.html">catálogo</a> tiene una tarjeta y una ficha. Las etiquetas de colores responden cuatro preguntas: en qué etapa va, si está funcionando ahora, de dónde sale su contrato y cómo se entra.</p>
+  <p class="lead">Cada API del <a href="apis.html">catálogo</a> tiene una tarjeta y una ficha. Las etiquetas de colores responden tres preguntas: si está funcionando ahora, de dónde sale su contrato y cómo se entra.</p>
 </div></section>
 
 <section class="gris"><div class="wrap">
-  <p class="eyebrow">En qué etapa va</p>
-  <h2>Contrato publicado y servicio disponible: dos cosas distintas</h2>
-  <p class="lead">La ficha las separa a propósito. Un contrato publicado —la descripción de qué se puede pedir y qué se recibe— ya sirve para diseñar y construir un sistema, aunque el servicio todavía no responda desde fuera.</p>
-  <table>
-    <tr><th>Estado</th><th>Qué quiere decir</th></tr>
-    <tr><td><span class="tag tag-mad">Deseable</span></td><td>Alguien lo necesita y está anotado. Nadie ha revisado todavía si es viable ni ha comprometido nada.</td></tr>
-    <tr><td><span class="tag tag-eval">En evaluación</span></td><td>Estamos evaluando si el intercambio hace falta y si es viable.</td></tr>
-    <tr><td><span class="tag tag-dev">En desarrollo</span></td><td>Ya está escrito qué entrega y hay trabajo andando, pero todavía no se puede usar desde fuera.</td></tr>
-    <tr><td><span class="tag tag-oper">Operativo</span></td><td>Funciona y hay municipios usándolo.</td></tr>
-  </table>
-</div></section>
-
-<section><div class="wrap">
   <p class="eyebrow">Si está funcionando ahora</p>
   <h2>La disponibilidad la mide una máquina, no la escribimos a mano</h2>
   <p class="lead">El indicador sale de un monitor que revisa el servicio cada cierto tiempo. Si una API no tiene monitoreo, la tarjeta lo dice en vez de suponer que funciona.</p>
@@ -70,7 +57,7 @@
   </table>
 </div></section>
 
-<section class="gris"><div class="wrap">
+<section><div class="wrap">
   <p class="eyebrow">De dónde sale el contrato</p>
   <h2 id="procedencia">Cuánto se le puede creer a lo que muestra el catálogo</h2>
   <p class="lead">No siempre escribimos nosotros el contrato de una API. Por eso cada ficha tiene un apartado de <strong>procedencia</strong>: quién responde por el contrato, dónde está la versión que rige y qué relación tiene con lo que se ve en el catálogo.</p>
@@ -84,7 +71,7 @@
   <p class="lead">Las diferencias y las preguntas abiertas sobre cada contrato no se escriben dentro de él: van en su entrada de esta wiki, y la ficha enlaza a ella en «Observaciones». Todas las entradas están en el <a href="wiki-intercambios.html">índice de intercambios</a>.</p>
 </div></section>
 
-<section><div class="wrap">
+<section class="gris"><div class="wrap">
   <p class="eyebrow">Cómo se entra</p>
   <h2 id="acceso">Quién puede pedirle datos</h2>
   <p class="lead">La tarjeta resume en una etiqueta cómo se entra, y la ficha lo explica con detalle en «Quién puede usarlo».</p>
@@ -97,7 +84,7 @@
   <p class="lead">Dos etiquetas más aparecen junto a la de acceso:</p>
   <ul>
     <li><span class="tag tag-contrato">OpenAPI</span> o <span class="tag tag-sin">Sin contrato</span>: si el contrato ya está publicado, y en qué formato. OpenAPI es un formato estándar para describir APIs, que leen tanto personas como programas.</li>
-    <li><span class="tag tag-sandbox">Se puede probar</span>: la ficha tiene un ambiente de pruebas que responde con datos inventados. Funciona dentro del navegador, así que se puede practicar aunque el servicio real todavía no esté publicado.</li>
+    <li><span class="tag tag-sandbox">Se puede probar</span>: la ficha tiene un ambiente de pruebas que responde con datos inventados. Funciona dentro del navegador, así que se puede practicar sin tocar datos reales.</li>
   </ul>
   <div class="aviso"><p>El ambiente de pruebas de una ficha no es la <a href="wiki-glosario.html#zona-de-practica">zona de práctica</a> del nodo, que todavía no existe. Qué se puede hacer hoy y qué falta está en <a href="wiki-conectar.html">conectar un sistema</a>.</p></div>
 </div></section>
