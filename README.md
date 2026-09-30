@@ -75,9 +75,15 @@ cd frontend && npm install && cp .env.example .env.local && npm run dev
 
 ## Publicar la maqueta
 
-Va a **GitHub Pages** al hacer push a `main`, por el workflow [`.github/workflows/pages-prototipos.yml`](.github/workflows/pages-prototipos.yml).
+Va a **GitHub Pages** al hacer push a `main`, por el workflow [`.github/workflows/pages-prototipos.yml`](.github/workflows/pages-prototipos.yml). Solo se dispara con cambios en `prototipos/**`, así que tocar el backend o la documentación no redespliega el sitio.
 
-> **Pendiente ahora que el repositorio tiene más de una cosa adentro:** ese workflow conviene acotarlo con `paths:` a `prototipos/**`, para que un cambio en el backend no dispare un despliegue del sitio estático.
+## Espejo en GitLab SUBDERE
+
+GitHub es el origen. GitLab SUBDERE tiene una réplica que se sobrescribe con `git push --mirror` desde el job `sync_from_github` de [`.gitlab-ci.yml`](.gitlab-ci.yml), por programación o a mano. El mismo archivo publica la maqueta en GitLab Pages. Allá no se trabaja: lo que se suba directo se pierde en la siguiente sincronización.
+
+## Contribuir
+
+Todo cambio entra por una rama y un Pull Request revisado; nadie hace push directo a `main`. El flujo, las convenciones y las reglas de cada carpeta están en [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ---
 

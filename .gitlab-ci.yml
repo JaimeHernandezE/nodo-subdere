@@ -1,0 +1,50 @@
+stages:
+  - sync
+  - deploy
+
+# --- Mirror GitHub → GitLab (schedule / manual) ---
+sync_from_github:
+  stage: sync
+  variables:
+    GIT_STRATEGY: none   # no necesitas el checkout del propio repo GitLab
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git
+    - git config --global http.postBuffer 524288000
+    - git config --global http.version HTTP/1.1
+    - git config --global core.compression 0
+  script:
+    - |
+      if [ -z "$GITHUB_PROJECT" ] || [ -z "$GITHUB_TOKEN" ] || [ -z "$GITLAB_PROJECT_PATH" ]; then
+        echo "ERROR: Configura en Settings → CI/CD → Variables:"
+        echo "  GITHUB_PROJECT      = org/repo   (ej. JaimeHernandezE/nodo-subdere)"
+        echo "  GITHUB_TOKEN        = token con acceso de lectura al repo"
+        echo "  GITLAB_PROJECT_PATH = grupo/.../proyecto en gitlab.subdere.gob.cl"
+        exit 1
+      fi
+    - git clone --mirror "https://$GITHUB_TOKEN@github.com/$GITHUB_PROJECT.git" repo.git
+    - cd repo.git
+    - git remote set-url --push origin "https://$GITLAB_SUBDERE_TOKEN_USER:$GITLAB_SUBDERE_TOKEN_PASS@gitlab.subdere.gob.cl/$GITLAB_PROJECT_PATH.git"
+    - git push --mirror
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - when: manual
+
+# --- GitLab Pages: maqueta (equivalente a .github/workflows/pages-prototipos.yml) ---
+pages:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - mkdir -p public
+    - cp -a prototipos/. public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      changes:
+        - prototipos/**/*
+        - .gitlab-ci.yml
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - when: manual
