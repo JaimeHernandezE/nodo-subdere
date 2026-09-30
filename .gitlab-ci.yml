@@ -1,8 +1,7 @@
 stages:
   - sync
-  - deploy
 
-# --- Mirror GitHub → GitLab (schedule / manual) ---
+# --- Mirror GitHub → GitLab (respaldo; schedule o "Run pipeline") ---
 sync_from_github:
   stage: sync
   variables:
@@ -26,25 +25,8 @@ sync_from_github:
     - cd repo.git
     - git remote set-url --push origin "https://$GITLAB_SUBDERE_TOKEN_USER:$GITLAB_SUBDERE_TOKEN_PASS@gitlab.subdere.gob.cl/$GITLAB_PROJECT_PATH.git"
     - git push --mirror
+  # Sin regla para "push": el propio push --mirror no debe abrir pipelines.
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
-    - when: manual
-
-# --- GitLab Pages: maqueta (equivalente a .github/workflows/pages-prototipos.yml) ---
-pages:
-  stage: deploy
-  image: alpine:latest
-  script:
-    - mkdir -p public
-    - cp -a prototipos/. public/
-  artifacts:
-    paths:
-      - public
-  rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      changes:
-        - prototipos/**/*
-        - .gitlab-ci.yml
     - if: '$CI_PIPELINE_SOURCE == "web"'
-      when: always
-    - when: manual
+    - when: never

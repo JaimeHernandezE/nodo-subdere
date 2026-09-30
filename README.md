@@ -79,7 +79,7 @@ Va a **GitHub Pages** al hacer push a `main`, por el workflow [`.github/workflow
 
 ## Espejo en GitLab SUBDERE
 
-GitHub es el origen. GitLab SUBDERE tiene una réplica que se sobrescribe con `git push --mirror` desde el job `sync_from_github` de [`.gitlab-ci.yml`](.gitlab-ci.yml), por programación o a mano. El mismo archivo publica la maqueta en GitLab Pages. Allá no se trabaja: lo que se suba directo se pierde en la siguiente sincronización.
+GitHub es el origen. GitLab SUBDERE guarda un respaldo que se sobrescribe con `git push --mirror` desde el job `sync_from_github` de [`.gitlab-ci.yml`](.gitlab-ci.yml), por programación o con *Run pipeline*. La maqueta se publica solo en GitHub Pages. En GitLab no se trabaja: lo que se suba directo se pierde en la siguiente sincronización.
 
 ## Contribuir
 
