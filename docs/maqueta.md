@@ -10,7 +10,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/index.html` | Landing — qué es el nodo y para quién |
 | `prototipos/que-es.html` | Descripción general: cómo funciona, alcance de la validación, los tres casos de municipio |
 | `prototipos/catalogo.html` | **Servicios.** Las herramientas de uso humano construidas sobre las APIs. Conserva el nombre de archivo por los enlaces ya compartidos; en Django la ruta es `/servicios/` |
-| `prototipos/apis.html` | **APIs.** Los doce intercambios del catálogo, con filtro por ámbito y buscador. Cada ficha dice si ya hay contrato publicado |
+| `prototipos/apis.html` | **APIs.** Los intercambios visibles del catálogo, agrupados por ámbito y con buscador, y una tarjeta de ejemplo anotada que explica cada parte |
 | `prototipos/servicio-cut.html` | Buscador de códigos territoriales |
 | `prototipos/servicio-fiscalizacion.html` | Consulta de permiso de circulación por patente |
 | `prototipos/wiki-fiscalizacion.html` | Entrada de wiki de los permisos de circulación |
@@ -22,7 +22,7 @@ Sin build, sin dependencias: vive en [`prototipos/`](../prototipos/). Se abre co
 | `prototipos/wiki-recorrido.html` | Wiki · Cómo funciona un intercambio: entregar y preguntar, los cuatro pasos de una entrega, qué se revisa y la puerta |
 | `prototipos/wiki-consumir.html` | Wiki · Cómo se usa una API del catálogo |
 | `prototipos/wiki-conectar.html` | Wiki · Conectar un sistema: los tres casos, el paso a paso, práctica y operación, versiones |
-| `prototipos/wiki-ficha.html` | Wiki · Cómo leer una ficha: madurez, disponibilidad, procedencia y acceso |
+| `prototipos/wiki-ficha.html` | Wiki · Cómo leer una ficha: disponibilidad, procedencia y acceso |
 | `prototipos/wiki-intercambios.html` | Wiki · Índice de entradas, generado desde `NODOS` con buscador |
 | `prototipos/wiki-cut.html` | Entrada de wiki de los Códigos Únicos Territoriales |
 | `prototipos/wiki-codigos.html` | Wiki · Índice de códigos y datos maestros |
@@ -74,7 +74,7 @@ El catálogo guarda el filtro y la búsqueda en la dirección, así que `catalog
 
 **`clase` distingue dos figuras.** Un nodo `intercambio` es elegible (incluido el consumo por módulo cuando aplique). Un nodo `plataforma` es condición de otros: hoy, el core SGM. Sin ese campo, el core se leería como un módulo más.
 
-Los dos campos que conviene no dejar para después son **`madurez`** y **`factibilidad`**: agregar una columna a un modelo que ya tiene datos y vistas siempre cuesta más que preverla. María José dejó esa evaluación explícitamente pendiente, y el catálogo es el lugar natural donde vive.
+Los dos campos que conviene no dejar para después son **`madurez`** y **`factibilidad`**: agregar una columna a un modelo que ya tiene datos y vistas siempre cuesta más que preverla. María José dejó esa evaluación explícitamente pendiente, y el catálogo es el lugar natural donde vive. Desde el 30 de septiembre de 2026 siguen en el modelo, pero el sitio no los muestra (ver «Lo publicado funciona»).
 
 ### El contrato técnico, cuando existe
 
@@ -245,11 +245,11 @@ El nombre se mantiene por continuidad con lo ya conversado con el equipo y con l
 |---|---|
 | `index.html` | Global. El hero, «Qué propone» (una forma común de pedir y entregar información), las tres piezas con su enlace y lo que el municipio puede esperar |
 | `que-es.html` | Cómo funciona el intercambio que sostiene las tres piezas: publicar, revisar, autorizar, comprobante, la puerta y el paso de práctica a operación |
-| `apis.html` | Construir: los contratos publicados. Cómo leer su estado se explica en `wiki-ficha.html` |
+| `apis.html` | Construir: los contratos publicados, y qué dice cada parte de la tarjeta. El detalle de procedencia y acceso está en `wiki-ficha.html` |
 | `catalogo.html` | Usar: las aplicaciones construidas sobre las APIs |
 | `wiki.html` | Entender: cómo se usa cada intercambio y por qué está definido así |
 
-Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, revisión previa, comprobante, credencial) ni la sección «Cómo está armado»: lo primero está en `que-es.html` y lo segundo en [`wiki-ficha.html`](../prototipos/wiki-ficha.html). Hasta el 29 de septiembre de 2026 las tablas de madurez y disponibilidad estaban en la sección «Cómo leer el estado» de `apis.html`; ahí quedan solo la frase que distingue contrato publicado de servicio disponible, el enlace a la wiki y el aviso final sobre el tamaño del catálogo. `que-es.html` conserva su explicación completa y enlaza a `wiki-recorrido.html` y `wiki-conectar.html` con «Más detalle en la wiki». La sección «Lo que el nodo no es» pasó a «Lo que el municipio puede esperar», con cuatro tarjetas en redacción afirmativa.
+Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, revisión previa, comprobante, credencial) ni la sección «Cómo está armado»: lo primero está en `que-es.html` y lo segundo en [`wiki-ficha.html`](../prototipos/wiki-ficha.html). Hasta el 29 de septiembre de 2026 las tablas de madurez y disponibilidad estaban en la sección «Cómo leer el estado» de `apis.html`. Desde el 30 de septiembre esa sección es «Cómo leer una tarjeta» (ver «Lo publicado funciona»). `que-es.html` conserva su explicación completa y enlaza a `wiki-recorrido.html` y `wiki-conectar.html` con «Más detalle en la wiki». La sección «Lo que el nodo no es» pasó a «Lo que el municipio puede esperar», con cuatro tarjetas en redacción afirmativa.
 
 `que-es.html` decía «el nodo conecta sistemas, no personas», lo que contradecía el catálogo de servicios. Quedó así: las entregas las hace el sistema del municipio, y las aplicaciones de servicios permiten probar algunas APIs desde una pantalla. No son un espejo de todo el catálogo de APIs, pero usan las mismas APIs publicadas, así que un sistema conectado obtiene los mismos resultados. No se destaca que el nodo no recibe planillas.
 
@@ -257,12 +257,12 @@ Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, re
 
 **29 de septiembre de 2026.** El sitio se escribe como versión definitiva, así que se retiraron las marcas de maqueta, que solo le servían al equipo:
 
-- La banda «Maqueta para revisión» salió de todas las páginas. Quedan solo los avisos que le dicen algo al lector: «Estado de la ficha» en `nodo.html`, que describe el estado del contrato, y el de `wiki-fiscalizacion.html`, que explica que el contrato comentado es una propuesta.
+- La banda «Maqueta para revisión» salió de todas las páginas. Quedó solo el aviso de `wiki-fiscalizacion.html`, que explica que el contrato comentado es una propuesta. El aviso «Estado de la ficha» de `nodo.html` se retiró el 30 de septiembre de 2026 (ver «Lo publicado funciona»).
 - El pie dice «Última actualización» en vez de «Maqueta de trabajo». La fecha por omisión y el texto del pie viven en [`assets/pie.js`](../prototipos/assets/pie.js); en `apis.html` se reemplaza por la más reciente de los campos `actualizado` de los nodos visibles.
 
-**Tarjetas de `apis.html`.** Cada tarjeta muestra:
+**Tarjetas de `apis.html`.** Desde el 30 de septiembre de 2026, cada tarjeta muestra:
 
-- La madurez, con un color para cada uno de los cuatro estados.
+- El nombre y qué entrega.
 - El contrato (`OpenAPI 3.0.3` o `Sin contrato`).
 - El modo de acceso (`Abierto`, `Con credencial`, `Clave Única`).
 - `Se puede probar` cuando la ficha tiene ambiente de pruebas.
@@ -272,6 +272,15 @@ Por eso la portada ya no tiene las tarjetas del mecanismo (formato publicado, re
 Los campos nuevos (`actualizado`, `acceso_tipo`, `sandbox`, `monitoreo`) están documentados en la cabecera de [`data.js`](../prototipos/assets/data.js).
 
 **Disponibilidad.** Nunca se escribe a mano. La página lee `prototipos/estado/status.json`, que debe publicar un monitor externo (Upptime, Uptime Kuma u otro) con la forma de [`estado/status.example.json`](../prototipos/estado/status.example.json). Si ese archivo no existe, sondea desde el navegador los nodos que declaran `monitoreo.salud` con `alcance: "publico"`. Los demás se muestran como «Solo red interna» o «Sin monitoreo». Hoy no hay monitor ni endpoint público de salud: CUT aparece como «Solo red interna» y Permisos de circulación como «Sin monitoreo». Elegir y configurar el monitor queda pendiente.
+
+## Lo publicado funciona
+
+**30 de septiembre de 2026.** Criterio del equipo: **no se publica un contrato sin servicio disponible.** La maqueta asume que todo intercambio visible está publicado y funcionando, así que el sitio dejó de mostrar etapas y dejó de distinguir contrato publicado de servicio disponible. La distancia con el estado real (el CUT responde solo en la red SEM y los permisos de circulación no tienen servicio) está en [`hoja-de-ruta.md`](hoja-de-ruta.md), §10 y Etapa 1.
+
+- **Tarjeta de `apis.html`.** Sin la etiqueta de etapa y sin la fila de ámbito, «Base» e instituciones; el buscador sigue encontrando por institución. La sección «Cómo leer el estado» pasó a «Cómo leer una tarjeta»: una tarjeta de ejemplo con cinco partes numeradas (nombre, qué entrega, contrato/acceso/pruebas, fecha de actualización y disponibilidad) y una lista que explica cada una. Estilos `.anatomia` y `.anota` en `styles.css`.
+- **Ficha (`nodo.html`).** Salieron el aviso «Estado de la ficha» y su lógica, y las filas «En qué estado está» y «¿Es viable?» del panel lateral. Los campos `madurez` y `factibilidad` siguen en el modelo, pero ninguna página los muestra.
+- **`wiki-ficha.html`.** Salió la sección de etapas; la página responde tres preguntas: si está funcionando ahora, de dónde sale el contrato y cómo se entra.
+- **Versionado informado por la API.** Cada API publicada informa, dentro de su propio contrato, su versión, su fecha de publicación y el plazo de gracia vigente. Lo dicen `wiki-consumir.html` y `wiki-conectar.html` (sección de versiones y caso C). Cuánto dura el plazo sigue pendiente (X-109).
 
 ## Ambiente de pruebas y aplicación vinculada
 
@@ -297,7 +306,7 @@ La versión del contrato de permisos de circulación pasó de `0.1.0-demo` a `0.
 - **En las páginas HTML** el enlace se escribe a mano: `<a class="termino" href="wiki-glosario.html#puerta-de-acceso">…</a>`.
 - **En los textos de [`data.js`](../prototipos/assets/data.js)** se usa el marcado `[[id]]` o `[[id|texto visible]]`. Lo resuelve [`assets/terminos.js`](../prototipos/assets/terminos.js) contra el diccionario `TERMINOS`, al final de `data.js`. La ficha lo aplica a `descripcion`, `nota`, `espec.acceso`, `espec.procedencia.detalle` y `pruebas`; el catálogo lo quita en los tooltips. El texto se escapa antes de enlazar, así que `data.js` sigue sin poder inyectar HTML.
 
-Hay trece términos, en orden alfabético y con un índice al inicio de la página: API, aplicación, Clave Única, comprobante, credencial, estándar (también contrato o especificación), nodo (dos sentidos), procedencia, puerta de acceso, servicio (dos sentidos, con la discusión sobre renombrar la pestaña), SGM, Términos y Condiciones (por definir) y zona de práctica (también *sandbox*; no existe todavía, y no es lo mismo que el ambiente de pruebas de las fichas). Todos están en `TERMINOS`, así que cualquiera se puede marcar en `data.js`.
+Hay trece términos, en orden alfabético. Desde el 30 de septiembre de 2026 la página abre con un buscador, que busca en el término y en su definición sin distinguir tildes, y cada término es una entrada desplegable; un enlace a `wiki-glosario.html#<id>` abre la entrada. Los términos: API, aplicación, Clave Única, comprobante, credencial, estándar (también contrato o especificación), nodo (dos sentidos), procedencia, puerta de acceso, servicio (dos sentidos, con la discusión sobre renombrar la pestaña), SGM, Términos y Condiciones (por definir) y zona de práctica (también *sandbox*; no existe todavía, y no es lo mismo que el ambiente de pruebas de las fichas). Todos están en `TERMINOS`, así que cualquiera se puede marcar en `data.js`.
 
 Uno solo tiene **nombre provisional**, **puerta de acceso**: también se le dice Plataforma de Control (ver [`plataforma-control.md`](plataforma-control.md)). Cuando se defina el nombre, hay que cambiarlo en tres lugares:
 

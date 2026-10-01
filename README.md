@@ -41,7 +41,8 @@ El catálogo parte corto a propósito: es preferible una entrada completa —con
 
 | Documento | Qué contiene |
 |---|---|
-| [`docs/maqueta.md`](docs/maqueta.md) | **El documento principal.** Las páginas del sitio, el modelo de datos del catálogo, la identidad gráfica, qué describe el sitio y qué no, y las decisiones de cada cambio |
+| [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md) | **Documento rector.** Qué es el nodo, para quién, qué hace, cómo se gobierna y hacia dónde va, con las etapas y todas las preguntas abiertas. De aquí se alimenta el sitio |
+| [`docs/maqueta.md`](docs/maqueta.md) | **El documento del sitio.** Las páginas del sitio, el modelo de datos del catálogo, la identidad gráfica, qué describe el sitio y qué no, y las decisiones de cada cambio |
 | [`docs/adr-2026-09-estandar-legible-por-maquina.md`](docs/adr-2026-09-estandar-legible-por-maquina.md) | **Decisión.** El estándar de cada nodo se publica como especificación legible por máquina; el catálogo la renderiza y no la transcribe |
 | [`docs/plataforma-control.md`](docs/plataforma-control.md) | **Propuesta.** Quién es quién y control de paso: las dos piezas de la puerta de acceso |
 | [`docs/flujo_1.md`](docs/flujo_1.md) · [`docs/flujo_2.md`](docs/flujo_2.md) | Diagramas de la plataforma de control: demostración y producción |

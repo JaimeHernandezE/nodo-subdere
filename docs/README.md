@@ -8,6 +8,7 @@ La maqueta HTML vive en [`prototipos/`](../prototipos/) y se publica en [GitHub 
 
 | Documento | Qué contiene |
 |---|---|
+| [`hoja-de-ruta.md`](hoja-de-ruta.md) | **Documento rector.** Qué es el nodo, para quién, qué hace, gobernanza, marco normativo, hoja de ruta por etapas y todas las preguntas abiertas. De aquí se alimenta el sitio |
 | [`plataforma-control.md`](plataforma-control.md) | **Propuesta.** Plataforma Institucional de Gestión de APIs (Plataforma de Control): base técnica licitables; control, logs y casos de uso |
 | [`flujo_2.md`](flujo_2.md) | Diagrama de **producción** de la Plataforma de Control (zonas de red) |
 | [`flujo_1.md`](flujo_1.md) | Diagrama de **demo** de la Plataforma de Control (un servidor) |
