@@ -35,14 +35,15 @@ backend/
 │   ├── servicios/           Las pantallas construidas sobre las APIs
 │   └── wiki/                Entradas de wiki y su relación con los nodos
 ├── Dockerfile
+├── entrypoint.sh            aplica migraciones y arranca
 ├── docker-compose.yml
 ├── docker-compose.prod.yml
 ├── manage.py
-├── pyproject.toml
+├── pyproject.toml           dependencias, ruff y pytest
 └── .env.example
 ```
 
-Una app por dominio, no por capa. `catalogo` contiene sus modelos, sus serializadores, sus vistas y sus pruebas, en `apps/catalogo/tests/`. Las apps están listadas en el orden en que se construyen, y ninguna depende de una que esté más abajo (`INSTRUCCIONES.md` §7).
+Una app por dominio, no por capa. `catalogo` contiene sus modelos, sus serializadores, sus vistas y sus pruebas, en `apps/catalogo/tests/`. Dentro de cada app, la API va en `api/v1/` y los archivos en snake_case; la estructura completa está en `INSTRUCCIONES.md` §2.ter. Las apps están listadas en el orden en que se construyen, y ninguna depende de una que esté más abajo (`INSTRUCCIONES.md` §7).
 
 ---
 
@@ -259,13 +260,19 @@ Con Docker Desktop, todo en contenedores:
 
 ```bash
 cd backend
-cp .env.example .env.local    # y completar; DATABASE_URL con db:5432
+cp .env.example .env.local    # y completar: al menos SECRET_KEY
 docker compose --env-file .env.local up
-docker compose --env-file .env.local exec api python manage.py migrate
+```
+
+Las migraciones se aplican solas al arrancar, incluida la carga de los 346 municipios. Para el resto:
+
+```bash
+docker compose --env-file .env.local exec api pytest
+docker compose --env-file .env.local exec api ruff check .
 docker compose --env-file .env.local exec api python manage.py createsuperuser
 ```
 
-O solo Postgres en Docker y Django en el equipo, con `DATABASE_URL` apuntando a `localhost:5432`:
+O solo Postgres en Docker y Django en el equipo, con `DATABASE_URL` apuntando a `localhost:5432` y Python 3.12:
 
 ```bash
 cd backend
@@ -278,7 +285,7 @@ python manage.py runserver
 
 En este segundo modo, `DJANGO_SETTINGS_MODULE` y las demás variables se cargan desde `.env.local` con `django-environ`.
 
-La API queda en `http://localhost:8000/api/v1/` y su documentación en `/api/v1/schema/swagger-ui/`.
+La API queda en `http://localhost:8000/api/v1/`: `/api/v1/salud` responde sin token, y la documentación está en `/api/v1/schema/swagger-ui/`.
 
 ---
 

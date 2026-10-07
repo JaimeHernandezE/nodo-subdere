@@ -21,11 +21,12 @@ Objetivo inmediato: **una primera versión en producción, oculta por informáti
 | Python 3.12 · Django 5.x · Django REST Framework | |
 | PostgreSQL | También en desarrollo, para no encontrarse diferencias tarde |
 | `drf-spectacular` | La API publica su propio OpenAPI. Un sitio que promueve contratos legibles por máquina no puede no tener el suyo |
-| `pytest` + `pytest-django` · `ruff` | Las pruebas viven dentro de cada app, en `apps/<app>/tests/`, salvo que Banco de Proyectos las ordene de otra forma (§2.ter) |
+| `pytest` + `pytest-django` · `ruff` | Las pruebas viven dentro de cada app, en `apps/<app>/tests/`. Configuración en `pyproject.toml` |
 | `django-environ` | Lee las variables de entorno y `DATABASE_URL`. Una sola biblioteca para las dos cosas |
 | `django-cors-headers` | El frontend corre en otro origen. Orígenes y cabeceras permitidas por variable de entorno |
 | `PyJWT` + `cryptography` | Validación del token del realm (§3) |
 | `gunicorn` | Servidor de producción. `runserver` solo en local |
+| `drf-spectacular-sidecar` · `whitenoise` | Swagger y el admin se sirven desde el propio backend, sin CDN: la producción oculta puede no tener salida a internet. `whitenoise` solo en `prod.py`; `collectstatic` corre al construir la imagen |
 | **Español en el dominio** | `Nodo`, `Especificacion`, `funcion`, `visibilidad`. En inglés queda solo lo del framework |
 | Sin secretos en el repositorio | Todo por variable de entorno, con `.env.example` documentado. `.env` excluido desde el primer commit |
 | Docker Desktop en local, un archivo por ambiente | Detalle en §2.bis |
@@ -62,7 +63,8 @@ docker compose --env-file .env.local up
 docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
 ```
 
-- `docker-compose.prod.yml` cambia el comando de `api` a `gunicorn`. `runserver` solo corre en local.
+- `docker-compose.prod.yml` quita el comando de desarrollo, y `api` corre con el de la imagen: `gunicorn`. `runserver` solo corre en local. También quita el volumen con el código y el puerto publicado de la base.
+- El `entrypoint.sh` de la imagen aplica las migraciones antes de arrancar, en los dos ambientes.
 - **Solo ambientes que existen.** Hoy son dos: local y la producción oculta. Cuando aparezca un ambiente de desarrollo compartido, se agrega su par de archivos; no se dejan vacíos esperando.
 - `.gitignore` ya excluye `.env` y `.env.*`, con `.env.example` como única excepción. **Revisar que siga así antes de cada publicación**: en otro repositorio del equipo quedaron archivos `.env` versionados con contraseñas de base de datos.
 - Dos formas de correr en local, y el `.env.local` debe decir cuál se está usando: todo en contenedores, y entonces la base es `db:5432`; o solo Postgres en Docker y Django en el equipo, y entonces es `localhost:5432`.
@@ -70,19 +72,41 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.
 
 ## 2.ter De dónde se copian las convenciones
 
-**El orden de carpetas y la autenticación no se inventan acá.** El proyecto **Banco de Proyectos** —Django y React, del mismo equipo— ya tiene las dos cosas resueltas y en uso. Al construir, conviene abrirlo al lado y seguirlo:
+El proyecto **Banco de Proyectos** —Django y React, del mismo equipo— es la referencia de orden: es lo que el equipo ya lee sin pensar. Se revisó al construir `core` y esto es lo que se tomó y lo que no.
 
-| Qué se copia de Banco de Proyectos | Por qué |
-|---|---|
-| **El orden de carpetas dentro de cada app** y la convención de nombres de archivo | Es el que el equipo ya lee sin pensar. Los nombres de archivo que aparecen en estos documentos son la lista de piezas, no una imposición: si Banco de Proyectos las ordena de otra forma, manda Banco de Proyectos |
-| **El bloqueo de quien se autentica y no está habilitado** | Es exactamente nuestro `403` con código `SIN_PERFIL`. Está probado en producción y no hay razón para rehacerlo |
-| La configuración de `ruff`, `pytest` y el `Dockerfile`, si sirven tal cual | |
+**La estructura de cada app**, fijada a partir de Banco de Proyectos:
 
-**Lo que hay que mirar con cuidado antes de copiar: el camino de Clave Única.** Banco de Proyectos se integra con Clave Única, y acá la decisión es pasar por un **realm de Keycloak que la federa**. No es lo mismo, y conviene no mezclar las dos cosas sin decidirlo:
+```
+apps/<app>/
+├── models.py · admin.py · apps.py
+├── urls.py                    incluye api/v1/routers
+├── api/v1/
+│   ├── routers.py             rutas de la versión 1
+│   ├── <entidad>_viewset.py   o <entidad>_view.py si no es un ViewSet
+│   └── <entidad>_serializer.py
+├── management/commands/
+├── migrations/
+└── tests/                     test_*.py, con pytest
+```
 
-- Se mantiene **Keycloak**, porque es la pieza de identidad que ya está en la nota de la plataforma de control, porque deja un solo lugar donde poner después el control de paso, y porque el día que haya perfiles municipales el realm es donde viven.
-- De Banco de Proyectos se porta la **capa de autorización** —la tabla de habilitados y el bloqueo— que es independiente de por dónde venga la autenticación.
-- Si al abrirlo resulta que su integración es directa contra Clave Única y portarla a Keycloak cuesta más de lo que parece, es una decisión que vale conversar antes de escribir código, no después. Queda anotada en **HR-21**.
+- La API va en `api/v1/`, como en Banco de Proyectos: cuando exista una v2, la v1 no se toca. Es la misma regla de «ninguna versión se corrige».
+- Los nombres de archivo van en **snake_case**. Banco de Proyectos mezcla `projectsViewSet.py`, `serializers.py` y `serializer.py`; acá no.
+- Lógica que no es HTTP —la proyección de una ficha, la lectura de una foto— va en módulos propios de la app, no en las vistas.
+
+| De Banco de Proyectos | Se toma | Por qué |
+|---|---|---|
+| `django-environ` y la configuración dividida por ambiente | Sí | Ya resuelto y conocido |
+| API en `api/v1/` con `routers.py` | Sí, en snake_case | Ver arriba |
+| Healthcheck de Postgres en compose y migraciones al arrancar | Sí | Evita que la api arranque antes que la base |
+| `AllowAny` como permiso por defecto | **No** | Acá todo endpoint está cerrado salvo que declare `AllowAny` |
+| Secretos escritos en los settings | **No** | Regla de §2 |
+| `ruff`, `pytest`, manejador de errores, endpoint de salud | No existen allá | Se construyeron acá, en `core` y `pyproject.toml` |
+
+**Lo que se creía de Banco de Proyectos y no es así**, y que importa para `cuentas`:
+
+- **Ya pasa por Keycloak**, no por Clave Única directa: realm en `oid.subdere.gob.cl`, con Clave Única como proveedor de identidad y el RUN en el *claim* `RolUnico`. Es el mismo camino que decidimos acá, y probablemente el mismo servidor. Lo que queda abierto en **HR-21** es si se usa uno de esos realms o uno propio.
+- **No tiene un bloqueo `SIN_PERFIL` que se pueda copiar.** Su flujo con Keycloak rechaza a quien no existe en la base, pero no revisa `is_active`, y sus clases de permiso crean el usuario automáticamente si no existe. El `403 SIN_PERFIL` de `cuentas` se construye desde cero, con prueba propia.
+- La validación del token vive dentro de clases de permiso y no en una clase de autenticación. Acá va en una clase de autenticación de DRF (§3).
 
 ## 3. Autenticación: Keycloak delante de Clave Única
 

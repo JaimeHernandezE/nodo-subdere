@@ -1,0 +1,70 @@
+{
+  "fuente": "https://stag-api.sem2.gob.cl/api/utilitarios/regiones",
+  "descargado_en": "2026-10-07T19:11:16+00:00",
+  "datos": [
+    {
+      "nombre": "Tarapacá",
+      "region_id": 1
+    },
+    {
+      "nombre": "Antofagasta",
+      "region_id": 2
+    },
+    {
+      "nombre": "Atacama",
+      "region_id": 3
+    },
+    {
+      "nombre": "Coquimbo",
+      "region_id": 4
+    },
+    {
+      "nombre": "Valparaíso",
+      "region_id": 5
+    },
+    {
+      "nombre": "Libertador General Bernardo O'Higgins",
+      "region_id": 6
+    },
+    {
+      "nombre": "Maule",
+      "region_id": 7
+    },
+    {
+      "nombre": "Biobío",
+      "region_id": 8
+    },
+    {
+      "nombre": "La Araucanía",
+      "region_id": 9
+    },
+    {
+      "nombre": "Los Lagos",
+      "region_id": 10
+    },
+    {
+      "nombre": "Aysén del General Carlos Ibáñez del Campo",
+      "region_id": 11
+    },
+    {
+      "nombre": "Magallanes y de la Antártica Chilena",
+      "region_id": 12
+    },
+    {
+      "nombre": "Metropolitana de Santiago",
+      "region_id": 13
+    },
+    {
+      "nombre": "Los Ríos",
+      "region_id": 14
+    },
+    {
+      "nombre": "Arica y Parinacota",
+      "region_id": 15
+    },
+    {
+      "nombre": "Ñuble",
+      "region_id": 16
+    }
+  ]
+}

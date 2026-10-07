@@ -1,0 +1,230 @@
+{
+  "fuente": "https://stag-api.sem2.gob.cl/api/utilitarios/provincias",
+  "descargado_en": "2026-10-07T19:11:16+00:00",
+  "datos": [
+    {
+      "nombre": "Iquique",
+      "provincia_id": 11
+    },
+    {
+      "nombre": "Tamarugal",
+      "provincia_id": 14
+    },
+    {
+      "nombre": "Antofagasta",
+      "provincia_id": 21
+    },
+    {
+      "nombre": "El Loa",
+      "provincia_id": 22
+    },
+    {
+      "nombre": "Tocopilla",
+      "provincia_id": 23
+    },
+    {
+      "nombre": "Copiapó",
+      "provincia_id": 31
+    },
+    {
+      "nombre": "Chañaral",
+      "provincia_id": 32
+    },
+    {
+      "nombre": "Huasco",
+      "provincia_id": 33
+    },
+    {
+      "nombre": "Elqui",
+      "provincia_id": 41
+    },
+    {
+      "nombre": "Choapa",
+      "provincia_id": 42
+    },
+    {
+      "nombre": "Limarí",
+      "provincia_id": 43
+    },
+    {
+      "nombre": "Valparaíso",
+      "provincia_id": 51
+    },
+    {
+      "nombre": "Isla de Pascua",
+      "provincia_id": 52
+    },
+    {
+      "nombre": "Los Andes",
+      "provincia_id": 53
+    },
+    {
+      "nombre": "Petorca",
+      "provincia_id": 54
+    },
+    {
+      "nombre": "Quillota",
+      "provincia_id": 55
+    },
+    {
+      "nombre": "San Antonio",
+      "provincia_id": 56
+    },
+    {
+      "nombre": "San Felipe de Aconcagua",
+      "provincia_id": 57
+    },
+    {
+      "nombre": "Marga Marga",
+      "provincia_id": 58
+    },
+    {
+      "nombre": "Cachapoal",
+      "provincia_id": 61
+    },
+    {
+      "nombre": "Cardenal Caro",
+      "provincia_id": 62
+    },
+    {
+      "nombre": "Colchagua",
+      "provincia_id": 63
+    },
+    {
+      "nombre": "Talca",
+      "provincia_id": 71
+    },
+    {
+      "nombre": "Cauquenes",
+      "provincia_id": 72
+    },
+    {
+      "nombre": "Curicó",
+      "provincia_id": 73
+    },
+    {
+      "nombre": "Linares",
+      "provincia_id": 74
+    },
+    {
+      "nombre": "Concepción",
+      "provincia_id": 81
+    },
+    {
+      "nombre": "Arauco",
+      "provincia_id": 82
+    },
+    {
+      "nombre": "Biobío",
+      "provincia_id": 83
+    },
+    {
+      "nombre": "Cautín",
+      "provincia_id": 91
+    },
+    {
+      "nombre": "Malleco",
+      "provincia_id": 92
+    },
+    {
+      "nombre": "Llanquihue",
+      "provincia_id": 101
+    },
+    {
+      "nombre": "Chiloé",
+      "provincia_id": 102
+    },
+    {
+      "nombre": "Osorno",
+      "provincia_id": 103
+    },
+    {
+      "nombre": "Palena",
+      "provincia_id": 104
+    },
+    {
+      "nombre": "Coihaique",
+      "provincia_id": 111
+    },
+    {
+      "nombre": "Aisén",
+      "provincia_id": 112
+    },
+    {
+      "nombre": "Capitán Prat",
+      "provincia_id": 113
+    },
+    {
+      "nombre": "General Carrera",
+      "provincia_id": 114
+    },
+    {
+      "nombre": "Magallanes",
+      "provincia_id": 121
+    },
+    {
+      "nombre": "Antártica Chilena",
+      "provincia_id": 122
+    },
+    {
+      "nombre": "Tierra del Fuego",
+      "provincia_id": 123
+    },
+    {
+      "nombre": "Última Esperanza",
+      "provincia_id": 124
+    },
+    {
+      "nombre": "Santiago",
+      "provincia_id": 131
+    },
+    {
+      "nombre": "Cordillera",
+      "provincia_id": 132
+    },
+    {
+      "nombre": "Chacabuco",
+      "provincia_id": 133
+    },
+    {
+      "nombre": "Maipo",
+      "provincia_id": 134
+    },
+    {
+      "nombre": "Melipilla",
+      "provincia_id": 135
+    },
+    {
+      "nombre": "Talagante",
+      "provincia_id": 136
+    },
+    {
+      "nombre": "Valdivia",
+      "provincia_id": 141
+    },
+    {
+      "nombre": "Ranco",
+      "provincia_id": 142
+    },
+    {
+      "nombre": "Arica",
+      "provincia_id": 151
+    },
+    {
+      "nombre": "Parinacota",
+      "provincia_id": 152
+    },
+    {
+      "nombre": "Diguillín",
+      "provincia_id": 161
+    },
+    {
+      "nombre": "Itata",
+      "provincia_id": 162
+    },
+    {
+      "nombre": "Punilla",
+      "provincia_id": 163
+    }
+  ]
+}
