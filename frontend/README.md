@@ -2,6 +2,8 @@
 
 La interfaz del sitio en React: los dos catálogos, las fichas, las pantallas de servicio y la wiki.
 
+> **Para construir:** [`INSTRUCCIONES.md`](INSTRUCCIONES.md) tiene el detalle de rutas, autenticación, patrones a portar y pantallas de administración. Este README explica el diseño.
+
 No se parte de cero. La maqueta de [`prototipos/`](../prototipos/) ya tiene el contenido escrito, la paleta institucional verificada y las interacciones probadas. **Este proyecto la traduce a componentes; no la rediseña.** Si algo se ve distinto, es un cambio deliberado y debería estar anotado en [`docs/maqueta.md`](../docs/maqueta.md).
 
 ---

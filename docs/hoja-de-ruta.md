@@ -1,6 +1,6 @@
 # Nodo SUBDERE — documento rector y hoja de ruta
 
-**Estado:** borrador de trabajo, 30 de septiembre de 2026. Nada de lo que dice está comprometido institucionalmente.
+**Estado:** borrador de trabajo, 6 de octubre de 2026. Nada de lo que dice está comprometido institucionalmente.
 
 Este documento responde, en un solo lugar, **qué es el Nodo SUBDERE, para quién es, qué hace, cómo se gobierna y hacia dónde va**. Es la fuente de la que se alimentan el sitio y lo que se construya después: si una página del sitio contradice este documento, se corrige la página, o se corrige primero este documento y después la página.
 
@@ -13,13 +13,66 @@ Este documento responde, en un solo lugar, **qué es el Nodo SUBDERE, para quié
   - **Pendiente**: el corpus no lo resuelve.
 - **Cada sección dice qué página del sitio la usa.** Cuando esa página no existe, lo dice.
 - **La «respuesta corta»** de cada sección está escrita con el tono de la wiki (ver [`maqueta.md`](maqueta.md), «El tono de la wiki»), para que el sitio la pueda tomar casi tal cual.
-- **No duplica.** Lo que ya tiene documento propio se resume y se enlaza: la decisión del estándar legible por máquina ([`adr-2026-09-estandar-legible-por-maquina.md`](adr-2026-09-estandar-legible-por-maquina.md)), la puerta de acceso ([`plataforma-control.md`](plataforma-control.md)), el precedente del Nodo Laboral y Previsional ([`nodo-lp-precedente.md`](nodo-lp-precedente.md)), el modelo del catálogo ([`maqueta.md`](maqueta.md)) y el glosario ([`wiki-glosario.html`](../prototipos/wiki-glosario.html)).
+- **No duplica.** Lo que ya tiene documento propio se resume y se enlaza: la decisión del estándar legible por máquina ([`adr-2026-09-estandar-legible-por-maquina.md`](adr-2026-09-estandar-legible-por-maquina.md)), la puerta de acceso ([`plataforma-control.md`](plataforma-control.md)), el precedente del Nodo Laboral y Previsional ([`nodo-lp-precedente.md`](nodo-lp-precedente.md)), la estructura de repositorios ([`adr-2026-10-estructura-de-repositorios.md`](adr-2026-10-estructura-de-repositorios.md)), el acceso directo de la primera etapa ([`adr-2026-10-acceso-directo-primera-etapa.md`](adr-2026-10-acceso-directo-primera-etapa.md)), la ficha de servicio ([`estandar-ficha-de-servicio.md`](estandar-ficha-de-servicio.md)), los cinco esquemas de intercambio ([`esquemas-de-intercambio.html`](esquemas-de-intercambio.html)), la organización de los repositorios ([`esquemas-de-repositorios.html`](esquemas-de-repositorios.html)), el modelo del catálogo ([`maqueta.md`](maqueta.md)) y el glosario ([`wiki-glosario.html`](../prototipos/wiki-glosario.html)).
 - **Pendientes.** Los marcadores `X-nn` son los que ya usan los documentos de este repositorio. Los vacíos que no tenían marcador llevan uno local, `HR-nn`, y están todos en la [Parte III](#parte-iii--preguntas-abiertas).
 - **Sin fechas inventadas.** Las únicas fechas son las que ya están en el corpus. La hoja de ruta ordena etapas por dependencia, no por plazo.
 
 ---
 
 # Parte I — Documento rector
+
+## 0. El problema, según el corpus
+
+**Estado:** Definido en los hechos: todos salen de los informes de 2022 a 2024. Las ventajas que responden a cada hallazgo son **Propuesta**.
+
+**Respuesta corta.** SUBDERE tiene desde 1998 el mandato de recoger, procesar y difundir la información municipal, y lo cumple con una plataforma de formularios creada en 2001 que un funcionario llena a mano. Con esos datos se estima la distribución del Fondo Común Municipal. En paralelo, otra unidad de la misma subsecretaría captura información parecida desde dieciséis fuentes automatizadas. Y el municipio, del otro lado, arma el mismo informe varias veces al mes para destinos distintos. El problema no es que falte una plataforma: falta el canal.
+
+**Detalle.**
+
+### 0.1 El mandato, y cómo se cumple hoy
+
+- La **Ley N° 19.602, de 1998**, encomienda a SUBDERE recoger, procesar y difundir la información municipal de gestión financiera y tributaria, administración de personal y prestación de servicios.
+- En **2001**, dentro del Programa de Fortalecimiento Municipal, se crea el **Sistema Nacional de Indicadores Municipales** para cumplir ese mandato. Recoge información de la totalidad de los municipios mediante múltiples formularios, de los que se levantan **153 indicadores**, usados principalmente para estimar la distribución del Fondo Común Municipal, y además para bonos y aguinaldos y para la ley de retiro voluntario.
+- El *Estado del arte* de mayo de 2023 lo caracteriza así: la plataforma «no se encuentra integrada a sistemas tecnológicos municipales», por lo que los datos «dependen de un funcionario que complete la información solicitada», «a riesgo siempre que esta se encuentre errónea o manipulada, al ser de carácter declarativa».
+
+Tres cosas en una frase, y las dice SUBDERE de sí misma: el dato con que se reparte el Fondo Común Municipal es declarativo, se digita a mano, y el riesgo de error o manipulación está reconocido por escrito.
+
+### 0.2 La dispersión ya está diagnosticada
+
+- El **Informe 1, de 2022**, levantó **28 sistemas** de la División de Municipalidades, agrupados en cinco ámbitos, y priorizó ocho para pruebas de usabilidad y de vulnerabilidades. El Sistema Nacional de Indicadores Municipales resultó crítico para la operación, sin versionamiento de código fuente, sin SSL y vulnerable —con fallas conocidas de nivel 10 publicadas en 2011 y 2012—, y con una de las notas de usabilidad más bajas de la muestra: 5,5 de 10.
+- El **Informe 2, de 2023** (§4.4.4.2.2), es el texto más directo sobre la duplicación: dos unidades captan información similar con enfoques diferentes, lo que produce «duplicidad de esfuerzos para entregarla» y que «los municipios tengan diversos lugares para ir a consultarla».
+- **SIM-FIMU**, de 2019, captura datos de forma automatizada desde **dieciséis fuentes** —entre ellas el propio Sistema Nacional de Indicadores Municipales, la Contraloría, el Servicio de Impuestos Internos y Tesorería— y tiene un convenio con Contraloría que el **Informe 4, de julio de 2024**, describe en etapa de diseño para habilitar un servicio web. Es el único antecedente de interoperación entre máquinas que aparece en el corpus.
+- Sobre la plataforma de pagos municipales, el corpus consigna que «no es utilizada por todos los municipios, principalmente por las dificultades de integración con los softwares de gestión municipal que dominan el mercado».
+
+> **Advertencia de vigencia.** El inventario tiene cuatro años y ninguna de sus 28 filas se ha verificado en 2026. Cubre la División de Municipalidades y no toda SUBDERE: Banco de Proyectos y Transferencia de Competencias no aparecen. Las fallas de seguridad citadas no se pueden afirmar como vigentes, pero tampoco hay nada en el corpus que diga que se corrigieron.
+
+### 0.3 El mismo problema, visto desde el municipio
+
+El **anexo de procesos de marzo de 2024** documenta **42 procesos municipales**, de los cuales **seis terminan en entregar información a un tercero**: los procesos 12, 13, 14, 33, 35 y 36. Entre ellos, el informe mensual de personal para transparencia activa, que el municipio publica en su propio sitio web, y el informe mensual a la Dirección de Presupuestos. Cada uno con su formato, su destino y su canal.
+
+### 0.4 Qué ventaja del nodo responde a cada hallazgo
+
+Cada fila es una ventaja que existe porque un informe documentó el problema que resuelve. Lo que no tiene hallazgo detrás, no es ventaja: es una idea nuestra, y va en otra parte.
+
+| Hallazgo documentado | Qué cambia con el nodo | Estado |
+|---|---|---|
+| El dato con que se reparte el Fondo Común Municipal es declarativo y lo digita un funcionario (*Estado del arte*, 2023) | El dato sale del sistema que lo produce, y se revisa contra las reglas publicadas antes de salir del municipio | Propuesta. Es la ventaja más fuerte del nodo |
+| Dos unidades captan lo mismo: duplicidad de esfuerzos y varios lugares donde ir a consultar (*Informe 2*, 2023) | El municipio entrega una vez; quien necesite esa información la consulta del nodo | Principio «solo una vez» definido; sin servicio detrás |
+| Seis de 42 procesos municipales terminan en entregar información a un tercero, cada uno por su canal (*anexo de procesos*, 2024) | Un mismo camino y un mismo comprobante para las seis entregas | Propuesta. Depende del levantamiento (HR-06) |
+| La plataforma de pagos no la usan todos los municipios por dificultades de integración con los sistemas de gestión que dominan el mercado (corpus) | El municipio no cambia de sistema: su proveedor implementa una vez el contrato publicado | Contratos publicados para dos intercambios; zona de práctica por construir |
+| SUBDERE financió el desarrollo de SIFIM, el software no quedó en su propiedad y los municipios adscritos terminaron pagando mensualmente por usarlo | El estándar es público y versionado, así que el municipio puede cambiar de sistema sin perder el camino | Definido como principio y como decisión (ADR) |
+| 28 sistemas, cada uno con su propio formato, su propia página y su propia clave (*Informe 1*, 2022) | Una sola puerta de acceso, en vez de que cada plataforma resuelva identidad y formato por su cuenta | Propuesta, no construida. Con la advertencia al lado: un servicio compartido de identidad ya se ofreció en esta casa y no se terminó de implementar |
+| Para el municipio, el costo de entrar no está definido en ninguna parte | Si el nodo es gratuito para el municipio, es la línea que más pesa en la adopción. Está sin decidir | **Pendiente** (HR-19) |
+
+### 0.5 El límite de todo lo anterior
+
+Todo este diagnóstico está hecho mirando desde adentro de SUBDERE. La nota de usabilidad de 5,5 la produjo una encuesta respondida por 21 personas de distintas áreas de la División de Municipalidades: usuarios internos, no municipios. **La experiencia del funcionario municipal que llena estos formularios trimestre a trimestre no está levantada en ninguna parte del corpus** (HR-18).
+
+Mientras no lo esté, cada fila del cuadro anterior es una hipótesis sobre un dolor que no hemos medido. Conviene decirlo así acá y en el sitio, porque es la diferencia entre un documento rector y una lámina.
+
+**Fuentes.** «Informe 1 — Levantamiento de la situación actual de la División de Municipalidades», 2022. «Estado del arte — servicios digitales DM SUBDERE», 15 de mayo de 2023. «Informe 2 — Modernización y Transformación Digital SUBDERE», 2023, §4.4.4.2.1 y §4.4.4.2.2. «Informe 2 — Anexo de procesos», 20 de marzo de 2024, procesos 12, 13, 14, 33, 35 y 36. «Informe 4 Final — Levantamiento de procesos y diseño de servicio SGM», 3 de julio de 2024. Ley N° 19.602, de 1998, y Programa de Fortalecimiento Municipal: citados por el corpus, no se leyó el texto de la ley. Los extractos entre comillas se tomaron de la transcripción del corpus, no del original maquetado.
+
+**Lo usa:** ninguna página con estas fuentes. `index.html` y `que-es.html` enuncian el problema, pero citándose a sí mismos. Su lugar natural es la página «Historia y precedentes» de la [Parte IV](#parte-iv--mapa-hacia-el-sitio).
 
 ## 1. Qué es el Nodo SUBDERE
 
@@ -96,6 +149,36 @@ La escala de referencia son 345 municipios y decenas de proveedores (`docs/nodo-
 - La puerta de acceso no define el negocio de ningún intercambio; solo publica, autoriza y deja constancia ([`plataforma-control.md`](plataforma-control.md)).
 - SUBDERE no es autora del contrato de un servicio que no opera: lo publica tal como lo entregó su responsable (ADR).
 - Quedan fuera un motor de integración hacia sistemas sin API y publicar la propia puerta como ficha del catálogo ([`plataforma-control.md`](plataforma-control.md), §7).
+
+### 4.1 Los dos ejes que ordenan cualquier intercambio
+
+**Estado:** Propuesta, 6 de octubre de 2026. Ordena en dos preguntas lo que antes se discutía caso a caso. Los esquemas están dibujados en [`esquemas-de-intercambio.html`](esquemas-de-intercambio.html).
+
+Cualquier intercambio del dominio municipal se ubica contestando dos preguntas, en este orden.
+
+**Primera: ¿quién tiene el mandato sobre el dato?** Decide el tipo. En el **tipo A** el municipio va directo al órgano que tiene el dato. En el **tipo B** SUBDERE recibe, procesa y entrega, porque está mandatada a hacerlo.
+
+**Segunda: ¿dónde vive el extremo del municipio?** Su nodo puede estar en su propia infraestructura, en la de su proveedor, o alojado en la de SUBDERE. Esto **no cambia el tipo** del intercambio: es una opción de alojamiento.
+
+| | Nodo propio del municipio | Nodo en su proveedor | Nodo alojado en SUBDERE |
+|---|---|---|---|
+| **Tipo A** | Sin restricciones | Depende del artículo 6 (HR-26) | Depende del artículo 6 (HR-26). Es el caso de un municipio con SGM |
+| **Tipo B** | Sin restricciones | Depende del artículo 6 (HR-26) | Depende del artículo 6 (HR-26). Es el caso de un municipio con SGM |
+
+**Lo que no es una opción del segundo eje.** Que SUBDERE consulte a otro órgano por cuenta del municipio no cambia dónde vive un nodo: cambia **quién es la parte** de la transacción. En un intercambio de tipo A lo convierte en un reenvío sin mandato, porque SUBDERE no tiene atribuciones sobre el trámite municipal; en uno de tipo B deja la entrada fuera de la Red. Por eso no aparece como columna: no es una variante de alojamiento, es una sustitución del titular.
+
+### 4.2 Los dos tramos de un intercambio de tipo B
+
+No tienen el mismo dueño ni la misma dificultad, y separarlos es lo que permite avanzar sin esperar respuestas.
+
+| Tramo | Quién es la parte | Qué necesita | Estado |
+|---|---|---|---|
+| **Salida** — otro órgano, o un municipio, consulta el producto de SUBDERE | SUBDERE, como proveedora de algo propio | Su nodo y su certificado | **Sin restricciones.** Se puede publicar sin preguntar nada |
+| **Entrada** — el municipio entrega lo que SUBDERE debe procesar | El municipio | Un nodo del municipio, viva donde viva | Depende de HR-26. Hoy llega como planilla cargada a mano, que es canal de plataforma de trámite y es legítimo |
+
+**Consecuencia para la ruta.** SUBDERE puede publicar los servicios de salida de sus flujos de tipo B sin esperar a nadie, mientras la entrada sigue llegando por la vía actual, y migrar la entrada cuando se resuelva HR-26. Eso desacopla la Etapa 1 de una pregunta que no controlamos, y produce el segundo servicio publicado en el catálogo de la Red.
+
+**Y la pieza que está en todos los casos es la puerta de acceso.** En las salidas resguarda las APIs propias de SUBDERE y resuelve la identidad del municipio que consume. En las entradas establece qué municipio y qué funcionario, que es lo que alimenta la trazabilidad del artículo 9. Y el SGM la necesita igual, por ser un sistema que sirve a muchos municipios a la vez. Es la única pieza grande de esta discusión que **no** depende de HR-26.
 
 **Lo usa:** `que-es.html` (parcialmente). No hay una sección «qué no es» en el sitio.
 
@@ -250,7 +333,7 @@ La escala de referencia son 345 municipios y decenas de proveedores (`docs/nodo-
 
 - **¿Qué es el Nodo SUBDERE?** La plataforma de encuentro municipal: un solo lugar con los estándares del dominio municipal y una sola puerta para usarlos. → §1
 - **¿Tengo que cambiar de sistema?** No. Si tu sistema cumple lo publicado, se conecta. → §11
-- **¿Cuánto cuesta?** El corpus no lo define para municipios. La acreditación y tarifa de privados es un pendiente. → §11, X-88
+- **¿Cuánto cuesta?** El corpus no lo define para municipios. La acreditación y tarifa de privados es un pendiente. → §11, X-88, HR-19
 - **¿Puedo probar sin pedir permiso?** Sí, con datos inventados. Hoy, en los ambientes de prueba de las fichas; la zona de práctica del nodo está por construir. → §3, §9
 - **¿Qué necesito para trabajar con datos reales?** Que el municipio acepte los Términos y Condiciones y reciba la credencial. Los dos están por definir. → §11
 - **¿Cómo sé qué versión de una API rige y cuánto tiempo tengo para actualizarme?** La propia API lo informa en su contrato: versión, fecha de publicación y plazo de gracia vigente. → §3, X-109
@@ -300,12 +383,17 @@ flowchart LR
 
 Lo que hace falta para que «lo publicado funciona» sea cierto y para que alguien pueda operar con datos reales.
 
+> **Esta etapa ya no espera a la Secretaría de Gobierno Digital.** Por decisión del 7 de octubre de 2026 ([ADR de acceso directo](adr-2026-10-acceso-directo-primera-etapa.md)), el CUT y los permisos de circulación se consumen directo desde su fuente en SEM, a través de la puerta y sin nodo de la Red: el primero porque es dato abierto, el segundo porque fuente y consumidor son del mismo órgano. Las vistas de uso humano se autentican con Clave Única y son canal de plataforma de trámite. HR-26 sigue abierto, pero pasa a la Etapa 2 — al primer sistema municipal que consuma máquina a máquina. Los contratos se escriben con la disciplina de PISEE para que migrar sea configuración.
+
 | Hito | Depende de | Bloqueado por | Responde |
 |---|---|---|---|
 | Modelo de operación de la puerta y licitación, construir y operar por separado | Etapa 0 validada | X-84 | Jefatura |
 | Puerta de acceso construida: identidad de sistemas y de personas | Licitación | X-02; taxonomía de scopes (X-89 según `plataforma-control.md`) | Por asignar |
 | Términos y Condiciones redactados y credencial emitida | Decisión jurídica | HR-07 | Por asignar |
 | CUT expuesto fuera de la red SEM, con ambiente de pruebas abierto (UC-0) | Puerta | — | Equipo SEM |
+| Repositorio del contrato del CUT y del de permisos de circulación, con solo la carpeta `nodo/` | Entrega de las APIs | HR-25 | Equipo del nodo |
+| APIs publicadas con datos sintéticos, declarados en la ficha | Contratos registrados | — | Equipo del nodo |
+| Perfiles y Clave Única para las vistas de uso humano, con administración delegada y registro de accesos | Puerta | HR-21, HR-27, HR-28 | Por asignar |
 | Contrato de permisos de circulación publicado por su responsable, con servicio | Conversación con Servicios Municipales | Preguntas de `wiki-fiscalizacion.html` | Servicios Municipales |
 | Monitor de disponibilidad publicando `estado/status.json` | — | HR-09 | Por asignar |
 | Zona de práctica | Puerta | HR-08 | Por asignar |
@@ -361,6 +449,8 @@ Todos los pendientes del nodo en una lista. Los `X-nn` son los que ya usan los d
 | X-109 | Política de versionado: versión mayor, aviso y plazo de gracia | ADR, `wiki-conectar.html` | Etapa 2 |
 | X-110 | Procedimiento de registro de un contrato | ADR | Etapa 2 |
 | X-111 | Alcance del renderizador de contratos | ADR | Etapa 2 |
+| X-121 | Formato de error de PISEE, que no está documentado | [`adr-2026-10-acceso-directo-primera-etapa.md`](adr-2026-10-acceso-directo-primera-etapa.md) §3, `backend/INSTRUCCIONES.md` §6 | Etapa 2 |
+| X-122 | Límite de tamaño de mensaje, para declarar uno propio que sea portable | [`adr-2026-10-acceso-directo-primera-etapa.md`](adr-2026-10-acceso-directo-primera-etapa.md) §3, `backend/apps/integraciones/INSTRUCCIONES.md` | Etapa 1 |
 
 ### Pendientes nuevos (HR-nn)
 
@@ -383,11 +473,22 @@ Todos los pendientes del nodo en una lista. Los `X-nn` son los que ya usan los d
 | HR-15 | Historia institucional: resolución, mandato, presupuesto; instituciones participantes y convenios vigentes | Ausente; [`nodo-lp-precedente.md`](nodo-lp-precedente.md) lo señala como sección que falta | Jefatura | — |
 | HR-16 | Adoptar o no la gobernanza del Nodo L&P (cinco niveles, operador externo, mesa técnica, repositorio de tickets) | [`nodo-lp-precedente.md`](nodo-lp-precedente.md) | Jefatura | Etapa 1 |
 | HR-17 | **Choque de marcadores.** En el registro de pendientes del SGM, X-87, X-88 y X-89 significan otra cosa (efecto de dominio comprobable, calendario de días hábiles, inyección de fallas), X-83 es el inventario de plataformas, y X-108 a X-111 no están registrados. Hay que renumerar los de este repositorio o registrarlos allá | [`plataforma-control.md`](plataforma-control.md), ADR, `pendientes.md` del SGM | Equipo del nodo con el equipo SGM | — |
+| HR-18 | La experiencia del funcionario municipal que entrega la información no está levantada: todo el diagnóstico mira desde adentro de SUBDERE | §0.5 | Por definir | Etapa 3 |
+| HR-19 | Si el nodo es gratuito para el municipio, y con qué acto se declara | §0.4, §14 | Jefatura | Etapa 1 |
+| HR-20 | Dónde se despliega y se publica la aplicación del nodo, dado que el GitLab institucional tiene Pages bloqueado | [`adr-2026-10-estructura-de-repositorios.md`](adr-2026-10-estructura-de-repositorios.md), `frontend/README.md` | Jefatura con informática | Etapa 1 |
+| HR-21 | El realm de Keycloak existe y el equipo tiene acceso. Queda confirmar que federa Clave Única también para los perfiles municipales, y qué se hace con quien administra y no la tiene. Y si conviene portar a Keycloak la integración directa con Clave Única que ya funciona en Banco de Proyectos, o al revés | `backend/INSTRUCCIONES.md` §2.ter y §3, `apps/cuentas/INSTRUCCIONES.md` | Por definir | Etapa 1 |
+| HR-22 | Token de lectura hacia los repositorios de servicio: quién lo emite, con qué alcance y cada cuánto se rota | [`adr-2026-10-estructura-de-repositorios.md`](adr-2026-10-estructura-de-repositorios.md) | Equipo del nodo con informática | Etapa 1 |
+| HR-23 | Qué se hace con los enlaces de GitHub Pages ya difundidos cuando se apague esa publicación | [`adr-2026-10-estructura-de-repositorios.md`](adr-2026-10-estructura-de-repositorios.md) | Equipo del nodo | — |
+| HR-24 | Lista de etiquetas permitidas al sanear el Markdown de la wiki | `backend/README.md` | Equipo del nodo | Etapa 2 |
+| HR-25 | Custodia del contrato del CUT y de permisos de circulación: el dueño de la fuente entrega las APIs, y en algún momento se le pide que aloje el contrato junto al servicio y lo complete. En qué momento se pide y cómo se traspasa | [`adr-2026-10-acceso-directo-primera-etapa.md`](adr-2026-10-acceso-directo-primera-etapa.md) §6 | Equipo del nodo | Etapa 1 |
+| HR-26 | Si el nodo de un municipio puede estar alojado en infraestructura de un tercero —SUBDERE o su proveedor— con el certificado a nombre del municipio, y si una instalación puede alojar varios | §4.1, §4.2, [`esquemas-de-intercambio.html`](esquemas-de-intercambio.html) | Secretaría de Gobierno Digital | Etapas 2 y 3 |
+| HR-27 | Administración delegada de perfiles: quién da de alta a los funcionarios de cada municipio en las vistas de uso humano | [`adr-2026-10-acceso-directo-primera-etapa.md`](adr-2026-10-acceso-directo-primera-etapa.md) §4 | Por definir | Etapa 1 |
+| HR-28 | Registro de accesos de las vistas de uso humano: qué se guarda, por cuánto tiempo y quién lo revisa | [`adr-2026-10-acceso-directo-primera-etapa.md`](adr-2026-10-acceso-directo-primera-etapa.md) §4 | Por definir (jurídico) | Etapa 1 |
 
 ### Preguntas agrupadas que viven en otro documento
 
 - **A Servicios Municipales, sobre los permisos de circulación:** qué parte del registro es pública, si cubre a todos los municipios, con qué frecuencia se actualiza, qué significa un año con permisos en dos comunas y qué haría falta para entregar el código de comuna. → `prototipos/wiki-fiscalizacion.html`
-- **Del backend:** cómo se cargan las especificaciones, cómo se avisa un cambio de especificación vigente, si la wiki se administra en Django o en archivos, en qué idioma queda la API. → `backend/README.md`
+- **Del backend:** cómo se cargan las especificaciones, cómo se avisa un cambio de especificación vigente, en qué idioma queda la API. → `backend/README.md`
 - **Del frontend:** renderizado en servidor, dónde se publica el sitio real, cómo se sanea el Markdown de la wiki, idioma de las rutas. → `frontend/README.md`
 - **Del Nodo L&P, por revisar:** sus diagramas, el Convenio Marco, las Reglas de Uso, sus indicadores y la relación con SUSESO. → [`nodo-lp-precedente.md`](nodo-lp-precedente.md)
 - **Del ADR, consecuencias abiertas:** validador y renderizador por formato, validación en el registro, exigencia de especificación en las bases desde la primera versión. → ADR, §4
@@ -400,6 +501,7 @@ Todos los pendientes del nodo en una lista. Los `X-nn` son los que ya usan los d
 
 | Sección | Páginas que la usan hoy |
 |---|---|
+| 0. El problema | Ninguna. `index.html` y `que-es.html` lo enuncian sin estas fuentes |
 | 1. Qué es | `index.html`, `que-es.html` |
 | 2. Para quién | `participar.html`, `wiki.html` |
 | 3. Qué hace | `que-es.html`, `wiki-recorrido.html`, `wiki-consumir.html`, `wiki-conectar.html` |

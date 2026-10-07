@@ -44,8 +44,11 @@ El catálogo parte corto a propósito: es preferible una entrada completa —con
 | [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md) | **Documento rector.** Qué es el nodo, para quién, qué hace, cómo se gobierna y hacia dónde va, con las etapas y todas las preguntas abiertas. De aquí se alimenta el sitio |
 | [`docs/maqueta.md`](docs/maqueta.md) | **El documento del sitio.** Las páginas del sitio, el modelo de datos del catálogo, la identidad gráfica, qué describe el sitio y qué no, y las decisiones de cada cambio |
 | [`docs/adr-2026-09-estandar-legible-por-maquina.md`](docs/adr-2026-09-estandar-legible-por-maquina.md) | **Decisión.** El estándar de cada nodo se publica como especificación legible por máquina; el catálogo la renderiza y no la transcribe |
+| [`docs/adr-2026-10-acceso-directo-primera-etapa.md`](docs/adr-2026-10-acceso-directo-primera-etapa.md) | **Decisión.** La primera etapa consume el CUT y los permisos de circulación directo desde su fuente, sin nodo de la Red, con el contrato escrito en forma PISEE para que migrar sea configuración |
 | [`docs/plataforma-control.md`](docs/plataforma-control.md) | **Propuesta.** Quién es quién y control de paso: las dos piezas de la puerta de acceso |
 | [`docs/flujo_1.md`](docs/flujo_1.md) · [`docs/flujo_2.md`](docs/flujo_2.md) | Diagramas de la plataforma de control: demostración y producción |
+| [`docs/esquemas-de-intercambio.html`](docs/esquemas-de-intercambio.html) | **Los cinco esquemas de intercambio.** Tipo A y tipo B de la minuta de la Red, los precedentes de SICEX y del Nodo Laboral y Previsional, y la puerta de SUBDERE, con la diferencia entre alojar el nodo del municipio y sustituirlo como titular. Se abre en el navegador |
+| [`docs/esquemas-de-repositorios.html`](docs/esquemas-de-repositorios.html) | **La organización de los repositorios.** De dónde sale cada ficha, qué publica la aplicación y qué es público. Se abre en el navegador |
 | [`docs/nodo-lp-precedente.md`](docs/nodo-lp-precedente.md) | El Nodo Laboral y Previsional de la Subsecretaría de Previsión Social, en operación desde noviembre de 2025: qué se copia, qué no, y qué advertencias deja |
 
 ---
@@ -60,6 +63,10 @@ python -m http.server 8000 --directory prototipos
 ```
 
 Las pantallas de servicio consultan APIs externas y, cuando no están alcanzables, funcionan con datos de demostración diciéndolo en pantalla. Para apuntarlas a un servicio real se agrega `?api=` a la dirección.
+
+## Construir el producto
+
+Cada parte tiene sus instrucciones de construcción, pensadas para trabajar con asistencia de IA: [`backend/INSTRUCCIONES.md`](backend/INSTRUCCIONES.md) con el contrato común y el orden de las aplicaciones, un `INSTRUCCIONES.md` por aplicación en `backend/apps/`, y [`frontend/INSTRUCCIONES.md`](frontend/INSTRUCCIONES.md). Lo que no está en ellos no es libertad creativa: es una pregunta abierta, y las preguntas viven en la Parte III de la hoja de ruta.
 
 ## Levantar el producto
 

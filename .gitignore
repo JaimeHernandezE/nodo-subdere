@@ -36,5 +36,9 @@ yarn-error.log*
 .vite/
 coverage/
 
+# Material recibido de terceros. NUNCA se versiona.
+# Decidido en docs/adr-2026-10-estructura-de-repositorios.md §2.4
+insumos/
+
 # Otros
 *.log
