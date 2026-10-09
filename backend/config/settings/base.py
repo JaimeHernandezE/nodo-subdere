@@ -22,6 +22,15 @@ NODO_OCULTO = env.bool("NODO_OCULTO", default=True)
 VERSION_DESPLIEGUE = env.str("VERSION_DESPLIEGUE", default="desarrollo")
 CUT_API_URL = env.str("CUT_API_URL", default="")
 
+# Identidad: realm de Keycloak que federa Clave Única. Ver apps/cuentas/INSTRUCCIONES.md §2.
+KEYCLOAK_ISSUER = env.str("KEYCLOAK_ISSUER", default="")
+KEYCLOAK_AUDIENCE = env.str("KEYCLOAK_AUDIENCE", default="")
+KEYCLOAK_JWKS_URL = env.str("KEYCLOAK_JWKS_URL", default="")
+KEYCLOAK_JWKS_CACHE_SEGUNDOS = env.int("KEYCLOAK_JWKS_CACHE_SEGUNDOS", default=3600)
+# Solo local.py lo activa; prod.py no arranca si la variable existe.
+CUENTAS_EMISOR_LOCAL = False
+CUENTAS_CLAVE_LOCAL = BASE_DIR / ".local" / "emisor_local.pem"
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -34,6 +43,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "drf_spectacular_sidecar",
     "apps.core",
+    "apps.cuentas",
 ]
 
 MIDDLEWARE = [
@@ -89,9 +99,7 @@ CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_HEADERS = (*default_headers, "x-procedimiento", "x-id-tramite")
 
 REST_FRAMEWORK = {
-    # La autenticación con el realm de Keycloak la agrega `cuentas`. Mientras no exista,
-    # todo endpoint que no declare AllowAny queda cerrado.
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.cuentas.autenticacion.AutenticacionRealm"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "UNAUTHENTICATED_USER": None,
     "EXCEPTION_HANDLER": "apps.core.errores.manejador_de_excepciones",

@@ -1,4 +1,14 @@
+import os
+
+from django.core.exceptions import ImproperlyConfigured
+
 from .base import *
+
+if "CUENTAS_EMISOR_LOCAL" in os.environ:
+    raise ImproperlyConfigured(
+        "CUENTAS_EMISOR_LOCAL existe en el ambiente. El emisor local es solo para desarrollo: "
+        "en producción la variable no puede estar presente, con ningún valor."
+    )
 
 DEBUG = False
 

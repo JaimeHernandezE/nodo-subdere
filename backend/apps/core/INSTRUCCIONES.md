@@ -65,6 +65,8 @@ Mismo caso que `canonico`: normaliza un identificador del Estado y lo usan varia
 
 Toda respuesta de error sale con el sobre de `../../INSTRUCCIONES.md` §6. El manejador traduce las excepciones de DRF (`VALIDACION_FALLIDA`, `NO_ENCONTRADO`, `PERMISO_DENEGADO`, `NO_AUTENTICADO`…) y cualquier excepción no prevista sale como `ERROR_INTERNO` con mensaje genérico — **nunca** con la traza ni el mensaje original; la traza va al log. Las rutas inexistentes fuera de DRF responden el mismo sobre (`handler404`, `handler500`).
 
+`rest_framework.views` se importa dentro del manejador y no al cargar el módulo: cargarlo carga las clases de autenticación, y las de `cuentas` importan este módulo para heredar de `ErrorNodo`. Moverlo arriba es un import circular.
+
 **Contrato con las demás apps:** toda excepción propia del proyecto hereda de `ErrorNodo` y declara su `codigo`, `mensaje` y `status`. Las de `integraciones` (`FuenteNoDisponible`, `NoEncontrado`…) y la `CampoDeFicha` de `catalogo` siguen esa forma. Así `core` traduce excepciones que no conoce, sin importar nada de esas apps.
 
 ### Cabeceras de contexto

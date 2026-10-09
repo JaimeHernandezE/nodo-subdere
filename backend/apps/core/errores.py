@@ -12,7 +12,6 @@ from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 from django.http import Http404, JsonResponse
 from rest_framework import exceptions, status
 from rest_framework.response import Response
-from rest_framework.views import set_rollback
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +80,10 @@ def _cabeceras(exc: exceptions.APIException) -> dict:
 
 
 def manejador_de_excepciones(exc, context):
+    # Importar rest_framework.views al cargar el módulo carga las clases de autenticación,
+    # y las de `cuentas` importan este módulo para heredar de ErrorNodo.
+    from rest_framework.views import set_rollback
+
     if isinstance(exc, Http404):
         exc = exceptions.NotFound()
     elif isinstance(exc, DjangoPermissionDenied):

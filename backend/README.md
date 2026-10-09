@@ -292,6 +292,16 @@ En este segundo modo, `DJANGO_SETTINGS_MODULE` y las demás variables se cargan 
 
 La API queda en `http://localhost:8000/api/v1/`: `/api/v1/salud` responde sin token, y la documentación está en `/api/v1/schema/swagger-ui/`.
 
+### Un token sin Keycloak
+
+En local, con `CUENTAS_EMISOR_LOCAL=1` en `.env.local`, el backend acepta tokens de un emisor propio. Primero hace falta un perfil: se crea desde `/admin/` con un superusuario. Después:
+
+```bash
+docker compose --env-file .env.local exec api python manage.py emitir_token_local --run 11.111.111-1
+```
+
+El token se usa en `Authorization: Bearer <token>`, o en el botón «Authorize» de Swagger. En producción esa variable no puede existir: `prod.py` no arranca. Detalle en `apps/cuentas/INSTRUCCIONES.md` §2.
+
 ---
 
 ## Qué falta decidir
