@@ -131,17 +131,19 @@ Los endpoints públicos usan `publicados()` siempre. **Que sea explícito es a p
 |---|---|---|
 | `GET /api/v1/nodos` | público | Solo `publicados()`. Filtros por ámbito, clase, madurez e intercambio |
 | `GET /api/v1/nodos?visibilidad=oculto\|retirado\|todas` | lector | Lo mismo, con los no publicados. Es lo que usa la pantalla de visibilidad |
-| `GET /api/v1/nodos/{identificador}` | público | Resuelve también por `Alias`, y responde con el `identificador` vigente. Un nodo `oculto` responde por enlace directo, con `visibilidad` en la respuesta para que el frontend avise. Incluye `leido_en` y `commit` |
-| `GET /api/v1/nodos/{identificador}/especificacion` | público | La vigente: metadatos y, si tiene archivo, la URL del archivo |
-| `GET /api/v1/nodos/{identificador}/especificacion/archivo` | público | El archivo tal como se leyó, con su tipo de contenido. `404` si el nodo solo publica metadato |
+| `GET /api/v1/nodos/{identificador}` | público si está publicado; lector si está oculto | Resuelve también por `Alias`, y responde con el `identificador` vigente. Incluye `visibilidad`, para que el frontend avise cuando no está publicado, y `leido_en` y `commit` |
+| `GET /api/v1/nodos/{identificador}/especificacion` | ídem | La vigente: metadatos y, si tiene archivo, la URL del archivo |
+| `GET /api/v1/nodos/{identificador}/especificacion/archivo` | ídem | El archivo tal como se leyó, con su tipo de contenido. `404` si el nodo solo publica metadato |
 | `PATCH /api/v1/nodos/{identificador}` | curador | Solo `visibilidad`, `orden` y `nota_editorial`. Deja `Bitacora` |
 | `GET /api/v1/ambitos` · `GET /api/v1/municipios` | público | Listados de apoyo. El de municipios lee `core.Municipio` |
 
 **Errores del `PATCH`:** un campo de ficha da `400` con código `CAMPO_DE_FICHA`; un campo que no existe, `400 VALIDACION_FALLIDA`; publicar sin especificación vigente o salir de `retirado` a otro estado que no sea `oculto`, `400 VALIDACION_FALLIDA` con el detalle.
 
+**Un nodo `oculto` no es público, ni por enlace directo.** Toda ficha nueva entra oculta, y los repositorios de origen están en el GitLab privado de SUBDERE: un contrato en preparación no puede quedar a la vista de quien adivine su identificador. Sin sesión, un oculto responde `404`, igual que uno que no existe, para no confirmar que está ahí. Con cualquier perfil responde, con su `visibilidad`, y así se puede revisar antes de publicar.
+
 **Un `retirado` responde `410 Gone`** con código `NODO_RETIRADO` y su `leido_en` en los detalles, en el nodo y en su especificación. No `404`: `404` dice «nunca existió».
 
-**Las rutas públicas no autentican**, como `/salud`: un token vencido no puede dejar a alguien sin ver el catálogo. La excepción es `GET /nodos` con `?visibilidad=`, que sí autentica: sin sesión, `401`.
+**Las rutas públicas autentican de forma opcional.** Un token válido identifica al perfil, que es lo que permite ver un oculto. Un token ausente, vencido o inválido deja la petición como anónima, sin `401`: un token vencido no puede dejar a alguien sin ver el catálogo publicado. La excepción es `GET /nodos` con `?visibilidad=`, que exige sesión: sin ella, `401`.
 
 La respuesta del nodo **no** incluye su entrada de wiki ni sus servicios. Los pide el frontend a esas aplicaciones, filtrando por el identificador del nodo.
 
@@ -150,13 +152,13 @@ La respuesta del nodo **no** incluye su entrada de wiki ni sus servicios. Los pi
 1. Intentar escribir `funcion` por el `PATCH` da `400` con código `CAMPO_DE_FICHA`.
 2. Cambiar `identificador` levanta excepción en `save()`, incluso desde la sincronización. Cambiar `funcion` con `save()` sin `desde_sincronizacion=True`, o con `Nodo.objects.update(funcion=...)`, levanta `CampoDeFicha`. `CAMPOS_DE_FICHA` cubre todos los campos del modelo salvo los editoriales y los de `ModeloBase`.
 3. `Especificacion` y `Ambiente` no se crean, modifican ni borran sin `desde_sincronizacion=True`, ni por `save()` ni por `QuerySet`.
-4. `GET /nodos` no devuelve ocultos ni retirados; `GET /nodos/{id}` de un oculto sí responde, con su `visibilidad`. `?visibilidad=todas` sin sesión da `401`.
+4. `GET /nodos` no devuelve ocultos ni retirados. `GET /nodos/{id}` de un oculto, su especificación y su archivo dan `404` sin sesión, también por `Alias`; con un perfil responden, con su `visibilidad`. `?visibilidad=todas` sin sesión da `401`.
 5. Un identificador antiguo con `Alias` resuelve al nodo nuevo y responde con el identificador vigente.
 6. Un nodo `retirado` responde `410` con la fecha de la última lectura, también en su especificación.
 7. Solo una `Especificacion` por nodo puede estar `vigente`.
 8. No se publica un nodo sin especificación vigente, y de `retirado` solo se pasa a `oculto`.
 9. Un nodo con solo metadato responde `404` en el archivo, y uno con archivo lo devuelve tal como se guardó.
-10. Un token vencido no impide leer las rutas públicas.
+10. Un token vencido no impide leer un nodo publicado, y tampoco da acceso a uno oculto.
 
 ## 7. Qué no implementar
 

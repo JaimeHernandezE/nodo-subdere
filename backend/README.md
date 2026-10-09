@@ -61,7 +61,7 @@ El corazón. Los modelos y sus decisiones:
 
 **`Nodo`** — un intercambio en el que participa el municipio. Los campos están en [`apps/catalogo/INSTRUCCIONES.md`](apps/catalogo/INSTRUCCIONES.md) §2.
 
-**`visibilidad` es un campo del modelo, no una consulta**, con tres estados: `publicado`, `oculto` y `retirado`. Un nodo oculto existe y no aparece en los listados, pero su ficha sigue siendo alcanzable por enlace directo. Los listados filtran de forma explícita, no con un *manager* que esconda el filtro:
+**`visibilidad` es un campo del modelo, no una consulta**, con tres estados: `publicado`, `oculto` y `retirado`. Un nodo oculto existe pero no es público: no aparece en los listados y, sin sesión, su ficha responde `404` también por enlace directo. Con cualquier perfil se puede revisar antes de publicarla. Los listados filtran de forma explícita, no con un *manager* que esconda el filtro:
 
 ```python
 class NodoQuerySet(models.QuerySet):

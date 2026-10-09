@@ -39,6 +39,14 @@ Un cliente que lee un archivo de un repositorio por su API, con un token de **so
 
 Implementar detrás de una interfaz pequeña —`leer(fuente) -> (commit, contenido)`— con una implementación para GitLab y otra falsa para las pruebas. Las pruebas **no** salen a la red.
 
+**Cómo se lee en GitLab.** Está probado contra `gitlab.subdere.gob.cl` (16.11) y el repositorio `modernizacion/cut`, desde el contenedor de la API:
+
+- `GET {REGISTRO_GIT_API_URL}/projects/{grupo%2Frepo}/repository/files/{ruta%2Fcodificada}?ref={rama}`, con el token en la cabecera `PRIVATE-TOKEN`. Una sola respuesta trae `content` en base64 y `last_commit_id`: no hace falta clonar.
+- **La ficha se lee en la rama y el archivo de la especificación en el *commit* de la ficha**, con `ref={commit}`. Así los dos salen de la misma versión del repositorio aunque alguien haga *push* entremedio, que es lo que pide la validación 4.
+- Los bytes llegan intactos: la huella del contrato leído coincide con la del archivo original. La validación 8 puede confiar en ella.
+- El token necesita alcance `read_api` **y rol *Reporter*** en el proyecto. Con *Guest* GitLab responde `403 Forbidden` aunque el alcance sea correcto; sin token, `401` en la API y `404` en el archivo. El motivo de la `Lectura` tiene que distinguir esos tres casos.
+- GitLab solo responde dentro de la red de SUBDERE o por VPN: el nombre resuelve a una IP privada. El servidor de la aplicación tiene que estar en esa red; es parte de **HR-20**.
+
 ## 3. Validación
 
 En este orden, y la primera que falla detiene el resto:

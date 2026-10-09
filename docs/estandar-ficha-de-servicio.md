@@ -164,7 +164,7 @@ Una ficha se publica solo si pasa todo esto. Si falla, el servicio no entra y el
 |---|---|
 | **Alta** | Alguien registra la URL del repositorio. La aplicación lee la ficha, la valida y la deja en el registro como oculta |
 | **Publicar** | Decisión editorial, cuando el servicio cumple el criterio de entrada: contrato, pantalla, entrada de wiki y servicio disponible |
-| **Ocultar** | Sale de los listados; su ficha sigue alcanzable por enlace directo, diciendo que no está en el catálogo |
+| **Ocultar** | Sale del catálogo público, también por enlace directo. La ven solo las personas con perfil en el nodo, con un aviso de que no está publicada. Una ficha recién dada de alta está en este estado |
 | **Retirar** | Deja de leerse el repositorio. La última lectura se conserva, porque el catálogo tiene que poder decir qué publicó y cuándo |
 | **Resincronizar** | Vuelve a leer el repositorio. Si la ficha cambió, queda una versión nueva en el registro con su *commit* y su fecha |
 
