@@ -36,7 +36,7 @@ Dos familias, y conviene no mezclarlas.
 
 | Método y ruta | Qué hace |
 |---|---|
-| `GET /api/v1/servicios` | Los servicios de nodos `publicados()` |
+| `GET /api/v1/servicios` | Los servicios de nodos `publicados()`. Con `?nodo={identificador}`, solo los construidos sobre ese nodo: es lo que pide la ficha del nodo, porque `catalogo` no consulta esta aplicación |
 | `GET /api/v1/servicios/{slug}` | Uno, con sus tareas y su estado |
 
 **Las consultas que entregan datos**, autenticadas, una por tarea:

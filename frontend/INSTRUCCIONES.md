@@ -48,7 +48,9 @@ Dejar redirecciones desde las direcciones viejas, incluida `nodo.html?id=divisio
 
 ## 4. Los dos patrones que la maqueta ya resolvió
 
-**La especificación se renderiza, no se transcribe.** La ficha lee el archivo OpenAPI y lo dibuja operación por operación. No hay una lista de operaciones escrita a mano en ninguna parte, y ese es el punto: si alguien edita la especificación y la ficha no cambia, la ficha está mintiendo. En React es un componente `<Especificacion archivo={...} />` que hace lo que hoy hace `assets/openapi.js`. Límite conocido que conviene no perder: solo resuelve referencias internas (`#/…`); una especificación repartida en varios archivos no se ensambla.
+**La ficha de un nodo se compone de tres pedidos.** `GET /api/v1/nodos/{id}` trae la ficha; `GET /api/v1/wiki?nodo={id}` su entrada de wiki, y `GET /api/v1/servicios?nodo={id}` las pantallas construidas sobre él. El backend no las junta porque `catalogo` no depende de `wiki` ni de `servicios`. Si el nodo responde por un alias, la ruta se reescribe al identificador vigente que viene en la respuesta. Un `410` con `NODO_RETIRADO` tiene su propia vista: qué fue y hasta cuándo se leyó.
+
+**La especificación se renderiza, no se transcribe.** La ficha lee el archivo OpenAPI desde `GET /api/v1/nodos/{id}/especificacion/archivo` y lo dibuja operación por operación. Si el nodo publica solo metadato, la ficha lo dice y no inventa operaciones. No hay una lista de operaciones escrita a mano en ninguna parte, y ese es el punto: si alguien edita la especificación y la ficha no cambia, la ficha está mintiendo. En React es un componente `<Especificacion archivo={...} />` que hace lo que hoy hace `assets/openapi.js`. Límite conocido que conviene no perder: solo resuelve referencias internas (`#/…`); una especificación repartida en varios archivos no se ensambla.
 
 **Las pantallas degradan con honestidad.** Cuando la fuente no responde, el backend devuelve datos de muestra con un campo que lo declara. La pantalla **tiene que mostrarlo**, visible, al lado del dato. Intentar, y si falla, mostrar la muestra con su etiqueta.
 
@@ -59,7 +61,7 @@ Y una tercera, nueva: **las pantallas que entregan datos de personas avisan que 
 Es la parte que no existe en la maqueta, así que acá sí hay diseño nuevo. Cuatro pantallas, en este orden de construcción:
 
 1. **Fuentes.** Lista con su última lectura: *commit*, fecha, válida o no, y el motivo cuando falló. Botón de resincronizar. Es la pantalla que más se va a usar.
-2. **Visibilidad.** Publicar, ocultar y retirar un nodo. **Los campos que vienen de la ficha se muestran en gris y no se pueden editar**, con una nota de por qué: los escribe la sincronización. Que el formulario lo diga evita la pregunta.
+2. **Visibilidad.** Lista todos los nodos con `GET /api/v1/nodos?visibilidad=todas`. Publicar, ocultar y retirar un nodo; de `retirado` solo se vuelve a `oculto`. **Los campos que vienen de la ficha se muestran en gris y no se pueden editar**, con una nota de por qué: los escribe la sincronización. Que el formulario lo diga evita la pregunta.
 3. **Wiki.** Editor de Markdown con vista previa, historial de versiones y botón de publicar.
 4. **Perfiles y equipos.** Alta por RUN, rol, activar y desactivar, y designar al encargado de un municipio. La misma pantalla la usa el encargado municipal para su equipo, **mostrando solo lo que puede hacer**: crea solo lectores, solo en su municipio, y no se edita a sí mismo. El backend lo impide igual; la pantalla evita que lo intente.
 

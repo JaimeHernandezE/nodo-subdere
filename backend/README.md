@@ -29,7 +29,7 @@ backend/
 ├── apps/
 │   ├── core/                Modelos abstractos, Municipio y utilidades compartidas
 │   ├── cuentas/             Keycloak, perfiles, roles, Acceso y Bitacora
-│   ├── catalogo/            Ámbitos, instituciones, nodos y especificaciones
+│   ├── catalogo/            Ámbitos, nodos, alias, especificaciones y ambientes
 │   ├── registro/            Fuentes registradas y sus lecturas
 │   ├── integraciones/       Adaptadores a las APIs externas
 │   ├── servicios/           Las pantallas construidas sobre las APIs
@@ -74,23 +74,11 @@ class Nodo(ModeloBase):
 
 No confundir `visibilidad` con `madurez`. La madurez dice qué tan avanzado está el intercambio; la visibilidad, si se muestra. Son ejes independientes.
 
-**`Especificacion`** — el contrato técnico, **versionado aparte de la ficha**. Cada versión se registra y ninguna se corrige: si el contrato cambia, se crea una versión nueva y se marca cuál rige. El contrato puede cambiar sin que cambie la descripción del nodo, y al revés.
-
-```python
-class Especificacion(ModeloBase):
-    nodo      = models.ForeignKey(Nodo, related_name="especificaciones", ...)
-    version   = models.CharField(...)       # única por nodo
-    archivo   = models.FileField(...)       # opcional: puede haber solo metadato
-    formato   = models.CharField(...)
-    validador = models.URLField(...)
-    origen    = models.TextField(...)
-    acceso    = models.TextField(...)
-    vigente   = models.BooleanField(default=False)
-```
+**`Especificacion`** — el contrato técnico, **versionado aparte de la ficha**. Cada versión se registra y ninguna se corrige: si el contrato cambia, se crea una versión nueva y se marca cuál rige. El contrato puede cambiar sin que cambie la descripción del nodo, y al revés. El archivo se guarda como texto, tal como se leyó del repositorio, con una huella que impide corregir una versión ya publicada. Puede no haber archivo: una plataforma o un servicio sin contrato en formato de máquina publica solo metadato. Los campos están en [`apps/catalogo/INSTRUCCIONES.md`](apps/catalogo/INSTRUCCIONES.md) §2.
 
 **No hay un campo `operaciones`, y es deliberado.** Cuando la especificación tiene archivo, se renderiza desde el archivo; cuando solo hay metadato, no se transcriben operaciones a mano. La decisión completa está en [`adr-2026-09-estandar-legible-por-maquina.md`](../docs/adr-2026-09-estandar-legible-por-maquina.md).
 
-**`archivo` opcional separa dos cosas que se confunden:** que un estándar esté publicado y que el servicio esté alcanzable. El catálogo de APIs lista los nodos con archivo; los que solo declaran metadato aparecen en el catálogo de servicios.
+**`catalogo` no consulta `registro`, `servicios` ni `wiki`**, que se construyen después. Lo que necesita de la última lectura —de cuándo es y de qué *commit* salió— lo escribe la sincronización en el propio nodo; la entrada de wiki y las pantallas de un nodo las pide el frontend a sus aplicaciones.
 
 ### `servicios`
 
@@ -156,10 +144,11 @@ class Lectura(ModeloBase):
 
 | Campo | Lo escribe |
 |---|---|
-| `ambito`, `clase`, `funcion`, `descripcion`, `madurez`, `responsable`, `instituciones`, `intercambio` | Solo la sincronización |
+| Todo lo que viene de la ficha: `identificador`, `nombre`, `sigla`, `ambito`, `clase`, `intercambio`, `funcion`, `descripcion`, `madurez`, `instituciones`, `responsable_*`, `origen_*`, `procedencia_*`, `acceso_*`, y de la lectura, `leido_en` y `commit` | Solo la sincronización |
+| `Especificacion` y `Ambiente`, completos | Solo la sincronización |
 | `visibilidad` (`publicado`, `oculto`, `retirado`), `orden`, `nota_editorial` | Solo una persona, desde la administración |
 
-**Los campos que vienen de la ficha son de solo lectura.** No por estilo: si alguien los edita, la siguiente sincronización le pasa por encima y el cambio se pierde sin aviso. Se cierran tres puertas: `readonly_fields` en el admin, una verificación en `save()` que solo deja pasar a la sincronización, y un `QuerySet` que rechaza `update()` y `bulk_update()` sobre esos campos.
+**Los campos que vienen de la ficha son de solo lectura.** No por estilo: si alguien los edita, la siguiente sincronización le pasa por encima y el cambio se pierde sin aviso. Se cierran tres puertas: `readonly_fields` en el admin, una verificación en `save()` que solo deja pasar a la sincronización, y un `QuerySet` que rechaza `update()` y `bulk_update()` sobre esos campos. Por la misma razón no hay relaciones muchos a muchos con datos de ficha: `instituciones` es una lista de textos, porque un `.set()` se saltaría las tres puertas.
 
 `retirado` deja de leer el repositorio pero conserva la última lectura, porque el catálogo tiene que poder decir qué publicó y hasta cuándo.
 

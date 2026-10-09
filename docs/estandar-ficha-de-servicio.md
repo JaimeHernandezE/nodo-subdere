@@ -33,6 +33,8 @@ La ficha la escribe el servicio. Lo que es decisión editorial del nodo **no va 
 | Madurez, responsable, instituciones | Ficha del servicio |
 | Especificación, versión y ambientes | Ficha del servicio |
 | Origen del dato y la norma que lo respalda | Ficha del servicio |
+| Procedencia del contrato y modo de acceso | Ficha del servicio |
+| Nota editorial, como el aviso de que algo es una demostración | Registro del nodo |
 | Visibilidad: publicado, oculto o retirado | Registro del nodo |
 | Entrada de wiki y observaciones sobre el contrato | Registro del nodo |
 | Aplicación de uso humano, cuando la construye el nodo | Registro del nodo |
@@ -51,7 +53,7 @@ sigla: CUT                            # opcional
 
 ambito: Transversal                   # Transversal | SGM
 clase: intercambio                    # intercambio | plataforma
-intercambio: consulta                 # consulta | entrega
+intercambio: consulta                 # consulta | entrega; se omite si clase es plataforma
 
 funcion: >
   Entrega el código único territorial de cada región, provincia y comuna,
@@ -74,8 +76,8 @@ instituciones:
   - Municipalidades
 
 especificacion:
-  archivo: nodo/cut.openapi.yaml      # ruta dentro de este mismo repositorio
-  formato: openapi-3.0
+  archivo: nodo/cut.openapi.yaml      # ruta dentro de este mismo repositorio; opcional
+  formato: openapi-3.0                # openapi-3.0 | openapi-3.1 | descripcion
   version: 1.0.0                      # debe coincidir con info.version del archivo
   publicada: 2026-09-15
 
@@ -92,6 +94,31 @@ origen:
   nota: >
     Los códigos los fija el decreto. El servicio los publica en forma
     legible por máquina; no constituye una fuente nueva.
+
+procedencia:                          # opcional
+  copia: exacta                       # exacta | instantanea | reconstruccion | sin-copia
+  fuente: Especificación de referencia entregada por el equipo SEM, septiembre de 2026
+  detalle: Sin ningún cambio.
+
+acceso:                               # opcional
+  tipo: abierto                       # abierto | credencial | clave-unica
+  detalle: >
+    Sin credencial. Son datos públicos y solo se consultan.
+```
+
+Una plataforma, o un servicio que todavía no tiene contrato en formato de máquina, publica **solo metadato**: omite `especificacion.archivo` y declara `formato: descripcion`. El catálogo la muestra diciendo que no hay archivo, y no transcribe operaciones a mano.
+
+```yaml
+clase: plataforma                     # sin campo intercambio
+
+especificacion:
+  formato: descripcion
+  version: 0.1.0
+  publicada: 2026-09-15
+
+procedencia:
+  copia: sin-copia
+  fuente: Documentación de arquitectura del SGM, en el repositorio del proyecto
 ```
 
 ## 4. Los campos
@@ -104,15 +131,17 @@ origen:
 | `sigla` | No | |
 | `ambito` | Sí | De la lista cerrada de ámbitos del nodo |
 | `clase` | Sí | `intercambio` o `plataforma` |
-| `intercambio` | Sí | Qué hace el municipio: `consulta` o `entrega`. Decide qué capacidades del nodo aplican |
+| `intercambio` | Solo si `clase` es `intercambio` | Qué hace el municipio: `consulta` o `entrega`. Decide qué capacidades del nodo aplican. Una plataforma no lo lleva: no es algo que el municipio consulte ni entregue |
 | `funcion` | Sí | Una o dos frases. Es lo que se lee en la tarjeta del catálogo |
 | `descripcion` | Sí | Párrafo. Qué resuelve y para quién |
 | `madurez` | Sí | De la lista cerrada |
 | `responsable` | Sí | Organismo, equipo y correo institucional. Es el registro público de quién responde por el servicio |
 | `instituciones` | Sí | Las que participan del intercambio |
-| `especificacion` | Sí | Ruta en este repositorio, formato, versión y fecha de publicación |
+| `especificacion` | Sí | Formato, versión y fecha de publicación. `archivo`, la ruta en este repositorio, es opcional: sin él, el formato es `descripcion` y el servicio publica solo metadato. Con él, el formato es `openapi-3.0` u `openapi-3.1` |
 | `ambientes` | No | Lista. Cada uno declara si entrega datos reales o inventados |
 | `origen` | No | La norma que respalda el dato, y una nota. Obligatorio cuando el servicio publica datos que fija una norma |
+| `procedencia` | No | Qué relación tiene lo que publica el catálogo con la fuente que rige: `copia` (`exacta`, `instantanea`, `reconstruccion` o `sin-copia`), `fuente` y `detalle`. Dice cuánto se le puede creer a lo publicado. Las diferencias con la fuente no van acá: van en la wiki |
+| `acceso` | No | Cómo se consume: `tipo` (`abierto`, `credencial` o `clave-unica`) y `detalle`. Es el resumen que se muestra en la tarjeta; las condiciones las fija la puerta de acceso |
 
 **`id` inmutable no es una formalidad.** El nodo ya pasó por un renombre —`division-territorial` a `cut`— que obligó a mantener un alias para no romper los enlaces que ya habían circulado. Los identificadores no se corrigen: se crea otro y el nodo guarda el alias.
 
@@ -123,10 +152,11 @@ Una ficha se publica solo si pasa todo esto. Si falla, el servicio no entra y el
 1. El archivo es YAML válido y `ficha` es una versión conocida.
 2. Están todos los campos obligatorios, y los de lista cerrada traen un valor de la lista.
 3. `id` no está tomado por otro servicio del registro.
-4. `especificacion.archivo` existe en el mismo repositorio y en el mismo *commit*, y se puede parsear.
-5. `especificacion.version` coincide con el `info.version` de ese archivo. Es una comprobación gratis y atrapa el error más común: publicar una versión y declarar otra.
+4. Si declara `especificacion.archivo`, existe en el mismo repositorio y en el mismo *commit*, y se puede parsear.
+5. Si hay archivo, `especificacion.version` coincide con el `info.version` de ese archivo. Es una comprobación gratis y atrapa el error más común: publicar una versión y declarar otra.
 6. `responsable.correo` es una dirección institucional.
 7. **La ficha no contiene datos personales** más allá del contacto institucional del responsable. Sin excepciones: ya tuvimos un archivo con nombre y RUT reales versionado en este repositorio.
+8. **Una versión ya publicada no cambia de contenido.** Si la ficha declara una `especificacion.version` que el registro ya tiene, el archivo tiene que ser idéntico. Si cambió, es una versión nueva y se declara como tal.
 
 ## 6. Dar de alta, ocultar y retirar
 
@@ -142,7 +172,7 @@ Esto es el procedimiento de registro que estaba pendiente, convertido en mecanis
 
 ## 7. Versión de este estándar
 
-`ficha: 1`. Agregar campos opcionales no cambia la versión. Quitar un campo, volverlo obligatorio o cambiar el significado de uno existente sube a `2`, y la aplicación tiene que seguir leyendo las fichas en versión 1 mientras alguna quede.
+`ficha: 1`. Agregar campos opcionales no cambia la versión: así entraron `procedencia` y `acceso`, el 9 de octubre de 2026, y así se volvió opcional `especificacion.archivo` e `intercambio` en las plataformas, porque relajan una exigencia y toda ficha que era válida lo sigue siendo. Quitar un campo, volverlo obligatorio o cambiar el significado de uno existente sube a `2`, y la aplicación tiene que seguir leyendo las fichas en versión 1 mientras alguna quede.
 
 Es la misma regla que el nodo le pide a los contratos que publica: ninguna versión se corrige.
 
@@ -152,3 +182,4 @@ Es la misma regla que el nodo le pide a los contratos que publica: ninguna versi
 - **Observaciones sobre el contrato.** Van en la wiki.
 - **Credenciales, URLs internas y nombres de servidores.** La ficha es pública en cuanto el nodo la publica.
 - **Cuotas y permisos.** Son de la puerta de acceso, no del catálogo.
+- **Dependencias y descargables.** La maqueta los muestra; entran después como campos opcionales, cuando haya un caso que los necesite fuera de la maqueta.

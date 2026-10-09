@@ -46,7 +46,7 @@ El contenido se guarda como Markdown, **no** como HTML. Nunca se guarda HTML gen
 
 | Método y ruta | Quién | Qué hace |
 |---|---|---|
-| `GET /api/v1/wiki` | público | Índice: secciones y entradas con versión publicada |
+| `GET /api/v1/wiki` | público | Índice: secciones y entradas con versión publicada. Con `?nodo={identificador}`, solo las asociadas a ese nodo |
 | `GET /api/v1/wiki/{slug}` | público | La versión vigente y publicada. Si no hay, `404` |
 | `GET /api/v1/wiki/{slug}/versiones` | lector | El historial, con autor, fecha y resumen |
 | `POST /api/v1/wiki/{slug}/versiones` | editor | Crea una versión nueva, en borrador |
@@ -54,7 +54,7 @@ El contenido se guarda como Markdown, **no** como HTML. Nunca se guarda HTML gen
 
 El público nunca ve borradores. Un `GET` público de una entrada sin versión publicada responde `404`, no una página vacía.
 
-Las entradas asociadas a un nodo se enlazan desde su ficha: incluir el `slug` de la entrada en la respuesta de `GET /api/v1/nodos/{identificador}`.
+Las entradas asociadas a un nodo se enlazan desde su ficha, pero **la respuesta del nodo no las incluye**: `catalogo` se construye antes y no consulta esta aplicación. El frontend las pide con `GET /api/v1/wiki?nodo={identificador}`. Un nodo sin entrada publicada recibe una lista vacía, y la ficha muestra «Entrada pendiente».
 
 ## 4. Contenido inicial
 
