@@ -12,6 +12,7 @@ Lo que comparten las demás aplicaciones. No tiene endpoints propios salvo el de
 |---|---|
 | `ModeloBase` (abstracto) y `Municipio` | `models.py` |
 | `canonico(codigo, nivel)` | `cut.py` |
+| Dígito verificador y forma canónica del RUN y el RUT | `run.py` |
 | Lectura de la foto del CUT | `foto_cut.py` · datos en `datos/` |
 | `ErrorNodo` y el manejador de errores de DRF | `errores.py` |
 | Cabeceras de contexto y `X-Robots-Tag` | `middleware.py` |
@@ -29,7 +30,7 @@ Todo modelo del proyecto hereda de él: `creado_en` y `actualizado_en`. Nada de 
 
 ### `Municipio` vive acá
 
-Es dato de referencia territorial, no de dominio: lo usan `cuentas` (perfiles y réplica), `catalogo` (listados) y `servicios`. Si viviera en `catalogo`, `cuentas` dependería de una app que se construye después (`../../INSTRUCCIONES.md` §7).
+Es dato de referencia territorial, no de dominio: lo usan `cuentas` (perfiles y equipos municipales), `catalogo` (listados) y `servicios`. Si viviera en `catalogo`, `cuentas` dependería de una app que se construye después (`../../INSTRUCCIONES.md` §7).
 
 Por la misma razón `Acceso` y `Bitacora` **no** viven acá: apuntan a `Perfil`, y eso haría depender `core` de `cuentas`. Están en [`../cuentas/INSTRUCCIONES.md`](../cuentas/INSTRUCCIONES.md) §5.
 
@@ -50,6 +51,15 @@ La migración de carga **no llama a la red**: lee una foto versionada de la fuen
 ### `canonico`
 
 El relleno del Código Único Territorial (`1101` → `"01101"`). Está acá porque lo usan `Municipio`, `integraciones` y `catalogo`, y **no puede estar duplicado**: ninguna otra app rellena códigos por su cuenta. Función pura, sin base de datos. Rechaza un código más largo que su nivel; uno más corto lo rellena. Su explicación para humanos vive en la entrada de wiki del CUT.
+
+### El RUN: `run.py`
+
+Mismo caso que `canonico`: normaliza un identificador del Estado y lo usan varias aplicaciones —`cuentas` para la llave del perfil, `integraciones` para los RUT que traen los datos de fiscalización—, así que vive en un solo lugar.
+
+- **No hay forma canónica fijada por norma.** Cada sistema guarda el RUN distinto. Clave Única resuelve la ambigüedad entregándolo separado (`RolUnico`: `numero` entero, `DV` texto, `tipo`), y el nodo lo guarda así. Para mostrar y comparar, la forma de texto es la convención de intercambio: sin puntos, con guion y la K en mayúscula (`12345678-5`). La da `formatear`.
+- **RUN y RUT comparten el algoritmo de módulo 11, pero no son lo mismo.** Las funciones aceptan los dos; quien persiste uno guarda también su tipo.
+- **Se normaliza en la entrada, nunca en la comparación.** `validar` recibe el par como lo entrega Clave Única; `leer` recibe lo que escribe una persona, con o sin puntos y guion. Las dos devuelven `(numero, dv)` normalizado o levantan `ValueError`. Si en algún lado se compara quitando puntos al vuelo, tarde o temprano hay dos filas para la misma persona.
+- Funciones puras, sin base de datos. Hasta 8 dígitos de cuerpo, que cubre personas y empresas.
 
 ### Errores: `ErrorNodo` y el sobre único
 
@@ -83,6 +93,7 @@ En `tests/`. Si una de estas deja de cumplirse, se rompió una decisión de arri
 6. `X-Robots-Tag` aparece con `NODO_OCULTO=1` y con `0` no.
 7. Una petición previa de CORS con `X-Procedimiento` desde un origen permitido es aceptada.
 8. Swagger se sirve sin depender de un CDN.
+9. El dígito verificador sale bien en los tres casos (dígito, `0` y `K`); un par que no corresponde se rechaza; las formas habituales de escribir un RUN se leen igual, y la forma canónica va sin puntos, con guion y la K en mayúscula.
 
 ## Qué no implementar
 

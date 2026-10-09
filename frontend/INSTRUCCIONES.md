@@ -61,7 +61,7 @@ Es la parte que no existe en la maqueta, así que acá sí hay diseño nuevo. Cu
 1. **Fuentes.** Lista con su última lectura: *commit*, fecha, válida o no, y el motivo cuando falló. Botón de resincronizar. Es la pantalla que más se va a usar.
 2. **Visibilidad.** Publicar, ocultar y retirar un nodo. **Los campos que vienen de la ficha se muestran en gris y no se pueden editar**, con una nota de por qué: los escribe la sincronización. Que el formulario lo diga evita la pregunta.
 3. **Wiki.** Editor de Markdown con vista previa, historial de versiones y botón de publicar.
-4. **Perfiles.** Alta, rol, activar y desactivar. Y la réplica del registro de cada municipio, **siempre con la fecha en que el municipio lo informó**.
+4. **Perfiles y equipos.** Alta por RUN, rol, activar y desactivar, y designar al encargado de un municipio. La misma pantalla la usa el encargado municipal para su equipo, **mostrando solo lo que puede hacer**: crea solo lectores, solo en su municipio, y no se edita a sí mismo. El backend lo impide igual; la pantalla evita que lo intente.
 
 Cada acción que cambia algo muestra qué quedó registrado en la bitácora. Es barato y hace que la gente confíe en la herramienta.
 

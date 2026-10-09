@@ -116,7 +116,8 @@ Hay un *realm* de Keycloak al que el equipo tiene acceso, y ese realm federa Cla
 - El frontend manda el *access token* en `Authorization: Bearer <token>`.
 - El backend valida el token con el **JWKS del realm**, verificando firma, `iss`, `aud` y expiración. Implementar como clase de autenticación de DRF en `apps/cuentas`. Dependencia: `PyJWT` con `cryptography`. No usar bibliotecas que agreguen sesiones o vistas de login al backend.
 - El JWKS va en el caché de Django y se vuelve a pedir una sola vez ante un `kid` desconocido, para soportar la rotación de claves del realm. Detalle en `apps/cuentas/INSTRUCCIONES.md` §2.
-- El `sub` del token identifica a la persona. El RUN viene como *claim* del realm.
+- **El RUN identifica a la persona, no el `sub`.** Viene en el *claim* `RolUnico` tal como lo entrega Clave Única (número, dígito verificador y tipo). El `sub` es el del realm y cambia si se recrea el usuario o se cambia de realm: se guarda solo para depurar.
+- Si Clave Única no responde, el respaldo son credenciales locales del realm con segundo factor, no un segundo camino en el backend. En local hay un emisor propio que nunca arranca en producción. Detalle en `apps/cuentas/INSTRUCCIONES.md` §2.
 
 **Keycloak autentica; el nodo autoriza.** Lo que la persona puede hacer lo dice el perfil en nuestra base, no el token. Detalle en `apps/cuentas/INSTRUCCIONES.md`.
 
@@ -132,13 +133,13 @@ Estas salen de decisiones escritas en `../docs/`. Romper una es un cambio de dec
 4. **El backend no guarda los datos de los servicios externos.** Consulta, normaliza y cachea por un tiempo corto y declarado. Si a un adaptador le aparecen tablas, se convirtió en un registro paralelo.
 5. **Ninguna versión se corrige.** Especificaciones, fichas y entradas de wiki se versionan; una corrección es una versión nueva.
 6. **Degradación honesta.** Si una fuente no responde, no se despublica ni se vacía nada: se muestra el último dato bueno diciendo de cuándo es.
-7. **Sin datos personales fuera de lo declarado.** Solo el RUN y el nombre de quien administra, y lo que un servicio externo devuelva en el momento de una consulta, que no se persiste.
+7. **Sin datos personales fuera de lo declarado.** Solo el RUN y el nombre de quien tiene perfil en el nodo, y lo que un servicio externo devuelva en el momento de una consulta, que no se persiste.
 
 ## 5. Trazabilidad y registro de accesos: un solo modelo
 
 Toda consulta que entregue **datos de una persona** —por API o por pantalla— deja un registro en `cuentas.Acceso`. Es a la vez el registro de accesos de las vistas humanas (HR-28) y el antecedente de los metadatos del artículo 9 del Decreto N° 12, para que migrar a la Red sea configuración.
 
-Las consultas a datos abiertos sin datos personales, como el CUT, no se registran. Y en producción, toda consulta que se registra exige perfil activo: no hay accesos anónimos a datos de personas.
+Las consultas a datos abiertos sin datos personales, como el CUT, no se registran. Y toda consulta que se registra exige perfil activo, en cualquier ambiente y también con datos sintéticos: no hay accesos anónimos a datos de personas.
 
 Lo que **no** se acepta de la petición, porque se deduce del token: quién es la persona y a qué municipio pertenece. Lo que **sí** viene en la petición: `X-Procedimiento` (para qué trámite) y, cuando corresponda, `X-Id-Tramite`.
 
@@ -177,7 +178,7 @@ El frontend puede empezar en paralelo desde el paso 3, contra el OpenAPI del bac
 Oculta por informática, y aun así:
 
 - `DEBUG=False`, `ALLOWED_HOSTS` y `CSRF_TRUSTED_ORIGINS` por variable de entorno, `SECURE_*` activos.
-- Sin registro público de usuarios. Un perfil se crea a mano o por réplica; nadie entra por tener Clave Única.
+- Sin registro público de usuarios. Un perfil lo crea un administrador o el encargado de un municipio; nadie entra por tener Clave Única.
 - Los endpoints públicos del catálogo existen y devuelven **solo** lo que está `publicado`.
 - `X-Robots-Tag: noindex` mientras esté oculta (`NODO_OCULTO=1`), y quitarlo es una decisión consciente.
 - Ningún dato real de un vecino en la base. Los ambientes con datos sintéticos lo declaran en su ficha.

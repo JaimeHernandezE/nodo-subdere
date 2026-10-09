@@ -49,7 +49,7 @@ Clave Única autentica, **no autoriza**. Que la persona sea funcionaria del muni
 
 Dos requisitos que se modelan desde el principio porque después son una migración:
 
-- **Administración delegada.** Si SUBDERE da de alta a los funcionarios uno por uno, no escala a 345 municipios. Hace falta un rol de administrador por municipio que dé de alta a los suyos (HR-27).
+- **Administración delegada.** Si SUBDERE da de alta a los funcionarios uno por uno, no escala a 345 municipios. Hace falta un rol de administrador por municipio que dé de alta a los suyos (HR-27). **Resuelto el 7 de octubre de 2026:** cada municipio tiene un encargado que arma su equipo en el nodo, y los administradores de SUBDERE pueden hacer lo mismo y reemplazar al encargado. Detalle en `backend/apps/cuentas/INSTRUCCIONES.md` §4.
 - **Registro de accesos.** Las vistas muestran datos personales: patente y titular. Que un funcionario del municipio A consulte un vehículo del municipio B tiene que quedar registrado — quién consultó qué y cuándo. Es el equivalente humano de la trazabilidad del artículo 9 (HR-28).
 
 ## 5. Datos sintéticos
@@ -81,7 +81,7 @@ El traspaso es **un cambio de dirección en el registro, no un servicio nuevo**:
 
 | Id | Pendiente |
 |---|---|
-| **HR-27** | Administración delegada de perfiles: quién da de alta a los funcionarios de cada municipio |
+| **HR-27** | Administración delegada de perfiles: quién da de alta a los funcionarios de cada municipio. **Resuelto** (§4) |
 | **HR-28** | Registro de accesos de las vistas de uso humano: qué se guarda, por cuánto tiempo y quién lo revisa |
 | **HR-25** | Traspaso de la custodia del contrato al dueño de la fuente, y en qué momento se pide |
 | **HR-26** | Sigue abierto, pero fuera de la ruta crítica de la Etapa 1 |

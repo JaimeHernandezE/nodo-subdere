@@ -177,26 +177,31 @@ Autenticación a través de un **realm de Keycloak que federa Clave Única**, po
 
 ```python
 class Perfil(ModeloBase):
-    sub    = models.CharField(unique=True)   # el subject del realm
-    run    = models.CharField(unique=True)   # claim del realm, que lo trae de Clave Única
-    nombre = models.CharField()
-    rol    = models.CharField(...)           # lector | editor | curador | administrador
-    municipio = models.ForeignKey("core.Municipio", null=True, blank=True, ...)
-    activo = models.BooleanField(default=True)
+    run_numero = models.PositiveIntegerField()   # RolUnico de Clave Única, tal como llega
+    run_dv     = models.CharField(max_length=1)
+    run_tipo   = models.CharField(default="RUN")
+    sub        = models.CharField(blank=True)    # el subject del realm; no es llave
+    nombre     = models.CharField()
+    rol        = models.CharField(...)           # lector | editor | curador | administrador
+    municipio  = models.ForeignKey("core.Municipio", null=True, blank=True, ...)
+    es_encargado = models.BooleanField(default=False)
+    activo     = models.BooleanField(default=True)
 ```
 
-| Rol | Puede |
+La llave es el RUN, no el `sub`: así lo indica la guía de integración de Clave Única, y con Keycloak en medio el `sub` es del realm y puede cambiar. El RUN se guarda separado, como lo entrega Clave Única, y su forma de texto (`12345678-5`) se calcula.
+
+| Rol | Además de lo anterior, puede |
 |---|---|
 | `lector` | Ver la administración, sin cambiar nada |
 | `editor` | Escribir y publicar entradas de wiki |
 | `curador` | Publicar, ocultar y retirar servicios; resincronizar |
-| `administrador` | Registrar y dar de baja fuentes; administrar perfiles |
+| `administrador` | Registrar y dar de baja fuentes; administrar perfiles; designar encargados |
 
 De cada persona se guarda el RUN y el nombre que entrega Clave Única, y nada más: es el mínimo para saber quién hizo cada cambio, y está ahí por eso. Una persona sin perfil activo se autentica y no entra: no se crean perfiles solos.
 
 El superusuario local de Django se mantiene únicamente para la puesta en marcha y emergencias, documentado como tal y no para uso diario.
 
-**Los usuarios municipales no los administramos nosotros.** Cada municipalidad designa un encargado que administra a su gente; el nodo mantiene una **réplica de ese registro, por municipio y solo para visualización**, siempre con la fecha en que el municipio la informó. La réplica no autoriza: quien autoriza es el perfil. Dónde administra el encargado sigue abierto (HR-27).
+**Cada municipio arma su equipo en el nodo.** Su encargado crea, desactiva y reactiva los perfiles de su municipio, siempre como `lector`. Los administradores de SUBDERE pueden hacer lo mismo en cualquier municipio, y son los únicos que designan o reemplazan al encargado: si uno renuncia o pierde el acceso, el municipio no queda sin control. El equipo son los perfiles con ese municipio; no hay réplica ni tabla aparte (HR-27, resuelto).
 
 ### `wiki` — el editor
 
