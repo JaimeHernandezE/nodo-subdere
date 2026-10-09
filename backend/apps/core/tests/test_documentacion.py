@@ -1,3 +1,6 @@
+from django.core.management import call_command
+
+
 def test_swagger_se_sirve_sin_depender_de_un_cdn(client):
     respuesta = client.get("/api/v1/schema/swagger-ui/")
     html = respuesta.content.decode()
@@ -5,6 +8,10 @@ def test_swagger_se_sirve_sin_depender_de_un_cdn(client):
     assert respuesta.status_code == 200
     assert "cdn.jsdelivr.net" not in html
     assert "/static/drf_spectacular_sidecar/swagger-ui-dist/swagger-ui-bundle.js" in html
+
+
+def test_el_esquema_se_genera_sin_advertencias_y_es_openapi_valido(tmp_path):
+    call_command("spectacular", "--validate", "--fail-on-warn", "--file", tmp_path / "esquema.yaml")
 
 
 def test_el_esquema_openapi_es_publico_y_describe_salud(client):

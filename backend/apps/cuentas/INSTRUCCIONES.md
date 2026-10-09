@@ -11,7 +11,7 @@ Depende solo de `core`. Ninguna clave foránea hacia `catalogo` ni hacia otra ap
 | Pieza | Archivo |
 |---|---|
 | `Perfil`, `Rol`, `Acceso`, `Bitacora` y el `QuerySet` que solo crece | `models.py` |
-| Validación del token y resolución del perfil | `autenticacion.py` |
+| Validación del token y resolución del perfil; `AutenticacionOpcional` para rutas públicas | `autenticacion.py` |
 | Emisor de tokens para desarrollo local | `emisor_local.py` · `management/commands/emitir_token_local.py` |
 | `RolMinimo`, `GestionaEquipo`, `VeEquipo` | `permisos.py` |
 | `registrar_acceso` y `registrar_bitacora` | `actuaciones.py` |
@@ -38,6 +38,8 @@ El JWKS se guarda en el caché de Django (`django.core.cache`), por `KEYCLOAK_JW
 Si el JWKS no se puede descargar, la respuesta es `503` con código `REALM_NO_DISPONIBLE`, no `401`: la persona no hizo nada mal.
 
 `KEYCLOAK_JWKS_URL` vacío significa `<KEYCLOAK_ISSUER>/protocol/openid-connect/certs`, la ruta estándar de Keycloak.
+
+**Las rutas públicas autentican de forma opcional**, con `AutenticacionOpcional`. Un token ausente, vencido, inválido o sin perfil, o el realm caído, dejan la petición como anónima en vez de responder `401`, `403` o `503`: nadie se queda sin ver lo público por traer un token que no sirve. Un token válido identifica al perfil, que es lo que permite a `catalogo` mostrar un nodo oculto. Es la misma clase con `opcional=True` y no una subclase, porque el esquema OpenAPI nombra el mecanismo por su clase.
 
 ### La persona se identifica por el RUN, no por el `sub`
 

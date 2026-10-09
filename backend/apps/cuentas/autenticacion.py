@@ -4,6 +4,7 @@ Keycloak autentica; el perfil del nodo autoriza. La persona se identifica por el
 trae el claim `RolUnico`, no por el `sub`, que es del realm y puede cambiar.
 """
 
+import functools
 import json
 import logging
 import urllib.request
@@ -156,7 +157,23 @@ def resolver_perfil(reclamos: dict) -> Perfil:
 
 
 class AutenticacionRealm(authentication.BaseAuthentication):
+    """Con `opcional=True`, para rutas públicas: un token que no sirve deja la petición
+    como anónima, sin 401. Un token vencido, sin perfil o con el realm caído no puede
+    dejar a nadie sin ver lo que es público. Lo que exige sesión lo decide la vista.
+    """
+
+    def __init__(self, *, opcional: bool = False):
+        self.opcional = opcional
+
     def authenticate(self, request):
+        try:
+            return self._autenticar(request)
+        except exceptions.APIException:
+            if self.opcional:
+                return None
+            raise
+
+    def _autenticar(self, request):
         partes = authentication.get_authorization_header(request).split()
         if not partes or partes[0].lower() != b"bearer":
             return None
@@ -172,3 +189,8 @@ class AutenticacionRealm(authentication.BaseAuthentication):
 
     def authenticate_header(self, request):
         return 'Bearer realm="nodo"'
+
+
+# Una instancia de la misma clase y no una subclase: el esquema OpenAPI nombra el
+# mecanismo de autenticación por su clase, y dos clases no pueden llamarse igual.
+AutenticacionOpcional = functools.partial(AutenticacionRealm, opcional=True)
