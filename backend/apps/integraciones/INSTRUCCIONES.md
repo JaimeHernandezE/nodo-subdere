@@ -51,7 +51,7 @@ class AdaptadorPermisos:
     def provisionales(self, patente: str, contexto: Contexto) -> Respuesta[list[PermisoProvisional]]: ...
 ```
 
-La interfaz de permisos sigue las tres operaciones del contrato propuesto, [`fiscalizacion.openapi.yaml`](../../../prototipos/estandares/fiscalizacion.openapi.yaml): el vehículo, sus permisos y los permisos provisionales. **`PR` y cuatro dígitos calza con los dos patrones del contrato**: es una provisoria y también la forma antigua de dos letras y cuatro dígitos. El contrato no lo resuelve; el adaptador expone las dos operaciones y `servicios` decide cuál consulta. Es una observación para la wiki del contrato.
+La interfaz de permisos sigue las tres operaciones del contrato propuesto, [`fiscalizacion.openapi.yaml`](../../../prototipos/estandares/fiscalizacion.openapi.yaml): el vehículo, sus permisos y los permisos provisionales. **`PR` y cuatro dígitos calza con los dos patrones del contrato**: es una provisoria y también la forma antigua de dos letras y cuatro dígitos. El contrato no lo resuelve; el adaptador expone las dos operaciones y `servicios` decide cuál consulta: la trata como provisoria (`servicios` §3). Es una observación para la wiki del contrato.
 
 Los nombres de las operaciones en `Acceso` son `consultar_vehiculo`, `consultar_permisos` y `consultar_permisos_provisionales`, con `nodo="permisos-de-circulacion"`. Una patente mal formada no deja acceso: se rechaza antes de llegar a datos de nadie.
 

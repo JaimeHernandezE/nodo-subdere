@@ -82,9 +82,11 @@ No confundir `visibilidad` con `madurez`. La madurez dice qué tan avanzado est�
 
 ### `servicios`
 
-Las pantallas construidas sobre una API del catálogo. `Servicio` apunta a un `Nodo` por clave foránea y tiene `url`, `tareas`, `estado` y `nota`.
+Las pantallas construidas sobre una API del catálogo. `Servicio` apunta a un `Nodo` por clave foránea y tiene lo que pinta la pantalla: `nombre`, `funcion`, `descripcion`, `tareas`, `fuentes`, `estado` (`disponible`, `en_construccion` o `deseable`) y `nota`. Lo mantiene un curador por la API, con bitácora.
 
 Un servicio **no** es un nodo filtrado: es un consumidor de uno. Por eso es un modelo aparte y no una vista del mismo. El catálogo de APIs dice qué se puede consumir; el de servicios dice qué se puede usar hoy sin programar.
+
+Expone además las consultas de datos sobre los adaptadores de `integraciones`: el buscador del CUT, público, y los permisos de circulación por patente, con perfil activo y la cabecera `X-Procedimiento`. Cada respuesta dice de dónde salió (`fuente`, `foto` o `muestra`) y de cuándo es. El detalle está en [`apps/servicios/INSTRUCCIONES.md`](apps/servicios/INSTRUCCIONES.md).
 
 ### `wiki`
 
@@ -195,7 +197,7 @@ La llave es el RUN, no el `sub`: así lo indica la guía de integración de Clav
 |---|---|
 | `lector` | Ver la administración, sin cambiar nada |
 | `editor` | Escribir y publicar entradas de wiki |
-| `curador` | Publicar, ocultar y retirar servicios; resincronizar |
+| `curador` | Publicar, ocultar y retirar nodos; crear y editar servicios; resincronizar |
 | `administrador` | Registrar y dar de baja fuentes; administrar perfiles; designar encargados |
 
 De cada persona se guarda el RUN y el nombre que entrega Clave Única, y nada más: es el mínimo para saber quién hizo cada cambio, y está ahí por eso. Una persona sin perfil activo se autentica y no entra: no se crean perfiles solos.
