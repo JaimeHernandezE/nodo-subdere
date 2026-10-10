@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "apps.registro",
     "apps.integraciones",
     "apps.servicios",
+    "apps.wiki",
 ]
 
 MIDDLEWARE = [

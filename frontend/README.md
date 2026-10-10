@@ -40,8 +40,8 @@ Salen directo de la maqueta y conviene conservarlas, porque ya se compartieron e
 | `/apis/:id` | Ficha de un intercambio, con su especificación | `nodo.html?id=` |
 | `/servicios` | Catálogo de pantallas de uso humano | `catalogo.html` |
 | `/servicios/:id` | Una pantalla de servicio | `servicio-cut.html`, `servicio-fiscalizacion.html` |
-| `/wiki` | Índice de la wiki | `wiki.html` |
-| `/wiki/:slug` | Una entrada | `wiki-cut.html`, `wiki-fiscalizacion.html` |
+| `/wiki` | Portada e índice de la wiki | `wiki.html`, `wiki-intercambios.html` |
+| `/wiki/:slug` | Una entrada; el contenido llega del backend como HTML saneado | `wiki-*.html` (`wiki-fiscalizacion.html` es `/wiki/permisos-de-circulacion`) |
 | `/participar` | Cómo participar | `participar.html` |
 
 `catalogo.html` conserva ese nombre en la maqueta por los enlaces ya compartidos, pero **la ruta real es `/servicios`**. Conviene dejar una redirección desde las direcciones viejas —incluida `nodo.html?id=division-territorial`, un nodo que se renombró en la maqueta y que el catálogo real llama `cut` desde el inicio— para no romper lo que ya circuló.
@@ -123,5 +123,4 @@ Queda en `http://localhost:5173`, contra el backend en `http://localhost:8000`.
 
 - **Si el sitio se renderiza en el servidor.** Es contenido público y la indexación importa; las *Recomendaciones para sitios web institucionales* insisten en SEO. React puro en el navegador lo complica. Vale evaluar SSR antes de avanzar mucho.
 - **Cómo se publica.** Hoy la maqueta va por GitHub Pages. El sitio real necesita otra cosa, y de eso depende si el frontend puede ser estático o no.
-- **Qué pasa con la wiki.** Si su contenido queda en el backend como Markdown, el frontend necesita renderizarlo con cuidado: nada de HTML sin sanitizar.
 - **El idioma de las rutas.** Hoy están en español y así deberían quedar, pero conviene decidirlo ahora y no cuando haya enlaces repartidos.

@@ -19,6 +19,9 @@ dependencies = [
     "PyJWT>=2.15,<3",
     "cryptography>=50",
     "PyYAML>=6,<7",
+    "markdown-it-py>=4.2,<5",
+    "mdit-py-plugins>=0.6,<0.7",
+    "nh3>=0.3.7,<0.4",
     "gunicorn>=26,<27",
 ]
 

@@ -56,13 +56,15 @@ Dejar redirecciones desde las direcciones viejas de la maqueta, incluida `nodo.h
 
 Y una tercera, nueva: **las pantallas que entregan datos de personas avisan que la consulta queda registrada.** No en letra chica.
 
+**La wiki llega como HTML ya saneado.** `GET /api/v1/wiki/{slug}` trae el campo `html`, renderizado y saneado por el backend con lista blanca; el frontend lo inserta tal cual y no vuelve a renderizar Markdown. Los componentes de la maqueta llegan como `div` con clase `aviso`, `tarjetas`, `tarjeta` o `tecnico`, y los títulos `h2` a `h4` traen `id`: con ellos se arma «En esta página». El menú lateral sale de `GET /api/v1/wiki`, agrupado por `seccion` en el orden en que viene; la entrada sin sección (`inicio`) es la portada de `/wiki`, y `/wiki#intercambios` apunta al grupo de intercambios del índice.
+
 ## 5. La administración
 
 Es la parte que no existe en la maqueta, así que acá sí hay diseño nuevo. Cuatro pantallas, en este orden de construcción:
 
 1. **Fuentes.** Lista con su última lectura: *commit*, fecha, válida o no, y el motivo cuando falló. Botón de resincronizar. Es la pantalla que más se va a usar.
 2. **Visibilidad.** Lista todos los nodos con `GET /api/v1/nodos?visibilidad=todas`. Publicar, ocultar y retirar un nodo; de `retirado` solo se vuelve a `oculto`. **Los campos que vienen de la ficha se muestran en gris y no se pueden editar**, con una nota de por qué: los escribe la sincronización. Que el formulario lo diga evita la pregunta.
-3. **Wiki.** Editor de Markdown con vista previa, historial de versiones y botón de publicar.
+3. **Wiki.** Editor de Markdown con vista previa, historial de versiones y botón de publicar. La vista previa es la del backend (`GET /api/v1/wiki/{slug}/versiones/{id}` trae el HTML ya saneado), no un renderizador del navegador: así lo que se ve antes de publicar es exactamente lo que se publica.
 4. **Perfiles y equipos.** Alta por RUN, rol, activar y desactivar, y designar al encargado de un municipio. La misma pantalla la usa el encargado municipal para su equipo, **mostrando solo lo que puede hacer**: crea solo lectores, solo en su municipio, y no se edita a sí mismo. El backend lo impide igual; la pantalla evita que lo intente.
 
 Cada acción que cambia algo muestra qué quedó registrado en la bitácora. Es barato y hace que la gente confíe en la herramienta.

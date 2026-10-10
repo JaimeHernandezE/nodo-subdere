@@ -94,6 +94,8 @@ Entradas de documentación, con su relación opcional a un nodo. La wiki contien
 
 Esa última regla es importante y conviene que el modelo la haga evidente: el catálogo publica el contrato tal como se entregó, sin editarlo, porque su valor es ser copia fiel y auditable. La crítica vive en la wiki. Si alguna vez aparece un campo «observaciones» en `Especificacion`, esa separación se perdió.
 
+Parte con las once páginas de la maqueta, transcritas a Markdown y cargadas por una migración. Una entrada nombra su nodo por identificador, no por clave foránea, y se ve solo con sesión si ese nodo está oculto. El detalle está en [`apps/wiki/INSTRUCCIONES.md`](apps/wiki/INSTRUCCIONES.md).
+
 ### `integraciones`
 
 Los adaptadores hacia APIs que no son nuestras: hoy el CUT y los permisos de circulación.
@@ -212,21 +214,23 @@ Las entradas de wiki son contenido del nodo, no del servicio, así que sí se ed
 
 ```python
 class Entrada(ModeloBase):
-    slug   = models.SlugField(unique=True)
-    titulo = models.CharField()
-    nodo   = models.ForeignKey("catalogo.Nodo", null=True, blank=True, ...)
+    slug    = models.SlugField(unique=True)
+    titulo  = models.CharField()
+    nodo    = models.SlugField(blank=True)          # identificador del nodo, no clave foránea
+    seccion = models.CharField(choices=Seccion, blank=True)
     vigente = models.ForeignKey("wiki.Version", null=True, ...)
 
 class Version(ModeloBase):
     entrada   = models.ForeignKey(Entrada, related_name="versiones", ...)
     markdown  = models.TextField()
-    autor     = models.ForeignKey("cuentas.Perfil", ...)
+    resumen   = models.CharField()
+    autor     = models.ForeignKey("cuentas.Perfil", null=True, ...)   # nulo: contenido inicial
     publicada = models.BooleanField(default=False)
 ```
 
 Markdown en la base de datos, con versiones que no se corrigen: una edición crea una versión nueva y se marca cuál rige. Eso resuelve la pregunta que estaba abierta entre base de datos y archivos del repositorio — con un editor en la aplicación, los archivos obligarían a darle permiso de escritura al repositorio, que es bastante más superficie por bastante menos utilidad.
 
-**El Markdown se sanea al renderizar, siempre.** Es contenido que escriben personas y se muestra en un sitio público: nada de HTML crudo. La lista de etiquetas permitidas es parte del código, no configuración.
+**El Markdown se sanea al renderizar, siempre.** Es contenido que escriben personas y se muestra en un sitio público: nada de HTML crudo. La lista de etiquetas permitidas es parte del código, no configuración. Los componentes de la maqueta —aviso, tarjetas, bloque técnico— se escriben como contenedores `::: aviso`, no como HTML.
 
 Acá viven también las observaciones sobre un contrato. El catálogo no tiene dónde escribirlas y eso es a propósito.
 

@@ -1,0 +1,8 @@
+from django.apps import AppConfig
+
+
+class WikiConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.wiki"
+    label = "wiki"
+    verbose_name = "Wiki: entradas y versiones"
