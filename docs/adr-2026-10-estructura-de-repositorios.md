@@ -53,7 +53,7 @@ La aplicación lee el archivo `nodo/ficha.yaml` del repositorio de cada servicio
 
 Se descartó que cada servicio exponga su ficha como *endpoint*, por cuatro razones:
 
-1. **La ficha tiene que existir antes que el servicio.** Hoy hay un intercambio visible sin servicio detrás y dos ocultos que no corren. El criterio de entrada al catálogo es contrato, pantalla y wiki, no servicio arriba.
+1. **La ficha tiene que existir antes que el servicio.** Hoy hay un intercambio visible sin servicio detrás y dos ocultos que no corren. El criterio de entrada al catálogo es contrato, pantalla y wiki, no servicio arriba. *Precisado el 10 de octubre de 2026:* basta la ficha; pantalla y wiki son vistas independientes y opcionales, y se muestran las que existan.
 2. **El servicio puede estar en una red que la aplicación no alcanza.** El CUT responde hoy solo en la red SEM.
 3. **La ficha es metadato de gobernanza** —responsable, ámbito, madurez—: cambia por decisión de una persona cada varios meses y conviene que pase por revisión y quede en el historial. Un *endpoint* cambia al desplegar, sin revisión y sin rastro.
 4. **A un responsable se le puede pedir un archivo; un *endpoint* nuevo es pedirle código**, y el proyecto entero trata de bajar el costo de entrada.

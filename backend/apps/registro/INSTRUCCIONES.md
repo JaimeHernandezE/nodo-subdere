@@ -37,6 +37,12 @@ class Lectura(ModeloBase):
 
 Un cliente que lee un archivo de un repositorio por su API, con un token de **solo lectura**. El token entra por variable de entorno; su emisión, alcance y rotación son **HR-22**.
 
+**Un solo token para todas las fuentes, no uno por repositorio.** El token identifica al nodo ante GitLab; lo que cambia de una fuente a otra es la dirección, no la credencial. Registrar una fuente nueva no toca la configuración: basta con que esa identidad tenga rol *Reporter* en el repositorio. Por eso `Fuente` no tiene campo de token, y ningún secreto se guarda en la base.
+
+La identidad conviene que sea una **cuenta de servicio del nodo** —un usuario de GitLab sin persona detrás, con un token personal `read_api`— agregada como *Reporter* a los grupos donde viven los repositorios. Así un repositorio nuevo dentro de un grupo ya cubierto no requiere nada. Un *group access token* también sirve, pero alcanza solo a un grupo y sus subgrupos, y los repositorios pueden quedar repartidos cuando cada dueño aloje su contrato junto a su servicio (traspaso de custodia, §1).
+
+Cuando GitLab responde `403` o `404` a una fuente, el `motivo` de la `Lectura` tiene que decir qué hacer: dar rol *Reporter* a la cuenta del nodo en ese repositorio. Es el error más probable al dar de alta una fuente nueva.
+
 Implementar detrás de una interfaz pequeña —`leer(fuente) -> (commit, contenido)`— con una implementación para GitLab y otra falsa para las pruebas. Las pruebas **no** salen a la red.
 
 **Cómo se lee en GitLab.** Está probado contra `gitlab.subdere.gob.cl` (16.11) y el repositorio `modernizacion/cut`, desde el contenedor de la API:
@@ -76,7 +82,7 @@ La proyección guarda con `save(desde_sincronizacion=True)`, objeto por objeto, 
 
 La proyección es **idempotente**: sincronizar dos veces el mismo *commit* no cambia nada ni genera ruido en `Bitacora`.
 
-Una ficha nueva entra como `oculto`. Publicarla es una decisión editorial de un curador, cuando el servicio cumple el criterio de entrada: contrato, pantalla, entrada de wiki y servicio disponible.
+Una ficha nueva entra como `oculto`. Publicarla es una decisión editorial de un curador; no exige pantalla, entrada de wiki ni servicio disponible (ver `catalogo` §4).
 
 ## 5. Endpoints
 

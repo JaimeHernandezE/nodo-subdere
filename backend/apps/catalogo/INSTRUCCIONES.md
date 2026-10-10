@@ -14,7 +14,7 @@ Depende de `core` y `cuentas`. **No consulta `registro`, `servicios` ni `wiki`**
 |---|---|
 | `Ambito`, `Nodo`, `Alias`, `Especificacion`, `Ambiente`, las listas cerradas, `CAMPOS_DE_FICHA` y las tres puertas | `models.py` |
 | `CampoDeFicha` y `NodoRetirado` | `errores.py` |
-| Ámbitos y el alias `division-territorial` → `cut` | `migrations/0002_ambitos_y_alias.py` |
+| Los ámbitos `SGM` y `Transversal` | `migrations/0002_ambitos.py` |
 | Resolución de un identificador, con alias y reglas de visibilidad | `resolver_nodo` en `api/v1/nodos_view.py` |
 | Endpoints | `api/v1/` |
 | Admin para superusuarios locales | `admin.py` |
@@ -112,7 +112,7 @@ class Ambiente(ModeloBase):
 **Reglas que el modelo tiene que hacer evidentes:**
 
 - **`identificador` es inmutable.** Cambiarlo es un servicio nuevo. Si hay que renombrar, se crea otro y se deja un `Alias`. Verificar en `save()`, incluso con `desde_sincronizacion=True`.
-- **`Alias.destino` es un identificador, no una clave foránea.** El identificador es inmutable, igual que en `cuentas.Acceso.nodo`, y así un alias puede existir antes de que la sincronización cree su nodo. El de `division-territorial` → `cut` se carga con una migración de datos.
+- **`Alias.destino` es un identificador, no una clave foránea.** El identificador es inmutable, igual que en `cuentas.Acceso.nodo`, y así un alias puede existir antes de que la sincronización cree su nodo. **El catálogo parte sin alias**: `cut` se llama así desde la primera lectura. El renombre `division-territorial` → `cut` ocurrió en la maqueta, y esa dirección vieja la redirige el frontend (ver `frontend/INSTRUCCIONES.md`). Un alias se crea cuando un nodo real se renombre.
 - **Un solo `Especificacion` vigente por nodo** (restricción única condicional), y `(nodo, version)` único. Ninguna versión se borra ni se corrige: la `huella` permite a `registro` rechazar una lectura que trae la misma versión con otro contenido. **El modelo también lo impide**: `save()` calcula la huella y, sobre una versión ya guardada, rechaza otro contenido u otra versión **incluso desde la sincronización**. Lo único que la sincronización cambia de una versión registrada es cuál rige.
 - **El archivo de la especificación se guarda como texto, no como `FileField`.** Viene de un repositorio, no de una subida, y guardarlo como texto evita tener que servir archivos subidos en producción. Sin archivo, el nodo publica solo metadato: `formato = descripcion`, `ruta` y `contenido` vacíos, y la ficha lo dice. No se transcriben operaciones a mano.
 - **No existe campo `operaciones`.** Cuando hay archivo, las operaciones se renderizan desde el archivo. La decisión está en el ADR del estándar legible por máquina.
@@ -137,7 +137,7 @@ Los endpoints públicos usan `publicados()` siempre. **Que sea explícito es a p
 ## 4. Visibilidad
 
 - Un curador puede mover un nodo entre los tres estados, con una excepción: **de `retirado` solo se sale a `oculto`**. Volver a publicar algo retirado pasa primero por revisarlo.
-- **Publicar exige una especificación vigente.** Es lo único que el código puede comprobar. El resto del criterio de entrada —pantalla, entrada de wiki y servicio disponible— es juicio editorial del curador: `servicios` y `wiki` se construyen después y `catalogo` no los consulta.
+- **Publicar exige una especificación vigente**, que puede ser solo metadato. Toda ficha válida la trae, así que en la práctica exige que el nodo venga de una lectura buena. **No exige pantalla, entrada de wiki ni servicio disponible**: las tres vistas de un nodo —su contrato acá, sus pantallas en `servicios` y su entrada en `wiki`— son independientes, y un nodo puede publicarse con una sola. Cada una se publica en su aplicación, y el frontend muestra las que existan.
 - `registro` no lee las fuentes de nodos retirados. Al salir de `retirado`, la siguiente sincronización vuelve a leerlas.
 
 ## 5. Endpoints

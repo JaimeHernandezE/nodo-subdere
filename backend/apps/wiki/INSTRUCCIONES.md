@@ -54,7 +54,7 @@ El contenido se guarda como Markdown, **no** como HTML. Nunca se guarda HTML gen
 
 El público nunca ve borradores. Un `GET` público de una entrada sin versión publicada responde `404`, no una página vacía.
 
-Las entradas asociadas a un nodo se enlazan desde su ficha, pero **la respuesta del nodo no las incluye**: `catalogo` se construye antes y no consulta esta aplicación. El frontend las pide con `GET /api/v1/wiki?nodo={identificador}`. Un nodo sin entrada publicada recibe una lista vacía, y la ficha muestra «Entrada pendiente».
+Las entradas asociadas a un nodo se enlazan desde su ficha, pero **la respuesta del nodo no las incluye**: `catalogo` se construye antes y no consulta esta aplicación. El frontend las pide con `GET /api/v1/wiki?nodo={identificador}`. Un nodo sin entrada publicada recibe una lista vacía, y la ficha simplemente no enlaza a la wiki: la entrada es una vista opcional del nodo, no una deuda.
 
 ## 4. Contenido inicial
 

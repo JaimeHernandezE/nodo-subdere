@@ -143,7 +143,7 @@ procedencia:
 | `procedencia` | No | Qué relación tiene lo que publica el catálogo con la fuente que rige: `copia` (`exacta`, `instantanea`, `reconstruccion` o `sin-copia`), `fuente` y `detalle`. Dice cuánto se le puede creer a lo publicado. Las diferencias con la fuente no van acá: van en la wiki |
 | `acceso` | No | Cómo se consume: `tipo` (`abierto`, `credencial` o `clave-unica`) y `detalle`. Es el resumen que se muestra en la tarjeta; las condiciones las fija la puerta de acceso |
 
-**`id` inmutable no es una formalidad.** El nodo ya pasó por un renombre —`division-territorial` a `cut`— que obligó a mantener un alias para no romper los enlaces que ya habían circulado. Los identificadores no se corrigen: se crea otro y el nodo guarda el alias.
+**`id` inmutable no es una formalidad.** En la maqueta, un nodo ya pasó por un renombre —`division-territorial` a `cut`— que obligó a mantener un alias para no romper los enlaces que ya habían circulado. El catálogo real parte con `cut` desde la primera lectura, pero la regla queda: los identificadores no se corrigen; se crea otro y el nodo guarda el alias.
 
 ## 5. Validación
 
@@ -163,7 +163,7 @@ Una ficha se publica solo si pasa todo esto. Si falla, el servicio no entra y el
 | Acción | Qué ocurre |
 |---|---|
 | **Alta** | Alguien registra la URL del repositorio. La aplicación lee la ficha, la valida y la deja en el registro como oculta |
-| **Publicar** | Decisión editorial, cuando el servicio cumple el criterio de entrada: contrato, pantalla, entrada de wiki y servicio disponible |
+| **Publicar** | Decisión editorial sobre la ficha. No exige pantalla, entrada de wiki ni servicio disponible: el contrato, las pantallas y la wiki de un servicio son vistas independientes, y se muestran las que existan |
 | **Ocultar** | Sale del catálogo público, también por enlace directo. La ven solo las personas con perfil en el nodo, con un aviso de que no está publicada. Una ficha recién dada de alta está en este estado |
 | **Retirar** | Deja de leerse el repositorio. La última lectura se conserva, porque el catálogo tiene que poder decir qué publicó y cuándo |
 | **Resincronizar** | Vuelve a leer el repositorio. Si la ficha cambió, queda una versión nueva en el registro con su *commit* y su fecha |

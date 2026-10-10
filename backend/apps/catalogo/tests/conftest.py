@@ -1,7 +1,7 @@
 import pytest
 from django.utils import timezone
 
-from apps.catalogo.models import Ambito, Especificacion, Formato, Nodo, Visibilidad
+from apps.catalogo.models import Alias, Ambito, Especificacion, Formato, Nodo, Visibilidad
 from apps.cuentas.models import Rol
 from apps.cuentas.tests.conftest import _ambiente, clave, como, crear_perfil, realm  # noqa: F401
 
@@ -43,6 +43,12 @@ def especificar(nodo: Nodo, version="1.0.0", contenido=CONTRATO, vigente=True) -
     )
     especificacion.save(desde_sincronizacion=True)
     return especificacion
+
+
+@pytest.fixture
+def alias(db):
+    """Un identificador antiguo de `cut`. El catálogo real parte sin alias."""
+    return Alias.objects.create(identificador="codigos-territoriales", destino="cut")
 
 
 @pytest.fixture

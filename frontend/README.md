@@ -44,7 +44,7 @@ Salen directo de la maqueta y conviene conservarlas, porque ya se compartieron e
 | `/wiki/:slug` | Una entrada | `wiki-cut.html`, `wiki-fiscalizacion.html` |
 | `/participar` | Cómo participar | `participar.html` |
 
-`catalogo.html` conserva ese nombre en la maqueta por los enlaces ya compartidos, pero **la ruta real es `/servicios`**. Conviene dejar una redirección desde las direcciones viejas —incluida `nodo.html?id=division-territorial`, que apunta a un nodo que se renombró— para no romper lo que ya circuló.
+`catalogo.html` conserva ese nombre en la maqueta por los enlaces ya compartidos, pero **la ruta real es `/servicios`**. Conviene dejar una redirección desde las direcciones viejas —incluida `nodo.html?id=division-territorial`, un nodo que se renombró en la maqueta y que el catálogo real llama `cut` desde el inicio— para no romper lo que ya circuló.
 
 ---
 

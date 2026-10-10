@@ -188,6 +188,6 @@ class TestVisibilidad:
         assert nodo.impedimento_para(Visibilidad.OCULTO) == ""
 
 
-def test_la_migracion_carga_los_ambitos_y_el_alias_de_cut():
+def test_la_migracion_carga_los_ambitos_y_ningun_alias():
     assert list(Ambito.objects.values_list("nombre", flat=True)) == ["SGM", "Transversal"]
-    assert Alias.objects.get(identificador="division-territorial").destino == "cut"
+    assert not Alias.objects.exists()

@@ -77,8 +77,8 @@ class TestOculto:
         return nodo
 
     @pytest.mark.parametrize("ruta", RUTAS)
-    @pytest.mark.parametrize("identificador", ["cut", "division-territorial"])
-    def test_sin_sesion_es_un_404_tambien_por_alias(self, oculto, ruta, identificador):
+    @pytest.mark.parametrize("identificador", ["cut", "codigos-territoriales"])
+    def test_sin_sesion_es_un_404_tambien_por_alias(self, oculto, alias, ruta, identificador):
         respuesta = anonimo().get(ruta.format(identificador))
 
         assert respuesta.status_code == 404
@@ -126,8 +126,8 @@ class TestTokenQueNoSirve:
 
 
 class TestFicha:
-    def test_por_alias_responde_con_el_identificador_vigente(self, publicado):
-        respuesta = anonimo().get("/api/v1/nodos/division-territorial")
+    def test_por_alias_responde_con_el_identificador_vigente(self, publicado, alias):
+        respuesta = anonimo().get("/api/v1/nodos/codigos-territoriales")
 
         assert respuesta.status_code == 200
         assert respuesta.json()["identificador"] == "cut"
