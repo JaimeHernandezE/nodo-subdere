@@ -1,0 +1,2357 @@
+openapi: 3.0.3
+info:
+  title: API del Nodo SUBDERE
+  version: desarrollo
+  description: Catálogo de intercambios del dominio municipal, servicios y wiki.
+paths:
+  /api/v1/ambitos:
+    get:
+      operationId: ambitos_listar
+      tags:
+      - ambitos
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ambito'
+          description: ''
+  /api/v1/fuentes:
+    get:
+      operationId: fuentes_listar
+      description: Las fuentes registradas. Registrar una la lee en el acto, aunque
+        la lectura falle.
+      tags:
+      - fuentes
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Fuente'
+          description: ''
+    post:
+      operationId: fuentes_registrar
+      description: Las fuentes registradas. Registrar una la lee en el acto, aunque
+        la lectura falle.
+      tags:
+      - fuentes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Fuente'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Fuente'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Fuente'
+        required: true
+      security:
+      - realm: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fuente'
+          description: ''
+  /api/v1/fuentes/{id}:
+    get:
+      operationId: fuentes_ver
+      description: 'Cambiar la dirección es el traspaso de custodia; `activa: false`,
+        dar de baja la fuente.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - fuentes
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fuente'
+          description: ''
+    patch:
+      operationId: fuentes_modificar
+      description: 'Cambiar la dirección es el traspaso de custodia; `activa: false`,
+        dar de baja la fuente.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - fuentes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFuente'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFuente'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFuente'
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fuente'
+          description: ''
+  /api/v1/fuentes/{id}/lecturas:
+    get:
+      operationId: fuentes_lecturas
+      description: El historial de lecturas de una fuente, de la más reciente a la
+        más antigua.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - fuentes
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lectura'
+          description: ''
+  /api/v1/fuentes/{id}/sincronizar:
+    post:
+      operationId: fuentes_sincronizar
+      description: Vuelve a leer ahora. Responde con la lectura, válida o no.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - fuentes
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lectura'
+          description: ''
+  /api/v1/municipios:
+    get:
+      operationId: municipios_listar
+      description: Las 346 comunas con su código CUT, de `core.Municipio`.
+      tags:
+      - municipios
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MunicipioResumen'
+          description: ''
+  /api/v1/municipios/{cut}/encargado:
+    put:
+      operationId: municipios_designar_encargado
+      description: Designa o reemplaza al encargado. El anterior queda como perfil
+        común de su municipio.
+      parameters:
+      - in: path
+        name: cut
+        schema:
+          type: string
+        required: true
+      tags:
+      - municipios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DesignarEncargado'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DesignarEncargado'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DesignarEncargado'
+        required: true
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+  /api/v1/municipios/{cut}/equipo:
+    get:
+      operationId: municipios_equipo
+      description: El equipo de un municipio. El RUN, solo para quien lo administra.
+      parameters:
+      - in: path
+        name: cut
+        schema:
+          type: string
+        required: true
+      tags:
+      - municipios
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Integrante'
+          description: ''
+  /api/v1/nodos:
+    get:
+      operationId: nodos_listar
+      description: El catálogo. Sin sesión, solo lo publicado.
+      parameters:
+      - in: query
+        name: ambito
+        schema:
+          type: string
+        description: Nombre del ámbito
+      - in: query
+        name: clase
+        schema:
+          type: string
+      - in: query
+        name: intercambio
+        schema:
+          type: string
+      - in: query
+        name: madurez
+        schema:
+          type: string
+      - in: query
+        name: visibilidad
+        schema:
+          type: string
+          enum:
+          - oculto
+          - publicado
+          - retirado
+          - todas
+        description: Exige sesión. Sin el parámetro, solo los publicados.
+      tags:
+      - nodos
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NodoResumen'
+          description: ''
+  /api/v1/nodos/{identificador}:
+    get:
+      operationId: nodos_ver
+      description: La ficha de un nodo. La lee cualquiera si está publicado; la edita
+        un curador.
+      parameters:
+      - in: path
+        name: identificador
+        schema:
+          type: string
+        required: true
+      tags:
+      - nodos
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nodo'
+          description: ''
+    patch:
+      operationId: nodos_editar
+      description: La ficha de un nodo. La lee cualquiera si está publicado; la edita
+        un curador.
+      parameters:
+      - in: path
+        name: identificador
+        schema:
+          type: string
+        required: true
+      tags:
+      - nodos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNodoEditorial'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNodoEditorial'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNodoEditorial'
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nodo'
+          description: ''
+  /api/v1/nodos/{identificador}/especificacion:
+    get:
+      operationId: nodos_especificacion
+      description: La especificación vigente del nodo, con las mismas reglas de visibilidad
+        que el nodo.
+      parameters:
+      - in: path
+        name: identificador
+        schema:
+          type: string
+        required: true
+      tags:
+      - nodos
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Especificacion'
+          description: ''
+  /api/v1/nodos/{identificador}/especificacion/archivo:
+    get:
+      operationId: nodos_especificacion_archivo
+      description: El archivo tal como se leyó del repositorio, byte por byte.
+      parameters:
+      - in: path
+        name: identificador
+        schema:
+          type: string
+        required: true
+      tags:
+      - nodos
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/yaml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+          description: ''
+  /api/v1/perfiles:
+    get:
+      operationId: perfiles_listar
+      description: 'Administradores: todos los perfiles. Encargados: los de su municipio.'
+      parameters:
+      - in: query
+        name: activo
+        schema:
+          type: boolean
+      - in: query
+        name: municipio
+        schema:
+          type: string
+        description: Código CUT
+      - in: query
+        name: rol
+        schema:
+          type: string
+      tags:
+      - perfiles
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Perfil'
+          description: ''
+    post:
+      operationId: perfiles_crear
+      description: 'Administradores: todos los perfiles. Encargados: los de su municipio.'
+      tags:
+      - perfiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Perfil'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Perfil'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Perfil'
+        required: true
+      security:
+      - realm: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+  /api/v1/perfiles/{id}:
+    get:
+      operationId: perfiles_ver
+      description: 'Los perfiles no se borran: se desactivan con `activo: false`.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - perfiles
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+    patch:
+      operationId: perfiles_modificar
+      description: 'Los perfiles no se borran: se desactivan con `activo: false`.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - perfiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfil'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfil'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfil'
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+  /api/v1/salud:
+    get:
+      operationId: salud
+      description: Responde si la API está arriba. Sin detalles de infraestructura
+        ni de la base.
+      tags:
+      - salud
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Salud'
+          description: ''
+  /api/v1/servicios:
+    get:
+      operationId: servicios_listar
+      description: Los servicios de nodos publicados, o los de un nodo. Los crea un
+        curador.
+      parameters:
+      - in: query
+        name: nodo
+        schema:
+          type: string
+        description: Identificador o alias del nodo. Un oculto exige sesión.
+      tags:
+      - servicios
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Servicio'
+          description: ''
+    post:
+      operationId: servicios_crear
+      description: Los servicios de nodos publicados, o los de un nodo. Los crea un
+        curador.
+      tags:
+      - servicios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicioNuevo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ServicioNuevo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ServicioNuevo'
+        required: true
+      security:
+      - realm: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Servicio'
+          description: ''
+  /api/v1/servicios/{slug}:
+    get:
+      operationId: servicios_ver
+      description: Un servicio. Si su nodo no está publicado, solo con sesión.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servicios
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Servicio'
+          description: ''
+    patch:
+      operationId: servicios_editar
+      description: Un servicio. Si su nodo no está publicado, solo con sesión.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servicios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedServicioEditorial'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedServicioEditorial'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedServicioEditorial'
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Servicio'
+          description: ''
+  /api/v1/servicios/cut/buscar:
+    get:
+      operationId: servicios_cut_buscar
+      description: Busca por nombre en los tres niveles, sin tildes ni mayúsculas.
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Al menos dos caracteres.
+        required: true
+      tags:
+      - servicios
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CutBusqueda'
+          description: ''
+  /api/v1/servicios/cut/codigo/{codigo}:
+    get:
+      operationId: servicios_cut_codigo
+      description: 'El camino inverso: de un código a la unidad territorial, con o
+        sin ceros.'
+      parameters:
+      - in: path
+        name: codigo
+        schema:
+          type: string
+        required: true
+      tags:
+      - servicios
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CutUnidad'
+          description: ''
+  /api/v1/servicios/permisos/{patente}:
+    get:
+      operationId: servicios_permisos
+      description: El vehículo y sus permisos; una patente `PR` y cuatro dígitos,
+        sus provisionales.
+      parameters:
+      - in: header
+        name: X-Id-Tramite
+        schema:
+          type: string
+      - in: header
+        name: X-Procedimiento
+        schema:
+          type: string
+        description: El trámite que motiva la consulta. Queda en el registro de accesos.
+        required: true
+      - in: query
+        name: desde_anio
+        schema:
+          type: integer
+        description: Solo para una patente definitiva.
+      - in: path
+        name: patente
+        schema:
+          type: string
+        required: true
+      tags:
+      - servicios
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermisosRespuesta'
+          description: ''
+  /api/v1/wiki:
+    get:
+      operationId: wiki_listar
+      description: El índice de la wiki, por sección y orden. Sin sesión, solo lo
+        publicado.
+      parameters:
+      - in: query
+        name: estado
+        schema:
+          type: string
+          enum:
+          - publicadas
+          - todas
+        description: '`todas` exige sesión e incluye las entradas sin publicar.'
+      - in: query
+        name: nodo
+        schema:
+          type: string
+        description: Identificador o alias del nodo.
+      tags:
+      - wiki
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EntradaResumen'
+          description: ''
+    post:
+      operationId: wiki_crear
+      description: El índice de la wiki, por sección y orden. Sin sesión, solo lo
+        publicado.
+      tags:
+      - wiki
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaNueva'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntradaNueva'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntradaNueva'
+        required: true
+      security:
+      - realm: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaResumen'
+          description: ''
+  /api/v1/wiki/{slug}:
+    get:
+      operationId: wiki_ver
+      description: Una entrada con su versión vigente. Sin versión publicada, 404.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - wiki
+      security:
+      - realm: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entrada'
+          description: ''
+    patch:
+      operationId: wiki_editar
+      description: Una entrada con su versión vigente. Sin versión publicada, 404.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - wiki
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEntradaEditorial'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEntradaEditorial'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEntradaEditorial'
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaResumen'
+          description: ''
+  /api/v1/wiki/{slug}/versiones:
+    get:
+      operationId: wiki_versiones
+      description: El historial de una entrada. Una edición es siempre una versión
+        nueva, en borrador.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - wiki
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VersionResumen'
+          description: ''
+    post:
+      operationId: wiki_versiones_crear
+      description: El historial de una entrada. Una edición es siempre una versión
+        nueva, en borrador.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - wiki
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionNueva'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VersionNueva'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VersionNueva'
+        required: true
+      security:
+      - realm: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+          description: ''
+  /api/v1/wiki/{slug}/versiones/{version_id}:
+    get:
+      operationId: wiki_versiones_ver
+      description: Una versión con su Markdown y su HTML.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: version_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - wiki
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+          description: ''
+  /api/v1/wiki/{slug}/versiones/{version_id}/publicar:
+    post:
+      operationId: wiki_versiones_publicar
+      description: Marca una versión como vigente. Publicar una antigua es volver
+        atrás.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: version_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - wiki
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+          description: ''
+  /api/v1/yo:
+    get:
+      operationId: yo
+      description: El perfil propio. Es lo que el frontend pide al entrar para armar
+        la interfaz.
+      tags:
+      - yo
+      security:
+      - realm: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Yo'
+          description: ''
+components:
+  schemas:
+    Acceso:
+      type: object
+      description: Agrupa campos planos del modelo como en la ficha. Nulo si la ficha
+        no lo declara.
+      properties:
+        tipo:
+          type: string
+        detalle:
+          type: string
+      required:
+      - detalle
+      - tipo
+    AccesoTipoEnum:
+      enum:
+      - abierto
+      - credencial
+      - clave-unica
+      type: string
+      description: |-
+        * `abierto` - Abierto
+        * `credencial` - Con credencial
+        * `clave-unica` - Con Clave Única
+    Ambiente:
+      type: object
+      properties:
+        nombre:
+          allOf:
+          - $ref: '#/components/schemas/NombreEnum'
+          readOnly: true
+        base:
+          type: string
+          format: uri
+          readOnly: true
+        datos:
+          allOf:
+          - $ref: '#/components/schemas/DatosEnum'
+          readOnly: true
+      required:
+      - base
+      - datos
+      - nombre
+    Ambito:
+      type: object
+      properties:
+        nombre:
+          type: string
+          readOnly: true
+        orden:
+          type: integer
+          readOnly: true
+      required:
+      - nombre
+      - orden
+    BlankEnum:
+      enum:
+      - ''
+    ClaseEnum:
+      enum:
+      - intercambio
+      - plataforma
+      type: string
+      description: |-
+        * `intercambio` - Intercambio
+        * `plataforma` - Plataforma
+    ComunaDelPermiso:
+      type: object
+      properties:
+        cut:
+          type: string
+        nombre:
+          type: string
+      required:
+      - cut
+      - nombre
+    ConsultaPermisos:
+      type: object
+      description: '`definitiva` trae el vehículo y sus permisos; `provisoria`, los
+        provisionales.'
+      properties:
+        tipo:
+          $ref: '#/components/schemas/ConsultaPermisosTipoEnum'
+        vehiculo:
+          $ref: '#/components/schemas/Vehiculo'
+        permisos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permiso'
+        provisionales:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermisoProvisional'
+      required:
+      - tipo
+    ConsultaPermisosTipoEnum:
+      enum:
+      - definitiva
+      - provisoria
+      type: string
+      description: |-
+        * `definitiva` - definitiva
+        * `provisoria` - provisoria
+    Cuota:
+      type: object
+      properties:
+        numero:
+          type: integer
+        monto:
+          type: integer
+        fecha_pago:
+          type: string
+          format: date
+        medio_pago:
+          type: string
+      required:
+      - fecha_pago
+      - medio_pago
+      - monto
+      - numero
+    CutBusqueda:
+      type: object
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnidadTerritorial'
+        origen:
+          $ref: '#/components/schemas/OrigenEnum'
+        obtenido_en:
+          type: string
+          format: date-time
+      required:
+      - datos
+      - obtenido_en
+      - origen
+    CutUnidad:
+      type: object
+      properties:
+        datos:
+          $ref: '#/components/schemas/UnidadTerritorial'
+        origen:
+          $ref: '#/components/schemas/OrigenEnum'
+        obtenido_en:
+          type: string
+          format: date-time
+      required:
+      - datos
+      - obtenido_en
+      - origen
+    DatosEnum:
+      enum:
+      - inventados
+      - reales
+      type: string
+      description: |-
+        * `inventados` - Inventados
+        * `reales` - Reales
+    DesignarEncargado:
+      type: object
+      properties:
+        perfil:
+          type: integer
+          description: Perfil activo de este municipio.
+      required:
+      - perfil
+    Entrada:
+      type: object
+      description: Una entrada con su versión vigente, como HTML saneado. Sin autor.
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          description: Inmutable.
+          pattern: ^[-a-zA-Z0-9_]+$
+        titulo:
+          type: string
+          readOnly: true
+          title: Título
+        descripcion:
+          type: string
+          readOnly: true
+          title: Descripción
+          description: Para el índice.
+        seccion:
+          allOf:
+          - $ref: '#/components/schemas/SeccionEnum'
+          readOnly: true
+          title: Sección
+        orden:
+          type: integer
+          readOnly: true
+        nodo:
+          type: string
+          readOnly: true
+          description: Identificador del nodo. No es clave foránea.
+          pattern: ^[-a-zA-Z0-9_]+$
+        publicada:
+          type: boolean
+          readOnly: true
+        publicada_en:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        version:
+          type: integer
+          readOnly: true
+        html:
+          type: string
+          readOnly: true
+      required:
+      - descripcion
+      - html
+      - nodo
+      - orden
+      - publicada
+      - publicada_en
+      - seccion
+      - slug
+      - titulo
+      - version
+    EntradaNueva:
+      type: object
+      description: Lo que un editor escribe de una entrada. El contenido va en versiones.
+      properties:
+        slug:
+          type: string
+          description: Inmutable.
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        titulo:
+          type: string
+          title: Título
+          maxLength: 200
+        descripcion:
+          type: string
+          title: Descripción
+          description: Para el índice.
+          maxLength: 300
+        nodo:
+          description: Identificador del nodo. No es clave foránea.
+          oneOf:
+          - type: string
+            maxLength: 100
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        seccion:
+          title: Sección
+          oneOf:
+          - $ref: '#/components/schemas/SeccionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        orden:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - descripcion
+      - slug
+      - titulo
+    EntradaResumen:
+      type: object
+      description: Lo que muestra el índice.
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          description: Inmutable.
+          pattern: ^[-a-zA-Z0-9_]+$
+        titulo:
+          type: string
+          readOnly: true
+          title: Título
+        descripcion:
+          type: string
+          readOnly: true
+          title: Descripción
+          description: Para el índice.
+        seccion:
+          allOf:
+          - $ref: '#/components/schemas/SeccionEnum'
+          readOnly: true
+          title: Sección
+        orden:
+          type: integer
+          readOnly: true
+        nodo:
+          type: string
+          readOnly: true
+          description: Identificador del nodo. No es clave foránea.
+          pattern: ^[-a-zA-Z0-9_]+$
+        publicada:
+          type: boolean
+          readOnly: true
+        publicada_en:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - descripcion
+      - nodo
+      - orden
+      - publicada
+      - publicada_en
+      - seccion
+      - slug
+      - titulo
+    Especificacion:
+      type: object
+      properties:
+        version:
+          type: string
+          readOnly: true
+          title: Versión
+        formato:
+          allOf:
+          - $ref: '#/components/schemas/FormatoEnum'
+          readOnly: true
+        ruta:
+          type: string
+          readOnly: true
+          description: 'Dentro del repositorio. Vacía: solo metadato.'
+        huella:
+          type: string
+          readOnly: true
+          description: sha256 del contenido.
+        publicada:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        commit:
+          type: string
+          readOnly: true
+        archivo:
+          type: string
+          format: uri
+          readOnly: true
+          description: URL del archivo tal como se leyó. Nula si el nodo publica solo
+            metadato.
+      required:
+      - archivo
+      - commit
+      - formato
+      - huella
+      - publicada
+      - ruta
+      - version
+    EstadoEnum:
+      enum:
+      - disponible
+      - en_construccion
+      - deseable
+      type: string
+      description: |-
+        * `disponible` - Disponible
+        * `en_construccion` - En construcción
+        * `deseable` - Deseable
+    FormatoEnum:
+      enum:
+      - openapi-3.0
+      - openapi-3.1
+      - descripcion
+      type: string
+      description: |-
+        * `openapi-3.0` - OpenAPI 3.0
+        * `openapi-3.1` - OpenAPI 3.1
+        * `descripcion` - Solo metadato
+    Fuente:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/FuenteTipoEnum'
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+        rama:
+          type: string
+          maxLength: 200
+        ruta_ficha:
+          type: string
+          maxLength: 300
+        activa:
+          type: boolean
+        nodo_identificador:
+          type: string
+          readOnly: true
+          description: Lo fija la primera lectura válida y no cambia después.
+          pattern: ^[-a-zA-Z0-9_]+$
+        ultima_lectura:
+          allOf:
+          - $ref: '#/components/schemas/LecturaResumen'
+          readOnly: true
+          nullable: true
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        actualizado_en:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actualizado_en
+      - creado_en
+      - id
+      - nodo_identificador
+      - tipo
+      - ultima_lectura
+      - url
+    FuenteDelDato:
+      type: object
+      properties:
+        dato:
+          type: string
+          maxLength: 300
+        origen:
+          type: string
+          maxLength: 300
+      required:
+      - dato
+      - origen
+    FuenteTipoEnum:
+      enum:
+      - repositorio
+      - carga_manual
+      type: string
+      description: |-
+        * `repositorio` - Repositorio
+        * `carga_manual` - Carga manual
+    Integrante:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        run:
+          type: string
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        rol:
+          allOf:
+          - $ref: '#/components/schemas/RolEnum'
+          readOnly: true
+        es_encargado:
+          type: boolean
+          readOnly: true
+        activo:
+          type: boolean
+          readOnly: true
+      required:
+      - activo
+      - es_encargado
+      - id
+      - nombre
+      - rol
+      - run
+    IntercambioEnum:
+      enum:
+      - consulta
+      - entrega
+      type: string
+      description: |-
+        * `consulta` - El municipio consulta
+        * `entrega` - El municipio entrega
+    Lectura:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        commit:
+          type: string
+          readOnly: true
+        valida:
+          type: boolean
+          readOnly: true
+        motivo:
+          type: string
+          readOnly: true
+        perfil:
+          type: string
+          readOnly: true
+          nullable: true
+          description: 'Quién pidió leer. Nulo: la tarea programada.'
+        contenido:
+          type: string
+          readOnly: true
+          description: El YAML tal como se leyó.
+      required:
+      - commit
+      - contenido
+      - creado_en
+      - id
+      - motivo
+      - perfil
+      - valida
+    LecturaResumen:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        commit:
+          type: string
+          readOnly: true
+        valida:
+          type: boolean
+          readOnly: true
+        motivo:
+          type: string
+          readOnly: true
+        perfil:
+          type: string
+          readOnly: true
+          nullable: true
+          description: 'Quién pidió leer. Nulo: la tarea programada.'
+      required:
+      - commit
+      - creado_en
+      - id
+      - motivo
+      - perfil
+      - valida
+    MadurezEnum:
+      enum:
+      - Deseable
+      - En evaluación
+      - En desarrollo
+      - Operativo
+      type: string
+      description: |-
+        * `Deseable` - Deseable
+        * `En evaluación` - En Evaluacion
+        * `En desarrollo` - En Desarrollo
+        * `Operativo` - Operativo
+    MunicipioResumen:
+      type: object
+      properties:
+        cut:
+          type: string
+          title: Código CUT
+          pattern: ^\d{5}$
+          maxLength: 5
+        nombre:
+          type: string
+          maxLength: 100
+      required:
+      - cut
+      - nombre
+    NivelEnum:
+      enum:
+      - region
+      - provincia
+      - comuna
+      type: string
+      description: |-
+        * `region` - region
+        * `provincia` - provincia
+        * `comuna` - comuna
+    Nodo:
+      type: object
+      description: La ficha completa, agrupada como en el estándar.
+      properties:
+        identificador:
+          type: string
+          readOnly: true
+          description: Inmutable.
+          pattern: ^[-a-zA-Z0-9_]+$
+        nombre:
+          type: string
+          readOnly: true
+        sigla:
+          type: string
+          readOnly: true
+        ambito:
+          type: string
+          readOnly: true
+        clase:
+          allOf:
+          - $ref: '#/components/schemas/ClaseEnum'
+          readOnly: true
+        intercambio:
+          allOf:
+          - $ref: '#/components/schemas/IntercambioEnum'
+          readOnly: true
+          description: |-
+            Vacío si es una plataforma.
+
+            * `consulta` - El municipio consulta
+            * `entrega` - El municipio entrega
+        funcion:
+          type: string
+          readOnly: true
+          title: Función
+        madurez:
+          allOf:
+          - $ref: '#/components/schemas/MadurezEnum'
+          readOnly: true
+        acceso_tipo:
+          allOf:
+          - $ref: '#/components/schemas/AccesoTipoEnum'
+          readOnly: true
+        visibilidad:
+          allOf:
+          - $ref: '#/components/schemas/VisibilidadEnum'
+          readOnly: true
+        orden:
+          type: integer
+          readOnly: true
+        leido_en:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Leído en
+        descripcion:
+          type: string
+          readOnly: true
+          title: Descripción
+        instituciones:
+          readOnly: true
+          description: Lista de nombres, como en la ficha.
+        responsable:
+          allOf:
+          - $ref: '#/components/schemas/Responsable'
+          readOnly: true
+        origen:
+          allOf:
+          - $ref: '#/components/schemas/Origen'
+          readOnly: true
+          nullable: true
+        procedencia:
+          allOf:
+          - $ref: '#/components/schemas/Procedencia'
+          readOnly: true
+          nullable: true
+        acceso:
+          allOf:
+          - $ref: '#/components/schemas/Acceso'
+          readOnly: true
+          nullable: true
+        ambientes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ambiente'
+          readOnly: true
+        especificacion:
+          allOf:
+          - $ref: '#/components/schemas/Especificacion'
+          readOnly: true
+          nullable: true
+        nota_editorial:
+          type: string
+          readOnly: true
+        commit:
+          type: string
+          readOnly: true
+          description: 'Vacío: carga manual, sin fuente verificable.'
+      required:
+      - acceso
+      - acceso_tipo
+      - ambientes
+      - ambito
+      - clase
+      - commit
+      - descripcion
+      - especificacion
+      - funcion
+      - identificador
+      - instituciones
+      - intercambio
+      - leido_en
+      - madurez
+      - nombre
+      - nota_editorial
+      - orden
+      - origen
+      - procedencia
+      - responsable
+      - sigla
+      - visibilidad
+    NodoResumen:
+      type: object
+      description: Lo que muestra una tarjeta del catálogo.
+      properties:
+        identificador:
+          type: string
+          readOnly: true
+          description: Inmutable.
+          pattern: ^[-a-zA-Z0-9_]+$
+        nombre:
+          type: string
+          readOnly: true
+        sigla:
+          type: string
+          readOnly: true
+        ambito:
+          type: string
+          readOnly: true
+        clase:
+          allOf:
+          - $ref: '#/components/schemas/ClaseEnum'
+          readOnly: true
+        intercambio:
+          allOf:
+          - $ref: '#/components/schemas/IntercambioEnum'
+          readOnly: true
+          description: |-
+            Vacío si es una plataforma.
+
+            * `consulta` - El municipio consulta
+            * `entrega` - El municipio entrega
+        funcion:
+          type: string
+          readOnly: true
+          title: Función
+        madurez:
+          allOf:
+          - $ref: '#/components/schemas/MadurezEnum'
+          readOnly: true
+        acceso_tipo:
+          allOf:
+          - $ref: '#/components/schemas/AccesoTipoEnum'
+          readOnly: true
+        visibilidad:
+          allOf:
+          - $ref: '#/components/schemas/VisibilidadEnum'
+          readOnly: true
+        orden:
+          type: integer
+          readOnly: true
+        leido_en:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Leído en
+      required:
+      - acceso_tipo
+      - ambito
+      - clase
+      - funcion
+      - identificador
+      - intercambio
+      - leido_en
+      - madurez
+      - nombre
+      - orden
+      - sigla
+      - visibilidad
+    NombreEnum:
+      enum:
+      - pruebas
+      - produccion
+      type: string
+      description: |-
+        * `pruebas` - Pruebas
+        * `produccion` - Producción
+    Origen:
+      type: object
+      description: Agrupa campos planos del modelo como en la ficha. Nulo si la ficha
+        no lo declara.
+      properties:
+        norma:
+          type: string
+        nota:
+          type: string
+      required:
+      - norma
+      - nota
+    OrigenEnum:
+      enum:
+      - fuente
+      - foto
+      - muestra
+      type: string
+      description: |-
+        * `fuente` - fuente
+        * `foto` - foto
+        * `muestra` - muestra
+    PatchedEntradaEditorial:
+      type: object
+      description: Lo que un editor escribe de una entrada. El contenido va en versiones.
+      properties:
+        titulo:
+          type: string
+          title: Título
+          maxLength: 200
+        descripcion:
+          type: string
+          title: Descripción
+          description: Para el índice.
+          maxLength: 300
+        nodo:
+          description: Identificador del nodo. No es clave foránea.
+          oneOf:
+          - type: string
+            maxLength: 100
+            pattern: ^[-a-zA-Z0-9_]+$
+          - type: string
+            maxLength: 0
+        seccion:
+          title: Sección
+          oneOf:
+          - $ref: '#/components/schemas/SeccionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        orden:
+          type: integer
+          maximum: 32767
+          minimum: 0
+    PatchedFuente:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/FuenteTipoEnum'
+          readOnly: true
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+        rama:
+          type: string
+          maxLength: 200
+        ruta_ficha:
+          type: string
+          maxLength: 300
+        activa:
+          type: boolean
+        nodo_identificador:
+          type: string
+          readOnly: true
+          description: Lo fija la primera lectura válida y no cambia después.
+          pattern: ^[-a-zA-Z0-9_]+$
+        ultima_lectura:
+          allOf:
+          - $ref: '#/components/schemas/LecturaResumen'
+          readOnly: true
+          nullable: true
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        actualizado_en:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedNodoEditorial:
+      type: object
+      description: Lo único que una persona edita de un nodo.
+      properties:
+        visibilidad:
+          $ref: '#/components/schemas/VisibilidadEnum'
+        orden:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        nota_editorial:
+          type: string
+    PatchedPerfil:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        run:
+          type: string
+          description: Con o sin puntos y guion. No se cambia después de crear.
+        nombre:
+          type: string
+          maxLength: 200
+        rol:
+          $ref: '#/components/schemas/RolEnum'
+        municipio:
+          type: string
+          title: Código CUT
+          nullable: true
+          description: 'Código CUT de la comuna. Vacío: persona de SUBDERE.'
+        es_encargado:
+          type: boolean
+          readOnly: true
+        activo:
+          type: boolean
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        actualizado_en:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedServicioEditorial:
+      type: object
+      description: Lo que un curador escribe de un servicio. `slug` y `nodo` solo
+        al crearlo.
+      properties:
+        nombre:
+          type: string
+          description: La herramienta, no el nodo.
+          maxLength: 200
+        funcion:
+          type: string
+          title: Función
+          description: Una línea, para la tarjeta.
+          maxLength: 300
+        descripcion:
+          type: string
+          title: Descripción
+        tareas:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        fuentes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FuenteDelDato'
+        estado:
+          $ref: '#/components/schemas/EstadoEnum'
+        nota:
+          type: string
+    Perfil:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        run:
+          type: string
+          description: Con o sin puntos y guion. No se cambia después de crear.
+        nombre:
+          type: string
+          maxLength: 200
+        rol:
+          $ref: '#/components/schemas/RolEnum'
+        municipio:
+          type: string
+          title: Código CUT
+          nullable: true
+          description: 'Código CUT de la comuna. Vacío: persona de SUBDERE.'
+        es_encargado:
+          type: boolean
+          readOnly: true
+        activo:
+          type: boolean
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        actualizado_en:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actualizado_en
+      - creado_en
+      - es_encargado
+      - id
+      - nombre
+      - run
+    Permiso:
+      type: object
+      properties:
+        anio:
+          type: integer
+        estado:
+          type: string
+        comuna:
+          $ref: '#/components/schemas/ComunaDelPermiso'
+        monto_total:
+          type: integer
+        vigente_hasta:
+          type: string
+          format: date
+          nullable: true
+        cuotas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cuota'
+      required:
+      - anio
+      - comuna
+      - cuotas
+      - estado
+      - monto_total
+      - vigente_hasta
+    PermisoProvisional:
+      type: object
+      properties:
+        anio:
+          type: integer
+        semestre:
+          type: integer
+        comuna:
+          $ref: '#/components/schemas/ComunaDelPermiso'
+        titular:
+          $ref: '#/components/schemas/TitularEmpresa'
+        marca:
+          type: string
+        modelo:
+          type: string
+      required:
+      - anio
+      - comuna
+      - marca
+      - modelo
+      - semestre
+      - titular
+    PermisosRespuesta:
+      type: object
+      properties:
+        datos:
+          $ref: '#/components/schemas/ConsultaPermisos'
+        origen:
+          $ref: '#/components/schemas/OrigenEnum'
+        obtenido_en:
+          type: string
+          format: date-time
+      required:
+      - datos
+      - obtenido_en
+      - origen
+    Procedencia:
+      type: object
+      description: Agrupa campos planos del modelo como en la ficha. Nulo si la ficha
+        no lo declara.
+      properties:
+        copia:
+          type: string
+        fuente:
+          type: string
+        detalle:
+          type: string
+      required:
+      - copia
+      - detalle
+      - fuente
+    Responsable:
+      type: object
+      properties:
+        organismo:
+          type: string
+        equipo:
+          type: string
+        correo:
+          type: string
+          format: email
+      required:
+      - correo
+      - equipo
+      - organismo
+    RolEnum:
+      enum:
+      - lector
+      - editor
+      - curador
+      - administrador
+      type: string
+      description: |-
+        * `lector` - Lector
+        * `editor` - Editor
+        * `curador` - Curador
+        * `administrador` - Administrador
+    Salud:
+      type: object
+      properties:
+        estado:
+          type: string
+        version:
+          type: string
+      required:
+      - estado
+      - version
+    SeccionEnum:
+      enum:
+      - usar_el_nodo
+      - intercambios
+      - codigos
+      - normas
+      - referencia
+      type: string
+      description: |-
+        * `usar_el_nodo` - Usar el nodo
+        * `intercambios` - Intercambios
+        * `codigos` - Códigos y datos maestros
+        * `normas` - Marco normativo
+        * `referencia` - Referencia
+    Servicio:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          description: Inmutable.
+          pattern: ^[-a-zA-Z0-9_]+$
+        nodo:
+          type: string
+          description: Inmutable.
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+          description: La herramienta, no el nodo.
+        funcion:
+          type: string
+          readOnly: true
+          title: Función
+          description: Una línea, para la tarjeta.
+        descripcion:
+          type: string
+          readOnly: true
+          title: Descripción
+        tareas:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        fuentes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FuenteDelDato'
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/EstadoEnum'
+          readOnly: true
+        nota:
+          type: string
+          readOnly: true
+        actualizado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actualizado
+      - descripcion
+      - estado
+      - fuentes
+      - funcion
+      - nodo
+      - nombre
+      - nota
+      - slug
+      - tareas
+    ServicioNuevo:
+      type: object
+      description: Lo que un curador escribe de un servicio. `slug` y `nodo` solo
+        al crearlo.
+      properties:
+        slug:
+          type: string
+          description: Inmutable.
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        nodo:
+          type: string
+          description: Inmutable.
+        nombre:
+          type: string
+          description: La herramienta, no el nodo.
+          maxLength: 200
+        funcion:
+          type: string
+          title: Función
+          description: Una línea, para la tarjeta.
+          maxLength: 300
+        descripcion:
+          type: string
+          title: Descripción
+        tareas:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        fuentes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FuenteDelDato'
+        estado:
+          $ref: '#/components/schemas/EstadoEnum'
+        nota:
+          type: string
+      required:
+      - descripcion
+      - funcion
+      - nodo
+      - nombre
+      - slug
+      - tareas
+    TitularEmpresa:
+      type: object
+      properties:
+        rut:
+          type: string
+        razon_social:
+          type: string
+      required:
+      - razon_social
+      - rut
+    UnidadSuperior:
+      type: object
+      properties:
+        codigo:
+          type: string
+        nombre:
+          type: string
+      required:
+      - codigo
+      - nombre
+    UnidadTerritorial:
+      type: object
+      description: Una región, provincia o comuna, con los nombres de las unidades
+        que la contienen.
+      properties:
+        nivel:
+          $ref: '#/components/schemas/NivelEnum'
+        codigo:
+          type: string
+          description: 'Canónico: con los ceros a la izquierda.'
+        nombre:
+          type: string
+        provincia:
+          allOf:
+          - $ref: '#/components/schemas/UnidadSuperior'
+          nullable: true
+          description: Solo en una comuna.
+        region:
+          allOf:
+          - $ref: '#/components/schemas/UnidadSuperior'
+          nullable: true
+          description: Nulo en una región.
+      required:
+      - codigo
+      - nivel
+      - nombre
+      - provincia
+      - region
+    Vehiculo:
+      type: object
+      properties:
+        patente:
+          type: string
+        marca:
+          type: string
+        modelo:
+          type: string
+        anio_fabricacion:
+          type: integer
+        color:
+          type: string
+        tipo:
+          type: string
+      required:
+      - anio_fabricacion
+      - color
+      - marca
+      - modelo
+      - patente
+      - tipo
+    Version:
+      type: object
+      description: 'Una versión con su Markdown y su HTML: la vista previa del editor.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        resumen:
+          type: string
+          readOnly: true
+          description: Qué cambió, para el historial.
+        autor:
+          type: string
+          readOnly: true
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        publicada:
+          type: boolean
+          readOnly: true
+        publicada_en:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        vigente:
+          type: boolean
+          readOnly: true
+        markdown:
+          type: string
+          readOnly: true
+        html:
+          type: string
+          readOnly: true
+      required:
+      - autor
+      - creado_en
+      - html
+      - id
+      - markdown
+      - publicada
+      - publicada_en
+      - resumen
+      - vigente
+    VersionNueva:
+      type: object
+      properties:
+        markdown:
+          type: string
+          maxLength: 200000
+        resumen:
+          type: string
+          description: Qué cambió, para el historial.
+          maxLength: 300
+      required:
+      - markdown
+      - resumen
+    VersionResumen:
+      type: object
+      description: Una línea del historial.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        resumen:
+          type: string
+          readOnly: true
+          description: Qué cambió, para el historial.
+        autor:
+          type: string
+          readOnly: true
+        creado_en:
+          type: string
+          format: date-time
+          readOnly: true
+        publicada:
+          type: boolean
+          readOnly: true
+        publicada_en:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        vigente:
+          type: boolean
+          readOnly: true
+      required:
+      - autor
+      - creado_en
+      - id
+      - publicada
+      - publicada_en
+      - resumen
+      - vigente
+    VisibilidadEnum:
+      enum:
+      - publicado
+      - oculto
+      - retirado
+      type: string
+      description: |-
+        * `publicado` - Publicado
+        * `oculto` - Oculto
+        * `retirado` - Retirado
+    Yo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        rol:
+          allOf:
+          - $ref: '#/components/schemas/RolEnum'
+          readOnly: true
+        municipio:
+          allOf:
+          - $ref: '#/components/schemas/MunicipioResumen'
+          readOnly: true
+          nullable: true
+        es_encargado:
+          type: boolean
+          readOnly: true
+          default: false
+      required:
+      - es_encargado
+      - id
+      - municipio
+      - nombre
+      - rol
+  securitySchemes:
+    realm:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token del realm de Keycloak que federa Clave Única.

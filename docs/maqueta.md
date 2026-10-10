@@ -385,6 +385,19 @@ La primera y la tercera dependen del mismo levantamiento y se resuelven juntas. 
 
 La alternativa que estaba en el hero —la versión que partía por el problema— se incorporó como texto de la sección «Qué propone» de la portada.
 
+## El sitio en React: lo que cambia respecto de la maqueta
+
+**10 de octubre de 2026.** La primera etapa del [frontend](../frontend/) traduce el sitio público a React contra el backend. El contenido y los estilos son los de la maqueta (`maqueta.css` es una copia de `styles.css`); estos son los cambios deliberados:
+
+- **Sin ambiente de pruebas ni disponibilidad.** La consola «Probar la API», los casos de prueba, el botón «Probar esta operación», los descargables generados en el navegador y la columna de disponibilidad (`status.json` o sondeo desde el navegador) no se portaron. La ficha conserva «Dónde practicar», que lista los ambientes que declara el nodo o lo marca como pendiente. Vuelven cuando exista la zona de práctica del backend y un monitor.
+- **Tarjeta de `apis.html`.** «Cómo leer una tarjeta» pasó de cinco partes a cuatro: nombre, qué entrega, madurez y acceso, y la fecha, que ahora es la última vez que el catálogo leyó la ficha. Sin monitor ni ambiente de pruebas, «Se puede probar» y la disponibilidad dirían algo que nadie comprueba; la madurez sí la declara la ficha y el backend la entrega.
+- **Ficha.** Sin «Depende de» ni «Descargables»: el modelo del backend no los tiene. El archivo de la especificación se enlaza desde «Qué entrega, y en qué forma».
+- **Índice de intercambios de la wiki.** `wiki-intercambios.html` es ahora la sección `#intercambios` de la portada `/wiki`, sin agrupar por ámbito. La dirección vieja redirige ahí.
+- **Pie.** Sin fecha de «Última actualización» y sin logotipo: el archivo del logo no está en el repositorio del frontend y la fecha la escribía `pie.js` a mano.
+- **Cómo participar.** La fila de la zona de práctica perdió la frase sobre el ambiente de pruebas dentro del navegador.
+- **Menú de sesión.** Es lo único nuevo en la barra: «Entrar» sin sesión, y con sesión un `<details>` con nombre, rol, municipio y «Salir». La consulta de permisos de circulación exige sesión, pide el trámite que la motiva y avisa que queda registrada.
+- **Foco visible** en enlaces, botones y campos, con `:focus-visible` en `sitio.css`.
+
 ## Para el QA
 
 Tres preguntas que conviene hacer junto con el enlace, porque son las que definen lo que sigue:

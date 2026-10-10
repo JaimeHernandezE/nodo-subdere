@@ -11,6 +11,19 @@ class TestSaneamiento:
         assert "<script" not in html
         assert "&lt;script&gt;" in html
 
+    def test_iframe_queda_como_texto(self):
+        html = renderizar('<iframe src="https://ejemplo.cl"></iframe>')
+        assert "<iframe" not in html
+
+    def test_style_queda_como_texto(self):
+        html = renderizar("<style>body{display:none}</style>")
+        assert "<style" not in html
+
+    def test_clase_fuera_de_la_lista(self):
+        html = renderizar('<div class="peligro">x</div>\n\n::: aviso\nHola\n:::')
+        assert '<div class="peligro"' not in html
+        assert '<div class="aviso">' in html
+
     def test_html_en_linea_queda_como_texto(self):
         html = renderizar('Hola <img src=x onerror="alert(1)"> mundo')
         assert "<img" not in html

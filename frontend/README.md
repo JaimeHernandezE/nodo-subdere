@@ -6,20 +6,30 @@ La interfaz del sitio en React: los dos catálogos, las fichas, las pantallas de
 
 No se parte de cero. La maqueta de [`prototipos/`](../prototipos/) ya tiene el contenido escrito, la paleta institucional verificada y las interacciones probadas. **Este proyecto la traduce a componentes; no la rediseña.** Si algo se ve distinto, es un cambio deliberado y debería estar anotado en [`docs/maqueta.md`](../docs/maqueta.md).
 
+## Qué está construido
+
+**Primera etapa: el sitio público, la sesión y `/yo`.** Portada, Qué es, Cómo participar, los dos catálogos, la ficha con su especificación renderizada, las pantallas de servicio (buscador CUT y consulta de permisos de circulación), la wiki con su menú e índice, la pantalla `SIN_PERFIL`, la 404 y las redirecciones de la maqueta.
+
+**Falta:** la administración (`/admin/*`, §5 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md)) y el ingreso con Keycloak. Mientras no exista el *realm*, se entra pegando un token del emisor local del backend en `/entrar`.
+
 ---
 
 ## Estructura
 
 ```
 frontend/
-├── public/
+├── public/             favicon; gobCL va en public/fonts/ si se consigue
 ├── src/
-│   ├── app/            Enrutador, layout, barra superior y pie
-│   ├── paginas/        Una por ruta del sitio
-│   ├── componentes/    Lo reutilizable entre páginas
-│   ├── api/            Cliente del backend y de los adaptadores
-│   ├── estilos/        Tokens y estilos globales
-│   └── tipos/          Tipos compartidos, derivados del OpenAPI del backend
+│   ├── app/            Enrutador, marco, barra superior, pie y redirecciones de la maqueta
+│   ├── paginas/        Una por ruta del sitio; herramientas/ tiene las de cada servicio
+│   ├── componentes/    Lo reutilizable: especificación, estados, etiquetas, origen del dato
+│   ├── api/            Cliente del backend y una función por consulta
+│   ├── sesion/         Token en memoria y /yo
+│   ├── estilos/        maqueta.css (copia de la maqueta) y sitio.css (lo que agrega React)
+│   ├── tipos/          esquema.yaml del backend y los tipos generados desde él
+│   ├── util/           Fechas, montos, slugs, título de la pestaña
+│   └── pruebas/        Vitest y Testing Library
+├── docker-compose.yml  Servicio web (node:22) para desarrollo
 ├── index.html
 ├── package.json
 ├── vite.config.ts
@@ -62,7 +72,7 @@ Salen directo de la maqueta y conviene conservarlas, porque ya se compartieron e
 
 El [Kit Gráfico de Gobierno](../docs/maqueta.md) define la paleta y la tipografía, y los pares de color del sitio ya están verificados contra el mínimo de contraste de la W3C. Traer una biblioteca de componentes significaría o pelear con sus colores o terminar usando los suyos. El sitio tiene siete pantallas y un puñado de patrones: tarjeta, etiqueta, tabla, aviso, buscador.
 
-Lo que sí hace falta cuidar: accesibilidad de teclado y foco visible. La barra de la maqueta es una lista de enlaces simples, sin desplegables, y la versión en React debería mantenerla así.
+Lo que sí hace falta cuidar: accesibilidad de teclado y foco visible. La barra de la maqueta es una lista de enlaces simples, sin desplegables, y la versión en React la mantiene así. La única excepción es el menú de sesión, a la derecha: un `<details>` que se abre con Enter o espacio y se cierra con Escape, devolviendo el foco a su botón.
 
 ### Los estilos vienen de la maqueta
 
@@ -78,11 +88,23 @@ Lo que sí hace falta cuidar: accesibilidad de teclado y foco visible. La barra 
 Dos cosas que hay que mantener al traducir, porque se pierden fácil:
 
 - **El rojo `#FF1D3D` no alcanza el contraste mínimo para texto pequeño** (3,8:1 sobre blanco). Para texto va `--rojo-tx` (`#D6102B`); el rojo pleno queda para elementos gráficos.
-- **La tipografía gobCL se carga desde `assets/fonts/`** y el sitio degrada sin ella. Si los `.woff2` no están, no se rompe nada.
+- **La tipografía gobCL se carga desde `public/fonts/`** y el sitio degrada sin ella. Si los `.woff2` no están, no se rompe nada; `npm run build` avisa que no los encontró, y es esperado.
+
+`maqueta.css` no se edita: lo que el sitio en React necesita además —foco visible, menú de sesión, contenido de la wiki, formularios— va en `sitio.css`.
 
 ### Tipos desde el OpenAPI
 
-El backend publica su esquema. Los tipos de `src/tipos/` se generan desde ahí en vez de escribirse a mano, para que un cambio en el modelo rompa la compilación en lugar de romperse en producción.
+El backend publica su esquema. Los tipos de `src/tipos/` se generan desde ahí en vez de escribirse a mano, para que un cambio en el modelo rompa la compilación en lugar de romperse en producción. Cuando cambia el backend:
+
+```powershell
+# desde backend/
+docker compose --env-file .env.local exec api sh -c "python manage.py spectacular --file /tmp/esquema.yaml"
+docker compose --env-file .env.local cp api:/tmp/esquema.yaml ..\frontend\src\tipos\esquema.yaml
+# desde frontend/
+docker compose run --rm web sh -c "npm run tipos && npm run revisar"
+```
+
+`src/tipos/index.ts` les da nombres cortos a los esquemas que usan las páginas.
 
 ---
 
@@ -102,20 +124,39 @@ Límite conocido, que conviene no perder: solo resuelve referencias internas (`#
 
 Ese comportamiento hay que conservarlo. Una pantalla que se queda en blanco cuando el servicio no responde no se puede mostrar en una reunión; una que finge datos sin avisar es peor. El patrón es: intentar, y si falla, mostrar la muestra con su etiqueta visible.
 
-Los datos de demostración viven en archivos aparte y claramente nombrados, para poder borrarlos de una vez cuando los servicios estén arriba.
+En el sitio en React la decisión la toma el backend, no la pantalla: cada respuesta de servicio trae `origen` (`fuente`, `foto` o `muestra`) y `obtenido_en`. La pantalla no tiene datos de demostración propios; pinta la etiqueta junto al resultado («En vivo», «Copia guardada», «Datos de muestra») y el aviso de «De dónde salen estos datos». Qué herramienta muestra cada servicio se decide por su `nodo` (`cut` o `permisos-de-circulacion`), en `paginas/Servicio.tsx`.
 
 ---
 
 ## Cómo levantarlo
 
-```bash
+Node no hace falta en el equipo: todo corre en Docker. El backend se levanta aparte y queda en `http://localhost:8000`; su `.env.local` necesita `CORS_ALLOWED_ORIGINS=http://localhost:5173` y, para entrar sin Keycloak, `CUENTAS_EMISOR_LOCAL=1`.
+
+```powershell
 cd frontend
-npm install
-cp .env.example .env          # apuntar VITE_API_URL al backend
-npm run dev
+docker compose up                 # instala y deja Vite en http://localhost:5173
 ```
 
-Queda en `http://localhost:5173`, contra el backend en `http://localhost:8000`.
+Si el backend está en otra dirección, copiar `.env.example` a `.env.local` y cambiar `VITE_API_URL`.
+
+**Entrar.** En `/entrar` se pega un token del emisor local:
+
+```powershell
+# desde backend/; el RUN necesita un Perfil activo
+docker compose --env-file .env.local exec api sh -c "python manage.py emitir_token_local --run 12345678-5"
+```
+
+El token queda solo en memoria: recargar la página cierra la sesión. Un RUN sin perfil lleva a la pantalla `SIN_PERFIL`.
+
+**Revisar y probar:**
+
+```powershell
+docker compose run --rm web sh -c "npm run revisar"   # tsc
+docker compose run --rm web sh -c "npm test"          # vitest
+docker compose run --rm web sh -c "npm run build"     # dist/
+```
+
+Las pruebas cubren el §6 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md) menos el punto 5, que es de la administración. Simulan el backend con un `fetch` falso (`src/pruebas/util.tsx`), así que no necesitan nada levantado.
 
 ---
 

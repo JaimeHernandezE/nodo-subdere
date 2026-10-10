@@ -1,0 +1,18 @@
+# Desarrollo. Uso: docker compose up
+# El backend se levanta aparte (backend/docker-compose.yml) y queda en localhost:8000;
+# el navegador lo llama directo, así que basta con que su CORS acepte localhost:5173.
+services:
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      VITE_SONDEAR_CAMBIOS: "1"
+    volumes:
+      - .:/app
+      - modulos:/app/node_modules
+    ports:
+      - "5173:5173"
+
+volumes:
+  modulos:

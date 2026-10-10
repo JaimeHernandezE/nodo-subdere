@@ -2,6 +2,8 @@
 
 Lee también [`README.md`](README.md) y, para las reglas comunes, [`../backend/INSTRUCCIONES.md`](../backend/INSTRUCCIONES.md) secciones 3 a 6.
 
+> **Estado: primera etapa construida.** El sitio público, la sesión con token del emisor local y `/yo` están hechos; cómo levantarlo y probarlo está en el [`README.md`](README.md). Falta la administración (§5) y el flujo OIDC de §2.
+
 **No se parte de cero.** La maqueta de [`../prototipos/`](../prototipos/) tiene el contenido escrito, la paleta institucional verificada y las interacciones probadas. Este proyecto **la traduce a componentes; no la rediseña.** Si algo se ve distinto, es un cambio deliberado y debe quedar anotado en [`../docs/maqueta.md`](../docs/maqueta.md).
 
 ---
@@ -15,13 +17,15 @@ Los tipos de `src/tipos/` **se generan desde el OpenAPI del backend**, no se esc
 Los estilos salen de `prototipos/assets/styles.css` con sus *tokens* intactos. Dos cosas que se pierden fácil al traducir:
 
 - **El rojo `#FF1D3D` no alcanza el contraste mínimo para texto pequeño** (3,8:1 sobre blanco). Para texto va `--rojo-tx` (`#D6102B`); el rojo pleno queda para elementos gráficos.
-- **La tipografía gobCL se carga desde `assets/fonts/`** y el sitio degrada sin ella. Si los `.woff2` no están, no se rompe nada.
+- **La tipografía gobCL se carga desde `public/fonts/`** y el sitio degrada sin ella. Si los `.woff2` no están, no se rompe nada.
 
 Accesibilidad de teclado y foco visible se cuidan desde el principio. El desplegable de la barra en la maqueta es un `<details>`/`<summary>` nativo justamente por eso: la versión en React debe seguir siéndolo o equivalerle.
 
 ## 2. Autenticación
 
 Authorization Code + PKCE contra el *realm* de Keycloak, como **cliente público**. Biblioteca estándar de OIDC para navegador; no escribir el flujo a mano.
+
+Mientras el *realm* no exista, `/entrar` recibe un token pegado del emisor local del backend (`emitir_token_local`). Todo lo demás de esta sección ya rige: el token vive en memoria (`src/sesion/`), va en cada llamada y la interfaz se arma con `/yo`. Al llegar Keycloak se reemplaza solo la pantalla `Entrar` y la función `entrar` de la sesión.
 
 - El *access token* va en `Authorization: Bearer` en cada llamada al backend.
 - El token **no** se guarda en `localStorage`. En memoria, con refresco silencioso.
@@ -56,7 +60,7 @@ Dejar redirecciones desde las direcciones viejas de la maqueta, incluida `nodo.h
 
 Y una tercera, nueva: **las pantallas que entregan datos de personas avisan que la consulta queda registrada.** No en letra chica.
 
-**La wiki llega como HTML ya saneado.** `GET /api/v1/wiki/{slug}` trae el campo `html`, renderizado y saneado por el backend con lista blanca; el frontend lo inserta tal cual y no vuelve a renderizar Markdown. Los componentes de la maqueta llegan como `div` con clase `aviso`, `tarjetas`, `tarjeta` o `tecnico`, y los títulos `h2` a `h4` traen `id`: con ellos se arma «En esta página». El menú lateral sale de `GET /api/v1/wiki`, agrupado por `seccion` en el orden en que viene; la entrada sin sección (`inicio`) es la portada de `/wiki`, y `/wiki#intercambios` apunta al grupo de intercambios del índice.
+**La wiki llega como HTML ya saneado.** `GET /api/v1/wiki/{slug}` trae el campo `html`, renderizado y saneado por el backend con lista blanca; el frontend lo inserta tal cual y no vuelve a renderizar Markdown. Los componentes de la maqueta llegan como `div` con clase `aviso`, `tarjetas`, `tarjeta` o `tecnico`, y los títulos `h2` a `h4` traen `id`: con ellos se arma «En esta página». Un término del glosario es un enlace común a `/wiki/glosario#termino`; si se le quiere dar otro aspecto, se reconoce por la ruta, no por una clase. El menú lateral sale de `GET /api/v1/wiki`, agrupado por `seccion` en el orden en que viene; la entrada sin sección (`inicio`) es la portada de `/wiki`, y `/wiki#intercambios` apunta al grupo de intercambios del índice.
 
 ## 5. La administración
 
