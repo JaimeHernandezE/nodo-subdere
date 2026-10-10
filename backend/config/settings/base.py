@@ -27,6 +27,32 @@ KEYCLOAK_ISSUER = env.str("KEYCLOAK_ISSUER", default="")
 KEYCLOAK_AUDIENCE = env.str("KEYCLOAK_AUDIENCE", default="")
 KEYCLOAK_JWKS_URL = env.str("KEYCLOAK_JWKS_URL", default="")
 KEYCLOAK_JWKS_CACHE_SEGUNDOS = env.int("KEYCLOAK_JWKS_CACHE_SEGUNDOS", default=3600)
+# Lectura de los repositorios de servicio. Ver apps/registro/INSTRUCCIONES.md §2.
+REGISTRO_GIT_API_URL = env.str("REGISTRO_GIT_API_URL", default="")
+REGISTRO_GIT_TOKEN = env.str("REGISTRO_GIT_TOKEN", default="")
+REGISTRO_TIEMPO_ESPERA_SEGUNDOS = env.int("REGISTRO_TIEMPO_ESPERA_SEGUNDOS", default=10)
+REGISTRO_DOMINIOS_NO_INSTITUCIONALES = env.list(
+    "REGISTRO_DOMINIOS_NO_INSTITUCIONALES",
+    default=[
+        "gmail.com",
+        "googlemail.com",
+        "hotmail.com",
+        "hotmail.cl",
+        "outlook.com",
+        "outlook.cl",
+        "live.com",
+        "live.cl",
+        "yahoo.com",
+        "yahoo.es",
+        "icloud.com",
+        "me.com",
+        "proton.me",
+        "protonmail.com",
+        "aol.com",
+        "gmx.com",
+    ],
+)
+
 # Solo local.py lo activa; prod.py no arranca si la variable existe.
 CUENTAS_EMISOR_LOCAL = False
 CUENTAS_CLAVE_LOCAL = BASE_DIR / ".local" / "emisor_local.pem"
@@ -45,6 +71,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.cuentas",
     "apps.catalogo",
+    "apps.registro",
 ]
 
 MIDDLEWARE = [

@@ -125,10 +125,13 @@ class Fuente(ModeloBase):
     ruta_ficha  = models.CharField(default="nodo/ficha.yaml")
     activa      = models.BooleanField(default=True)
 
-class Lectura(ModeloBase):
+    nodo_identificador = models.SlugField(blank=True)   # lo fija la primera lectura válida
+
+class Lectura(SoloCrece):
     """Cada intento de leer una fuente. Nunca se edita ni se borra."""
     fuente     = models.ForeignKey(Fuente, related_name="lecturas", ...)
-    commit     = models.CharField(blank=True)
+    perfil     = models.ForeignKey(Perfil, null=True)   # quién pidió leer; nulo si fue programada
+    commit     = models.CharField(blank=True)   # la cabeza de la rama al leer
     contenido  = models.TextField(blank=True)   # el YAML tal como se leyó
     valida     = models.BooleanField()
     motivo     = models.TextField(blank=True)   # por qué se rechazó
@@ -136,7 +139,11 @@ class Lectura(ModeloBase):
 
 `Lectura` es un registro que solo crece porque el catálogo afirma ser copia fiel y auditable: tiene que poder decir de qué *commit* salió cada ficha publicada y en qué fecha se leyó. Guardar el YAML tal cual permite además reconstruir la proyección si el modelo cambia, sin volver a pedirle nada al repositorio.
 
-**La carga manual existe solo para la transición**, cuando un responsable todavía no tiene repositorio: se sube el archivo, se valida igual, y el catálogo marca que esa ficha no tiene fuente verificable. No es un atajo para editar a mano una ficha que sí tiene repositorio.
+**Un solo token para todas las fuentes**: identifica al nodo ante GitLab, y registrar un repositorio nuevo es darle a esa cuenta rol *Reporter*, no tocar la configuración. Ningún secreto se guarda en la base. GitLab solo responde dentro de la red de SUBDERE o por VPN (HR-20, HR-22).
+
+**La carga manual existe solo para la transición**, cuando un responsable todavía no tiene repositorio: se sube el archivo, se valida igual, y el catálogo marca que esa ficha no tiene fuente verificable. No es un atajo para editar a mano una ficha que sí tiene repositorio. El modelo ya la admite; el endpoint queda para después.
+
+La sincronización corre con `python manage.py sincronizar_fuentes` (tarea programada) o con `POST /api/v1/fuentes/{id}/sincronizar`. El detalle está en [`apps/registro/INSTRUCCIONES.md`](apps/registro/INSTRUCCIONES.md).
 
 ### Lo que la sincronización escribe, y lo que no
 
