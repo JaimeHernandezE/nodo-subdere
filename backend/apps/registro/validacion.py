@@ -34,7 +34,7 @@ from apps.catalogo.models import (
 )
 from apps.core import run
 
-from .errores import FuenteNoDisponible
+from .errores import RepositorioNoDisponible
 from .models import Fuente
 
 VERSIONES_DEL_ESTANDAR = (1,)
@@ -410,7 +410,7 @@ def _regla_4_y_5_especificacion(especificacion: dict, leer_archivo: Callable[[st
         )
     try:
         contenido = leer_archivo(ruta)
-    except FuenteNoDisponible as error:
+    except RepositorioNoDisponible as error:
         raise FichaInvalida(f"especificacion.archivo: {error}") from None
     try:
         documento = yaml.safe_load(contenido)

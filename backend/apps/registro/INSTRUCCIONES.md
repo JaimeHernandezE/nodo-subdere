@@ -13,7 +13,7 @@ Depende de `core`, `cuentas` y `catalogo`. Es **el único lugar del proyecto** q
 | Pieza | Archivo |
 |---|---|
 | `Fuente`, `Lectura` y la regla de la dirección (`problema_de_url`) | `models.py` |
-| `FuenteNoDisponible`, `FuenteDeNodoRetirado` y `FuenteInactiva` | `errores.py` |
+| `RepositorioNoDisponible` (interna: su mensaje es el motivo de la lectura), `FuenteDeNodoRetirado` y `FuenteInactiva` | `errores.py` |
 | `LectorGitLab`, `LectorFalso` y el límite de 1 MB | `lectores.py` |
 | Las ocho reglas, en orden, y `FichaInvalida` | `validacion.py` |
 | La escritura sobre `catalogo` y la comparación por contenido (`instantanea`) | `proyeccion.py` |

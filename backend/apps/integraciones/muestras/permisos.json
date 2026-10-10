@@ -1,0 +1,55 @@
+{
+  "aviso": "Datos sintéticos. Ninguna patente ni RUT corresponde a un vehículo o una empresa real. Se borra completo cuando exista la fuente.",
+  "respuestas": {
+    "/vehiculos/ZZZZ10": {
+      "patente": "ZZZZ10",
+      "marca": "TOYOTA",
+      "modelo": "YARIS",
+      "color": "BLANCO",
+      "anio_fabricacion": 2019,
+      "tipo": "AUTOMOVIL"
+    },
+    "/vehiculos/ZZZZ10/permisos": [
+      {
+        "anio": 2026,
+        "estado": "VIGENTE",
+        "comuna": { "cut": "13101", "nombre": "Santiago" },
+        "monto_total": 214300,
+        "vigente_hasta": "2027-03-31",
+        "cuotas": [
+          { "numero": 1, "monto": 107150, "fecha_pago": "2026-03-18", "medio_pago": "EN LINEA" },
+          { "numero": 2, "monto": 107150, "fecha_pago": "2026-08-14", "medio_pago": "EN LINEA" }
+        ]
+      },
+      {
+        "anio": 2025,
+        "estado": "VENCIDO",
+        "comuna": { "cut": "13101", "nombre": "Santiago" },
+        "monto_total": 205900,
+        "vigente_hasta": "2026-03-31",
+        "cuotas": [
+          { "numero": 1, "monto": 205900, "fecha_pago": "2025-03-27", "medio_pago": "CAJA" }
+        ]
+      }
+    ],
+    "/vehiculos/ZZ0001": {
+      "patente": "ZZ0001",
+      "marca": "CHEVROLET",
+      "modelo": "SAIL",
+      "color": "GRIS",
+      "anio_fabricacion": 2012,
+      "tipo": "AUTOMOVIL"
+    },
+    "/vehiculos/ZZ0001/permisos": [],
+    "/permisos-provisionales/PR0001": [
+      {
+        "anio": 2026,
+        "semestre": 2,
+        "comuna": { "cut": "13123", "nombre": "Providencia" },
+        "marca": "HONDA",
+        "modelo": "PILOT",
+        "titular": { "rut": "77.777.777-7", "razon_social": "AUTOMOTORA DE EJEMPLO SPA" }
+      }
+    ]
+  }
+}

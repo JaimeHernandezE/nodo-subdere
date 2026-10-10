@@ -14,7 +14,7 @@ from apps.catalogo.errores import CampoDeFicha
 from apps.catalogo.models import Nodo, Visibilidad
 from apps.cuentas.models import Perfil
 
-from .errores import FuenteDeNodoRetirado, FuenteInactiva, FuenteNoDisponible
+from .errores import FuenteDeNodoRetirado, FuenteInactiva, RepositorioNoDisponible
 from .lectores import Lector, LectorGitLab
 from .models import Fuente, Lectura, TipoDeFuente
 from .proyeccion import proyectar
@@ -61,7 +61,7 @@ def sincronizar(fuente: Fuente, *, perfil: Perfil | None = None, lector: Lector 
         lectura = Lectura(fuente=fuente, perfil=perfil)
         try:
             leido = lector.leer_ficha(fuente)
-        except FuenteNoDisponible as error:
+        except RepositorioNoDisponible as error:
             lectura.valida, lectura.motivo = False, str(error)
             lectura.save()
             return lectura

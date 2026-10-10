@@ -3,7 +3,7 @@ from rest_framework import status
 from apps.core.errores import ErrorNodo
 
 
-class FuenteNoDisponible(Exception):
+class RepositorioNoDisponible(Exception):
     """No se pudo leer el repositorio. El mensaje es el motivo que queda en la lectura."""
 
 

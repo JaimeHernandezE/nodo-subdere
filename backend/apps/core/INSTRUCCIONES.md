@@ -46,7 +46,7 @@ La migración de carga **no llama a la red**: lee una foto versionada de la fuen
 - **Cómo se regenera.** `python manage.py descargar_cut`, que lee `CUT_API_URL` (o `--url`). Solo reescribe si los tres listados se descargan y validan. Se ejecuta a mano y el resultado se revisa en un commit. Si cambian los códigos, hace falta además una migración de datos nueva: la `0002` ya corrió y no se edita.
 - **Por qué se versiona, si `insumos/` no.** `insumos/` es material de terceros que no es nuestro publicar. Esto es **dato abierto, sin datos personales**, y el catálogo tiene que poder decir de dónde salió cada municipio y en qué fecha. Es una excepción declarada, no un precedente: nada con datos de personas entra en `datos/`.
 - **Los nombres van tal como vienen**, aunque la fuente escriba «Los Alamos» o «Los Angeles» sin tilde. El catálogo es copia fiel; corregir es pedirle a la fuente que corrija.
-- Se guardan los tres listados aunque solo se cargue `comunas.json`: con los otros dos se prueba la jerarquía, y servirán de respuestas grabadas para las pruebas de `AdaptadorCUT`.
+- Se guardan los tres listados aunque solo se cargue `comunas.json`: con los otros dos se prueba la jerarquía. Además son las respuestas grabadas de las pruebas de `AdaptadorCUT` y **su respaldo**: sin `CUT_API_URL`, o con la fuente caída, `integraciones` responde esta foto con su fecha y `origen="foto"` (`../integraciones/INSTRUCCIONES.md` §5). Regenerarla cambia lo que ve la pantalla en ese caso.
 
 ### `canonico`
 
@@ -67,7 +67,7 @@ Toda respuesta de error sale con el sobre de `../../INSTRUCCIONES.md` §6. El ma
 
 `rest_framework.views` se importa dentro del manejador y no al cargar el módulo: cargarlo carga las clases de autenticación, y las de `cuentas` importan este módulo para heredar de `ErrorNodo`. Moverlo arriba es un import circular.
 
-**Contrato con las demás apps:** toda excepción propia del proyecto hereda de `ErrorNodo` y declara su `codigo`, `mensaje` y `status`. Las de `integraciones` (`FuenteNoDisponible`, `NoEncontrado`…) y la `CampoDeFicha` de `catalogo` siguen esa forma. Así `core` traduce excepciones que no conoce, sin importar nada de esas apps.
+**Contrato con las demás apps:** toda excepción propia del proyecto hereda de `ErrorNodo` y declara su `codigo`, `mensaje` y `status`. Las de `integraciones` (`FuenteNoDisponible`, `ParametroInvalido`, `NoEncontrado`, `RespuestaDemasiadoGrande`) y la `CampoDeFicha` de `catalogo` siguen esa forma. Así `core` traduce excepciones que no conoce, sin importar nada de esas apps.
 
 ### Cabeceras de contexto
 

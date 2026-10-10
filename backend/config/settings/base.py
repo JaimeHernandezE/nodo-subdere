@@ -20,7 +20,16 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
 NODO_OCULTO = env.bool("NODO_OCULTO", default=True)
 VERSION_DESPLIEGUE = env.str("VERSION_DESPLIEGUE", default="desarrollo")
+
+# Adaptadores a las fuentes externas. Ver apps/integraciones/INSTRUCCIONES.md.
 CUT_API_URL = env.str("CUT_API_URL", default="")
+CUT_CACHE_SEGUNDOS = env.int("CUT_CACHE_SEGUNDOS", default=3600)
+PERMISOS_CIRCULACION_API_URL = env.str("PERMISOS_CIRCULACION_API_URL", default="")
+PERMISOS_CIRCULACION_CACHE_SEGUNDOS = env.int("PERMISOS_CIRCULACION_CACHE_SEGUNDOS", default=300)
+INTEGRACIONES_TIEMPO_ESPERA_SEGUNDOS = env.int("INTEGRACIONES_TIEMPO_ESPERA_SEGUNDOS", default=5)
+
+# Uno por proceso. Con varias instancias, Redis acá; los adaptadores no cambian.
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
 # Identidad: realm de Keycloak que federa Clave Única. Ver apps/cuentas/INSTRUCCIONES.md §2.
 KEYCLOAK_ISSUER = env.str("KEYCLOAK_ISSUER", default="")
@@ -72,6 +81,7 @@ INSTALLED_APPS = [
     "apps.cuentas",
     "apps.catalogo",
     "apps.registro",
+    "apps.integraciones",
 ]
 
 MIDDLEWARE = [

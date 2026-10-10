@@ -14,6 +14,8 @@ La menos riesgosa en lo normativo: una persona que se autentica y consulta por p
 
 La más delicada en datos personales: las pantallas muestran patente y titular. Que un funcionario del municipio A consulte un vehículo del municipio B **tiene que quedar registrado**. Eso es `cuentas.Acceso`, con `canal="pantalla"`, y es obligatorio en todo endpoint que entregue datos de una persona.
 
+**El `Acceso` no lo escribe esta aplicación: lo escribe el adaptador.** `AdaptadorPermisos` exige un `Contexto` —el perfil, el canal y la petición— y registra cada consulta él mismo, también cuando responde desde el caché. Los endpoints de acá solo arman ese contexto. Así ninguna vista nueva puede olvidarse del registro (ver `integraciones` §3).
+
 ## 2. Modelos
 
 ```python
@@ -45,18 +47,18 @@ Dos familias, y conviene no mezclarlas.
 |---|---|---|
 | `GET /api/v1/servicios/cut/buscar?q=` | público | Busca por nombre de región, provincia o comuna |
 | `GET /api/v1/servicios/cut/codigo/{codigo}` | público | El camino inverso: código a unidad territorial |
-| `GET /api/v1/servicios/permisos/{patente}` | autenticado con perfil | El permiso de circulación de una patente |
+| `GET /api/v1/servicios/permisos/{patente}` | autenticado con perfil | El vehículo y sus permisos de circulación. Una patente provisoria (`PR` y cuatro dígitos) trae los permisos provisionales |
 
-El CUT es público porque es dato abierto, y no escribe `Acceso`: no entrega datos de nadie. Los permisos de circulación **no**: requieren perfil activo, exigen la cabecera `X-Procedimiento` y escriben `cuentas.Acceso`. Sin esa cabecera, `400` con código `PROCEDIMIENTO_REQUERIDO` — para que nadie consulte «porque sí».
+El CUT es público porque es dato abierto, y no escribe `Acceso`: no entrega datos de nadie. Los permisos de circulación **no**: requieren perfil activo, exigen la cabecera `X-Procedimiento` y el adaptador escribe `cuentas.Acceso`, uno por operación consultada a la fuente. Sin esa cabecera, `400` con código `PROCEDIMIENTO_REQUERIDO` — para que nadie consulte «porque sí».
 
 Un perfil con municipio ve lo que su trámite necesita; **que haya o no restricción por municipio en los permisos de circulación es una pregunta para jurídica**, no una decisión de implementación. Hasta que se responda, se registra todo acceso y no se restringe por municipio, y la pantalla dice que la consulta queda registrada.
 
 ## 4. Degradación honesta
 
-Es el patrón que la maqueta ya resolvió y hay que portarlo, no reinventarlo:
+La decide el adaptador, y cada respuesta trae su `origen` —`fuente`, `foto` o `muestra`— y su fecha (`integraciones` §5). Esta aplicación lo pasa tal cual a la pantalla:
 
-- Se intenta la fuente. Si responde, se entrega el dato.
-- Si no responde, se entrega la **muestra sintética, diciéndolo en la respuesta** con un campo explícito, para que la pantalla lo muestre en pantalla.
+- **CUT:** si la fuente no responde, se entrega la foto versionada, con su fecha. Es dato real y abierto.
+- **Permisos:** si la fuente está configurada y no responde, `503 FUENTE_NO_DISPONIBLE`, y la pantalla lo dice. **Nunca** datos inventados sobre una patente que puede existir. La muestra sintética aparece solo en un ambiente sin fuente configurada, marcada en cada respuesta.
 - Nunca una pantalla en blanco, nunca datos de muestra sin aviso.
 
 Una pantalla que se queda en blanco no se puede mostrar en una reunión; una que finge datos sin avisar es peor.
@@ -65,8 +67,8 @@ Una pantalla que se queda en blanco no se puede mostrar en una reunión; una que
 
 1. `GET /servicios` no devuelve servicios de nodos ocultos.
 2. Consultar un permiso sin perfil activo da `403`; sin `X-Procedimiento` da `400`.
-3. Cada consulta exitosa de permisos escribe exactamente un `cuentas.Acceso` con el perfil, la patente y el procedimiento, y **sin** la respuesta.
-4. Con la fuente caída, la respuesta trae datos de muestra y el campo que lo declara.
+3. Cada consulta de permisos deja en `cuentas.Acceso` el perfil, la patente y el procedimiento, y **sin** la respuesta. Lo escribe el adaptador; acá se prueba que el endpoint le pasa el contexto.
+4. Con la fuente del CUT caída, la respuesta trae la foto y el campo que lo declara; con la de permisos caída, `503`.
 5. El buscador del CUT funciona en los dos sentidos y devuelve códigos canónicos.
 6. Una patente mal formada se rechaza antes de llamar a la fuente.
 

@@ -16,7 +16,7 @@ from typing import Protocol
 
 from django.conf import settings
 
-from .errores import FuenteNoDisponible
+from .errores import RepositorioNoDisponible
 from .models import Fuente
 
 LIMITE_BYTES = 1024 * 1024
@@ -36,11 +36,13 @@ class Lector(Protocol):
 
 def _decodificar(crudo: bytes, ruta: str) -> str:
     if len(crudo) > LIMITE_BYTES:
-        raise FuenteNoDisponible(f"{ruta} pesa más de 1 MB: el nodo no lee archivos tan grandes.")
+        raise RepositorioNoDisponible(
+            f"{ruta} pesa más de 1 MB: el nodo no lee archivos tan grandes."
+        )
     try:
         return crudo.decode("utf-8")
     except UnicodeDecodeError:
-        raise FuenteNoDisponible(f"{ruta} no está codificado en UTF-8.") from None
+        raise RepositorioNoDisponible(f"{ruta} no está codificado en UTF-8.") from None
 
 
 class LectorGitLab:
@@ -55,7 +57,7 @@ class LectorGitLab:
         datos = self._pedir(fuente, fuente.ruta_ficha, fuente.rama)
         commit = datos.get("commit_id")
         if not isinstance(commit, str) or not commit:
-            raise FuenteNoDisponible("GitLab respondió sin el commit de la rama.")
+            raise RepositorioNoDisponible("GitLab respondió sin el commit de la rama.")
         return Leido(commit=commit, contenido=self._contenido(datos, fuente.ruta_ficha))
 
     def leer_archivo(self, fuente: Fuente, ruta: str, commit: str) -> str:
@@ -63,7 +65,7 @@ class LectorGitLab:
 
     def _pedir(self, fuente: Fuente, ruta: str, ref: str) -> dict:
         if not self.api_url or not self.token:
-            raise FuenteNoDisponible(
+            raise RepositorioNoDisponible(
                 "La lectura de repositorios no está configurada en el nodo: "
                 "faltan REGISTRO_GIT_API_URL o REGISTRO_GIT_TOKEN."
             )
@@ -79,32 +81,36 @@ class LectorGitLab:
                 # base64 infla un tercio; el margen deja pasar el JSON que lo envuelve.
                 crudo = respuesta.read(LIMITE_BYTES * 2)
         except urllib.error.HTTPError as error:
-            raise FuenteNoDisponible(self._motivo_http(error.code, fuente, ruta, ref)) from None
+            raise RepositorioNoDisponible(
+                self._motivo_http(error.code, fuente, ruta, ref)
+            ) from None
         except (urllib.error.URLError, TimeoutError, OSError):
-            raise FuenteNoDisponible(
+            raise RepositorioNoDisponible(
                 f"GitLab no respondió en {self.api_url}. El nodo solo lo alcanza dentro de la "
                 "red de SUBDERE o por VPN."
             ) from None
         try:
             datos = json.loads(crudo)
         except ValueError:
-            raise FuenteNoDisponible(
+            raise RepositorioNoDisponible(
                 f"GitLab respondió algo que no se pudo leer al pedir {ruta}."
             ) from None
         if not isinstance(datos, dict):
-            raise FuenteNoDisponible(f"GitLab respondió algo inesperado al pedir {ruta}.")
+            raise RepositorioNoDisponible(f"GitLab respondió algo inesperado al pedir {ruta}.")
         return datos
 
     def _contenido(self, datos: dict, ruta: str) -> str:
         tamano = datos.get("size")
         if isinstance(tamano, int) and tamano > LIMITE_BYTES:
-            raise FuenteNoDisponible(
+            raise RepositorioNoDisponible(
                 f"{ruta} pesa más de 1 MB: el nodo no lee archivos tan grandes."
             )
         try:
             crudo = base64.b64decode(datos.get("content") or "", validate=True)
         except (binascii.Error, TypeError, ValueError):
-            raise FuenteNoDisponible(f"GitLab entregó {ruta} con un contenido ilegible.") from None
+            raise RepositorioNoDisponible(
+                f"GitLab entregó {ruta} con un contenido ilegible."
+            ) from None
         return _decodificar(crudo, ruta)
 
     @staticmethod
@@ -132,7 +138,7 @@ class LectorFalso:
     """Un repositorio en memoria, para las pruebas.
 
     `archivos` va de ruta a contenido; todos viven en un único `commit`. `falla`, si se
-    da, es el motivo con que cualquier lectura termina en `FuenteNoDisponible`.
+    da, es el motivo con que cualquier lectura termina en `RepositorioNoDisponible`.
     """
 
     def __init__(self, archivos: dict[str, str] | None = None, commit: str = "a" * 40):
@@ -151,7 +157,7 @@ class LectorFalso:
 
     def _leer(self, fuente: Fuente, ruta: str) -> str:
         if self.falla:
-            raise FuenteNoDisponible(self.falla)
+            raise RepositorioNoDisponible(self.falla)
         if ruta not in self.archivos:
-            raise FuenteNoDisponible(f"GitLab no encontró {ruta} en {fuente.proyecto} (404).")
+            raise RepositorioNoDisponible(f"GitLab no encontró {ruta} en {fuente.proyecto} (404).")
         return _decodificar(self.archivos[ruta].encode("utf-8"), ruta)

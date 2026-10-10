@@ -6,7 +6,7 @@ import urllib.request
 
 import pytest
 
-from apps.registro.errores import FuenteNoDisponible
+from apps.registro.errores import RepositorioNoDisponible
 from apps.registro.lectores import LIMITE_BYTES, LectorGitLab
 from apps.registro.models import Fuente, problema_de_url
 from apps.registro.sincronizacion import sincronizar
@@ -95,7 +95,7 @@ def test_un_archivo_se_lee_en_el_commit_pedido(fuente, gitlab):
 def test_un_archivo_de_mas_de_1_mb_se_rechaza(fuente, gitlab):
     gitlab(datos=archivo("x", size=LIMITE_BYTES + 1))
 
-    with pytest.raises(FuenteNoDisponible, match="1 MB"):
+    with pytest.raises(RepositorioNoDisponible, match="1 MB"):
         LectorGitLab().leer_ficha(fuente)
 
 
@@ -104,7 +104,7 @@ def test_un_archivo_que_no_es_utf8_se_rechaza(fuente, gitlab):
     datos["content"] = base64.b64encode("ñ".encode("latin-1")).decode()
     gitlab(datos=datos)
 
-    with pytest.raises(FuenteNoDisponible, match="UTF-8"):
+    with pytest.raises(RepositorioNoDisponible, match="UTF-8"):
         LectorGitLab().leer_ficha(fuente)
 
 

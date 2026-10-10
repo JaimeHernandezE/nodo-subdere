@@ -102,9 +102,14 @@ Cada adaptador hace tres cosas y ninguna más:
 2. **Normaliza** lo que devuelve. El caso concreto: el CUT entrega los códigos como entero y acá se rellenan a su forma canónica.
 3. **Cachea** por un tiempo corto y declarado, para no castigar al servicio de origen.
 
-Lo que **no** hacen: guardar los datos en la base, enriquecerlos con información propia, ni exponer nada que la API de origen no exponga. Si un adaptador empieza a tener tablas, se convirtió en un registro paralelo.
+Lo que **no** hacen: guardar los datos en la base, enriquecerlos con información propia, ni exponer nada que la API de origen no exponga. Si un adaptador empieza a tener tablas, se convirtió en un registro paralelo. La app no tiene modelos ni endpoints: los expone `servicios`.
 
-Cada adaptador declara su URL base por variable de entorno y degrada con honestidad: si el servicio no responde, el frontend debe poder decirlo, no mostrar un vacío ambiguo.
+Cada adaptador declara su URL base por variable de entorno y degrada con honestidad: cada respuesta dice si salió de la `fuente`, de la `foto` o de la `muestra`, y de cuándo es.
+
+- **CUT:** sin URL, o con la fuente caída, responde la foto versionada de `core`, con su fecha. Es dato abierto: no registra accesos.
+- **Permisos de circulación:** con la fuente caída, `503 FUENTE_NO_DISPONIBLE`, nunca datos inventados. La muestra sintética aparece solo sin URL configurada. El adaptador **exige** un contexto —perfil, canal y petición— y registra cada consulta en `cuentas.Acceso`, también la que sale del caché.
+
+El detalle está en [`apps/integraciones/INSTRUCCIONES.md`](apps/integraciones/INSTRUCCIONES.md).
 
 ---
 
