@@ -68,8 +68,10 @@ class TestConsulta:
         assert cuerpo["origen"] == "fuente"
         assert cuerpo["datos"]["tipo"] == "definitiva"
         assert cuerpo["datos"]["vehiculo"]["marca"] == "TOYOTA"
-        assert [p["anio"] for p in cuerpo["datos"]["permisos"]] == [2026, 2024]
-        assert cuerpo["datos"]["permisos"][0]["cuotas"][0]["fecha_pago"] == "2026-03-18"
+        assert [p["anio"] for p in cuerpo["datos"]["permisos"]] == [2026, 2026, 2024]
+        assert cuerpo["datos"]["permisos"][1]["cuotas"][0]["fecha_pago"] == "2026-03-18"
+        assert cuerpo["datos"]["permisos"][0]["comuna"] == {"cut": "13101", "nombre": "Santiago"}
+        assert "chasis" not in str(cuerpo)
         assert "provisionales" not in cuerpo["datos"]
 
     def test_cada_operacion_deja_su_acceso_con_el_contexto_y_sin_la_respuesta(
@@ -96,12 +98,9 @@ class TestConsulta:
         )
 
     def test_desde_anio_filtra_y_queda_en_el_acceso(self, fuente, cliente):
-        ruta = f"{PERMISOS}/vehiculos/BDPF18/permisos?desde_anio=2025"
-        fuente.rutas[ruta] = fuente.rutas[f"{PERMISOS}/vehiculos/BDPF18/permisos"]
-
         respuesta = consultar(cliente, "BDPF18", desde_anio="2025")
 
-        assert [p["anio"] for p in respuesta.json()["datos"]["permisos"]] == [2026]
+        assert [p["anio"] for p in respuesta.json()["datos"]["permisos"]] == [2026, 2026]
         acceso = Acceso.objects.get(operacion="consultar_permisos")
         assert acceso.parametros == {"patente": "BDPF18", "desde_anio": 2025}
 
@@ -113,15 +112,23 @@ class TestConsulta:
         assert fuente.pedidos == []
         assert not Acceso.objects.exists()
 
-    def test_una_patente_pr_consulta_los_provisionales(self, fuente, cliente):
-        respuesta = consultar(cliente, "PR0909")
+    def test_una_patente_pr_consulta_los_provisionales(self, settings, cliente):
+        settings.PERMISOS_CIRCULACION_API_URL = ""
+        respuesta = consultar(cliente, "PR0001")
 
         assert respuesta.status_code == 200
         datos = respuesta.json()["datos"]
         assert datos["tipo"] == "provisoria"
         assert datos["provisionales"][0]["titular"]["rut"] == "77777777-7"
-        assert fuente.urls() == [f"{PERMISOS}/permisos-provisionales/PR0909"]
         assert Acceso.objects.get().operacion == "consultar_permisos_provisionales"
+
+    def test_los_provisionales_con_sem_dan_503_sin_consultar(self, fuente, cliente):
+        respuesta = consultar(cliente, "PR0909")
+
+        assert respuesta.status_code == 503
+        assert codigo(respuesta) == "FUENTE_NO_DISPONIBLE"
+        assert fuente.pedidos == []
+        assert Acceso.objects.get().resultado == "error"
 
     @pytest.mark.parametrize("patente", ["XX", "BDPF1", "1234AB"])
     def test_una_patente_mal_formada_se_rechaza_antes_de_la_fuente(self, fuente, cliente, patente):
@@ -137,13 +144,13 @@ class TestConsulta:
 
         assert respuesta.status_code == 404
         assert codigo(respuesta) == "NO_ENCONTRADO"
-        assert fuente.urls() == [f"{PERMISOS}/vehiculos/AB1234"]
+        assert fuente.urls() == [f"{PERMISOS}/fiscalizaciones/AB1234"]
         assert Acceso.objects.get().resultado == "no_encontrado"
 
 
 class TestDegradacion:
     def test_con_la_fuente_caida_da_503_y_nunca_la_muestra(self, fuente, cliente):
-        fuente.rutas[f"{PERMISOS}/vehiculos/ZZZZ10"] = http(503)
+        fuente.rutas[f"{PERMISOS}/fiscalizaciones/ZZZZ10"] = http(503)
 
         respuesta = consultar(cliente, "ZZZZ10")
 

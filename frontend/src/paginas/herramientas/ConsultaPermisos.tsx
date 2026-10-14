@@ -216,9 +216,23 @@ function Resultado({ respuesta, patente }: { respuesta: PermisosRespuesta; paten
         </div>
       </div>
       {permisos.length ? (
-        permisos.map((p) => <TarjetaDePermiso key={`${p.anio}-${p.comuna.cut}`} permiso={p} />)
+        permisos.map((p, i) => <TarjetaDePermiso key={i} permiso={p} />)
       ) : (
         <p className="pendiente">Este vehículo no tiene permisos de circulación registrados.</p>
+      )}
+    </>
+  );
+}
+
+function Comuna({ comuna }: { comuna: Permiso["comuna"] }) {
+  return (
+    <>
+      <b>{comuna.nombre || "una municipalidad que la fuente no nombra"}</b>
+      {comuna.cut && (
+        <>
+          {" "}
+          <code>{comuna.cut}</code>
+        </>
       )}
     </>
   );
@@ -232,7 +246,7 @@ function TarjetaDePermiso({ permiso }: { permiso: Permiso }) {
         <span className={permiso.estado === "VIGENTE" ? "tag tag-dev" : "tag"}>{permiso.estado}</span>
       </div>
       <div className="jerarquia" style={{ borderTop: 0, paddingTop: 6, marginTop: 6 }}>
-        Recaudado por <b>{permiso.comuna.nombre}</b> <code>{permiso.comuna.cut}</code>
+        Recaudado por <Comuna comuna={permiso.comuna} />
         <span className="sep">·</span> Total <b>{pesos(permiso.monto_total)}</b>
         {permiso.vigente_hasta && (
           <>
@@ -280,7 +294,7 @@ function Provisional({ patente, permiso }: { patente: string; permiso: PermisoPr
           {permiso.marca || "—"} {permiso.modelo}
         </b>
         <span className="sep">·</span> {permiso.anio}, semestre {permiso.semestre}
-        <span className="sep">·</span> {permiso.comuna.nombre} <code>{permiso.comuna.cut}</code>
+        <span className="sep">·</span> <Comuna comuna={permiso.comuna} />
       </div>
       <div className="jerarquia">
         Titular <b>{permiso.titular.razon_social}</b> <code>{permiso.titular.rut}</code>

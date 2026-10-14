@@ -79,6 +79,11 @@ function MenuDeSesion() {
             </p>
             <p>Rol: {ROLES[yo.rol]}</p>
             <p>{yo.municipio ? `Municipio: ${yo.municipio.nombre}` : "SUBDERE"}</p>
+            <p>
+              <Link to="/admin" onClick={() => setAbierto(false)}>
+                Administración
+              </Link>
+            </p>
           </>
         ) : sinPerfil ? (
           <p>Te autenticaste, pero no tienes perfil en el nodo.</p>

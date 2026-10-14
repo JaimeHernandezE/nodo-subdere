@@ -35,7 +35,9 @@ export function hayToken(): boolean {
 }
 
 type Opciones = {
-  params?: Record<string, string | number | undefined>;
+  metodo?: "GET" | "POST" | "PATCH" | "PUT";
+  cuerpo?: unknown;
+  params?: Record<string, string | number | boolean | undefined>;
   cabeceras?: Record<string, string>;
   texto?: boolean;
   signal?: AbortSignal;
@@ -56,11 +58,14 @@ export async function pedir<T>(ruta: string, opciones: Opciones = {}): Promise<T
     ...opciones.cabeceras,
   };
   if (token) cabeceras.Authorization = `Bearer ${token}`;
+  if (opciones.cuerpo !== undefined) cabeceras["Content-Type"] = "application/json";
 
   let respuesta: Response;
   try {
     respuesta = await fetch(url(ruta, opciones.params), {
+      method: opciones.metodo ?? "GET",
       headers: cabeceras,
+      body: opciones.cuerpo !== undefined ? JSON.stringify(opciones.cuerpo) : undefined,
       signal: opciones.signal,
     });
   } catch (error) {

@@ -1,8 +1,13 @@
-"""Permisos de circulación, según el contrato propuesto. Ver INSTRUCCIONES.md §2, §3 y §5.
+"""Permisos de circulación, leídos de la API de fiscalización de SEM.
+
+Ver INSTRUCCIONES.md §2, §3 y §5.
 
 Cada consulta entrega datos asociados a una persona, así que este adaptador **exige** un
 `Contexto` y registra él mismo cada consulta en `cuentas.Acceso`: también la que sale del
 caché, la que no encuentra nada y la que falla. Ningún llamador puede saltárselo.
+
+SEM entrega el vehículo y sus pagos en una sola respuesta, con su propia forma; acá se
+traduce a las dataclasses del contrato propuesto, que es lo que expone el nodo.
 
 Sin URL, responde la muestra sintética de `muestras/`, diciéndolo. Con URL y la fuente
 caída, `FuenteNoDisponible`: nunca datos inventados sobre una patente que puede existir.
@@ -19,19 +24,24 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
 
-from apps.core import run
+from apps.core import foto_cut, run
+from apps.core.cut import canonico
 from apps.core.errores import ErrorNodo
 from apps.cuentas.actuaciones import registrar_acceso
 from apps.cuentas.models import Acceso, Perfil
 
 from . import patente as patentes
 from .cliente import pedir_json
+from .cut import sin_tildes
 from .errores import FuenteNoDisponible, NoEncontrado, ParametroInvalido
 from .respuesta import Origen, Respuesta
 
 NODO = "permisos-de-circulacion"
 MUESTRA = Path(__file__).resolve().parent / "muestras" / "permisos.json"
 ANIO_MINIMO = 1990
+PROVISIONALES_SIN_CONECTAR = (
+    "La consulta de permisos provisionales todavía no está conectada a la fuente."
+)
 
 registro = logging.getLogger(__name__)
 
@@ -110,7 +120,8 @@ class PermisoProvisional:
 
 
 def _fecha(valor) -> datetime.date | None:
-    return datetime.date.fromisoformat(valor) if valor else None
+    """SEM escribe las fechas como dd-mm-aaaa."""
+    return datetime.datetime.strptime(valor, "%d-%m-%Y").date() if valor else None
 
 
 def _rut(texto: str) -> str:
@@ -120,57 +131,79 @@ def _rut(texto: str) -> str:
         return str(texto)
 
 
-def _comuna(datos: dict) -> ComunaDelPermiso:
-    return ComunaDelPermiso(cut=str(datos["cut"]), nombre=str(datos["nombre"]))
+@functools.cache
+def _comunas_por_nombre() -> dict[str, tuple[str, str]]:
+    return {
+        sin_tildes(fila["nombre"]): (canonico(fila["comuna_id"], "comuna"), fila["nombre"])
+        for fila in foto_cut.leer("comunas")["datos"]
+    }
 
 
-def _vehiculo(datos: dict) -> Vehiculo:
+def _comuna(nombre) -> ComunaDelPermiso:
+    """SEM identifica la municipalidad por su RUT y su nombre; el CUT sale del nombre.
+
+    Un nombre que no calza con la foto del CUT, o que viene vacío, queda sin código.
+    """
+    nombre = str(nombre or "").strip()
+    cut, oficial = _comunas_por_nombre().get(sin_tildes(nombre), ("", nombre))
+    return ComunaDelPermiso(cut=cut, nombre=oficial)
+
+
+def _vehiculo(respuesta: dict) -> Vehiculo:
+    datos = respuesta["data"]
     return Vehiculo(
-        patente=str(datos["patente"]),
+        patente=str(datos["patente"]).upper(),
         marca=str(datos["marca"]),
         modelo=str(datos["modelo"]),
-        anio_fabricacion=int(datos["anio_fabricacion"]),
+        anio_fabricacion=int(datos["ano_fabricacion"]),
         color=str(datos.get("color") or ""),
-        tipo=str(datos.get("tipo") or ""),
     )
 
 
-def _permisos(datos: list) -> list[Permiso]:
+def _cuota(pago: dict) -> tuple[Cuota, ...]:
+    """`tipo_pago` es `T` para el pago total, o el número de la cuota."""
+    fecha = _fecha(pago.get("fecha_pago_cuota"))
+    if fecha is None:
+        return ()
+    tipo = str(pago["tipo_pago"]).strip().upper()
+    numero = 1 if tipo == "T" else int(tipo)
+    return (Cuota(numero=numero, monto=int(pago["monto_cuota"]), fecha_pago=fecha),)
+
+
+def _permisos(respuesta: dict) -> list[Permiso]:
+    """Un permiso por cada pago, sin agruparlos: ver INSTRUCCIONES.md §2."""
     return [
         Permiso(
-            anio=int(p["anio"]),
+            anio=int(p["ano"]),
             estado=str(p["estado"]),
-            comuna=_comuna(p["comuna"]),
+            comuna=_comuna(p.get("institucion_nombre")),
             monto_total=int(p["monto_total"]),
-            vigente_hasta=_fecha(p.get("vigente_hasta")),
-            cuotas=tuple(
-                Cuota(
-                    numero=int(c["numero"]),
-                    monto=int(c["monto"]),
-                    fecha_pago=_fecha(c["fecha_pago"]),
-                    medio_pago=str(c.get("medio_pago") or ""),
-                )
-                for c in p.get("cuotas") or []
-            ),
+            vigente_hasta=_fecha(p.get("fecha_vigencia")),
+            cuotas=_cuota(p),
         )
-        for p in datos
+        for p in respuesta["data"]["pagos"] or []
     ]
 
 
 def _provisionales(datos: list) -> list[PermisoProvisional]:
-    return [
-        PermisoProvisional(
-            anio=int(p["anio"]),
-            semestre=int(p["semestre"]),
-            comuna=_comuna(p["comuna"]),
-            titular=TitularEmpresa(
-                rut=_rut(p["titular"]["rut"]), razon_social=str(p["titular"]["razon_social"])
-            ),
-            marca=str(p.get("marca") or ""),
-            modelo=str(p.get("modelo") or ""),
+    """El titular es la automotora; los datos de su representante no salen del adaptador."""
+    provisionales = []
+    for p in datos:
+        automotora = (p.get("propietarios") or [{}])[0]
+        provisionales.append(
+            PermisoProvisional(
+                anio=int(p["permiso_anio"]),
+                semestre=int(p["permiso_semestre"]),
+                comuna=_comuna(p.get("institucion_nombre")),
+                titular=TitularEmpresa(
+                    rut=_rut(automotora.get("automotora_rut") or ""),
+                    razon_social=str(automotora.get("automotora_razon_social") or ""),
+                ),
+                marca=str(p.get("marca") or ""),
+                modelo=str(p.get("modelo") or ""),
+            )
         )
-        for p in datos
-    ]
+    return provisionales
 
 
 @functools.cache
@@ -190,7 +223,11 @@ class AdaptadorPermisos:
     def vehiculo(self, patente: str, contexto: Contexto) -> Respuesta:
         patente = patentes.validar(patente)
         return self._consultar(
-            "consultar_vehiculo", contexto, {"patente": patente}, f"/vehiculos/{patente}", _vehiculo
+            "consultar_vehiculo",
+            contexto,
+            {"patente": patente},
+            f"/fiscalizaciones/{patente}",
+            _vehiculo,
         )
 
     def permisos(
@@ -198,7 +235,6 @@ class AdaptadorPermisos:
     ) -> Respuesta:
         patente = patentes.validar(patente)
         parametros = {"patente": patente}
-        ruta = f"/vehiculos/{patente}/permisos"
         if desde_anio is not None:
             if isinstance(desde_anio, bool) or not isinstance(desde_anio, int):
                 raise ParametroInvalido(mensaje="desde_anio debe ser un año.")
@@ -207,12 +243,13 @@ class AdaptadorPermisos:
                     mensaje=f"desde_anio no puede ser anterior a {ANIO_MINIMO}."
                 )
             parametros["desde_anio"] = desde_anio
-            ruta += f"?desde_anio={desde_anio}"
 
         def convertir(datos):
             return [p for p in _permisos(datos) if desde_anio is None or p.anio >= desde_anio]
 
-        return self._consultar("consultar_permisos", contexto, parametros, ruta, convertir)
+        return self._consultar(
+            "consultar_permisos", contexto, parametros, f"/fiscalizaciones/{patente}", convertir
+        )
 
     def provisionales(self, patente: str, contexto: Contexto) -> Respuesta:
         patente = patentes.validar_provisoria(patente)
@@ -220,7 +257,7 @@ class AdaptadorPermisos:
             "consultar_permisos_provisionales",
             contexto,
             {"patente": patente},
-            f"/permisos-provisionales/{patente}",
+            f"/fiscalizaciones/provisionales/{patente}",
             _provisionales,
         )
 
@@ -252,23 +289,30 @@ class AdaptadorPermisos:
 
     def _obtener(self, ruta: str, convertir, contexto: Contexto) -> Respuesta:
         if not self.url:
-            datos = _muestra().get(ruta.split("?", 1)[0])
+            datos = _muestra().get(ruta)
             if datos is None:
                 raise NoEncontrado("La muestra sintética no tiene esa patente.")
             return Respuesta(
                 datos=convertir(datos), origen=Origen.MUESTRA, obtenido_en=timezone.now()
             )
 
+        if ruta.startswith("/fiscalizaciones/provisionales/"):
+            # SEM pide dos parámetros más, que identifican a la municipalidad que consulta.
+            registro.warning("Permisos: los provisionales aún no están conectados a SEM")
+            raise FuenteNoDisponible(PROVISIONALES_SIN_CONECTAR)
+
+        # El vehículo y sus permisos salen de la misma respuesta: se guarda una vez.
         clave = f"integraciones:permisos:{ruta}"
-        if (guardada := cache.get(clave)) is not None:
-            return guardada
-        datos = pedir_json(f"{self.url}{ruta}", cabeceras=contexto.cabeceras())
+        guardada = cache.get(clave)
+        datos, obtenido_en = guardada or (
+            pedir_json(f"{self.url}{ruta}", cabeceras=contexto.cabeceras()),
+            timezone.now(),
+        )
         try:
-            respuesta = Respuesta(
-                datos=convertir(datos), origen=Origen.FUENTE, obtenido_en=timezone.now()
-            )
+            convertidos = convertir(datos)
         except (KeyError, TypeError, ValueError, AttributeError):
             registro.warning("Permisos: la fuente respondió %s con una forma inesperada", ruta)
             raise FuenteNoDisponible() from None
-        cache.set(clave, respuesta, self.cache_segundos)
-        return respuesta
+        if guardada is None:
+            cache.set(clave, (datos, obtenido_en), self.cache_segundos)
+        return Respuesta(datos=convertidos, origen=Origen.FUENTE, obtenido_en=obtenido_en)

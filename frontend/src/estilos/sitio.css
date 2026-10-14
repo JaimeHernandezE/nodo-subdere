@@ -61,3 +61,45 @@
 .campo input:focus,.campo textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px var(--azul-l)}
 button.btn{cursor:pointer;font-family:var(--font-tit)}
 .error-campo{color:var(--rojo-tx);font-size:13.5px;margin:6px 0 0}
+.campo select{padding:10px 12px;border:1px solid var(--line-l);border-radius:6px;font:inherit;font-size:15px;color:var(--ink);background:#fff}
+
+/* ---------- administración ---------- */
+.admin{padding-top:32px}
+.admin__quien{font-size:13.5px;color:var(--muted);margin:-6px 0 14px}
+.admin__nav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1.5px solid var(--line-l);margin:0 0 26px}
+.admin__nav a{padding:9px 16px;font-size:14.5px;color:var(--body);border-bottom:3px solid transparent;margin-bottom:-1.5px}
+.admin__nav a:hover{color:var(--navy);text-decoration:none}
+.admin__nav a[aria-current="page"]{color:var(--navy);font-weight:600;border-bottom-color:var(--rojo)}
+.admin-tabla td{font-size:14px}
+.admin-tabla td>a{font-weight:600;overflow-wrap:anywhere}
+.admin-meta{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+td.admin-meta{display:table-cell}
+.admin-motivo{font-size:13px;color:var(--amb-md);background:var(--amb-bg);border-radius:4px;padding:6px 9px;margin:6px 0 0;max-width:60ch}
+.admin-acciones{white-space:nowrap}
+.admin-acciones .btn-copiar{display:block;width:100%;margin:0 0 6px;text-align:left}
+.admin-acciones .btn-copiar:disabled{opacity:.6;cursor:wait}
+.admin-inactiva td{background:var(--grey)}
+.admin-inactiva td:not(.admin-acciones){color:var(--muted)}
+.admin-encargado{margin-left:6px}
+.admin-historial{margin-top:8px;font-size:13px}
+.admin-historial>summary{cursor:pointer;color:var(--azul)}
+.admin-historial ol{margin:8px 0 0;padding-left:18px}
+.admin-historial li{margin-bottom:8px}
+.admin-form{margin:6px 0 20px;border:1px solid var(--line-l);border-radius:10px;background:#fff}
+.admin-form>summary{cursor:pointer;padding:12px 18px;font-weight:600;color:var(--navy)}
+.admin-form[open]>summary{border-bottom:1px solid var(--hair)}
+.admin-form form{padding:0 18px 6px}
+.admin-fila{display:flex;gap:16px;flex-wrap:wrap}
+.admin-fila .campo{flex:1 1 220px}
+.admin-editar{margin-top:12px;padding:12px 14px;border:1px dashed var(--line-l);border-radius:8px;background:#fff}
+.admin-editar .campo{margin-top:10px}
+.admin-filtro{width:auto;min-width:180px}
+.admin-detalle{display:grid;gap:18px;padding:6px 0}
+.admin-detalle fieldset{border:1px solid var(--hair);border-radius:8px;padding:6px 16px 14px;margin:0;min-width:0}
+.admin-detalle legend{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--navy);font-weight:700;padding:0 6px}
+.admin-rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0 16px}
+.admin-ficha input{background:var(--grey);color:var(--muted);border-color:var(--hair);cursor:not-allowed}
+.campo textarea.admin-nota{font-family:inherit;font-size:14.5px;min-height:80px}
+.aviso-ok{background:#ECFDF5;border-left-color:#16A34A}
+.aviso-ok p{color:#065F46}
+.aviso ul{margin:6px 0 0;padding-left:18px;font-size:14px;color:var(--amb-md)}

@@ -181,6 +181,8 @@ describe("6. El menú de sesión se maneja con teclado", () => {
     expect(within(menu).getByText(/Municipio: Talca/)).toBeVisible();
 
     await usuario.tab();
+    expect(within(menu).getByRole("link", { name: "Administración" })).toHaveFocus();
+    await usuario.tab();
     expect(within(menu).getByRole("button", { name: "Salir" })).toHaveFocus();
 
     await usuario.keyboard("{Escape}");

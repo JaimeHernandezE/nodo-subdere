@@ -13,8 +13,8 @@ Depende de `core` y `cuentas`. **No tiene modelos, migraciones ni endpoints prop
 | Pieza | Archivo |
 |---|---|
 | `AdaptadorCUT`, `Region`, `Provincia`, `Comuna` y la caída a la foto | `cut.py` |
-| `AdaptadorPermisos`, `Contexto`, las dataclasses del contrato y el registro de accesos | `permisos.py` |
-| La muestra sintética de permisos | `muestras/permisos.json` |
+| `AdaptadorPermisos`, `Contexto`, las dataclasses del contrato, la traducción desde SEM y el registro de accesos | `permisos.py` |
+| La muestra sintética de permisos, con la forma de SEM | `muestras/permisos.json` |
 | La única salida HTTP: tiempo de espera, reintento, límite de 1 MB, mapeo de errores | `cliente.py` |
 | `Respuesta` y `Origen` (`fuente`, `foto`, `muestra`) | `respuesta.py` |
 | Normalizar y validar patentes | `patente.py` |
@@ -52,6 +52,17 @@ class AdaptadorPermisos:
 ```
 
 La interfaz de permisos sigue las tres operaciones del contrato propuesto, [`fiscalizacion.openapi.yaml`](../../../prototipos/estandares/fiscalizacion.openapi.yaml): el vehículo, sus permisos y los permisos provisionales. **`PR` y cuatro dígitos calza con los dos patrones del contrato**: es una provisoria y también la forma antigua de dos letras y cuatro dígitos. El contrato no lo resuelve; el adaptador expone las dos operaciones y `servicios` decide cuál consulta: la trata como provisoria (`servicios` §3). Es una observación para la wiki del contrato.
+
+### Permisos: de la API de SEM al contrato
+
+La fuente real es la API de fiscalización de SEM (`PERMISOS_CIRCULACION_API_URL` es su base, por ejemplo `https://stag-api.sem2.gob.cl/api/bum`). No sigue el contrato propuesto: el adaptador traduce, y lo que expone el nodo no cambia.
+
+- **Una sola llamada para el vehículo y sus permisos**: `GET /fiscalizaciones/{patente}` devuelve `{"data": {..., "pagos": [...]}}`. El caché guarda esa respuesta una vez y de ella salen las dos operaciones; cada una igual deja su `Acceso`. `desde_anio` se filtra en el nodo: SEM no lo recibe. Una patente que no existe responde `404`.
+- **Un permiso por cada pago, sin agruparlos.** SEM entrega un registro por pago (`tipo_pago` `T` es el pago total; `1` o `2`, la cuota). En *staging* aparecen el mismo año en dos municipalidades y estados distintos para el mismo año: agruparlos obligaría a decidir cuál vale, y eso es inventar. El pago total se entrega como la cuota número 1.
+- **La comuna sale del nombre.** SEM identifica la municipalidad por su RUT (`institucion_id`) y su nombre; el CUT se busca por nombre, sin tildes, en la foto de `core`. Si el nombre no calza o viene vacío, la comuna va sin código, con el nombre tal como venga.
+- **Lo que no sale del adaptador**: el chasis, el identificador interno, el número de serie del documento y el código SII. En los provisionales, los datos del representante de la automotora: el titular es la empresa.
+- **Fechas** `dd-mm-aaaa` → `date`. El vehículo no trae `tipo`: va vacío.
+- **Provisionales, todavía sin conectar.** SEM los publica en `/fiscalizaciones/provisionales/{patente}/{id}/{id1}`, y esos dos parámetros identifican a la municipalidad que consulta (sin ellos responde «No se encontró Municipalidad con el RUT proporcionado»). Hasta saber qué son y de dónde los saca el nodo, con fuente configurada la operación responde `FUENTE_NO_DISPONIBLE` sin llamar a SEM, y deja su `Acceso`. La traducción ya está escrita y la prueba la muestra.
 
 Los nombres de las operaciones en `Acceso` son `consultar_vehiculo`, `consultar_permisos` y `consultar_permisos_provisionales`, con `nodo="permisos-de-circulacion"`. Una patente mal formada no deja acceso: se rechaza antes de llegar a datos de nadie.
 
@@ -105,7 +116,7 @@ La muestra son **datos sintéticos de verdad**: patentes inventadas que pasan la
 
 Una fixture automática cierra `urllib.request.urlopen` y vacía el caché antes de cada prueba; las que necesitan una fuente la reemplazan por una falsa que anota cada pedido. El vencimiento del caché se prueba adelantando el reloj, no esperando.
 
-1. Ninguna prueba sale a la red: los adaptadores se prueban contra respuestas grabadas —la foto de `core` para el CUT, los ejemplos del contrato para permisos—.
+1. Ninguna prueba sale a la red: los adaptadores se prueban contra respuestas grabadas —la foto de `core` para el CUT, respuestas sintéticas con la forma de SEM para permisos—.
 2. El CUT normaliza `1101` a `01101` en los tres niveles, y `buscar` encuentra sin tildes.
 3. Una patente o un código con formato inválido fallan **antes** de llamar a la fuente.
 4. Fuente de permisos caída da `FUENTE_NO_DISPONIBLE`; patente inexistente da `NO_ENCONTRADO`. No se confunden.
@@ -114,6 +125,7 @@ Una fixture automática cierra `urllib.request.urlopen` y vacía el caché antes
 7. Cada consulta de permisos escribe exactamente un `cuentas.Acceso`, también desde el caché y cuando no encuentra nada. Las consultas al CUT no escriben ninguno.
 8. Sin URL, permisos responde la muestra, marcada; sus patentes pasan el formato.
 9. Una respuesta de más de 1 MB da `RESPUESTA_DEMASIADO_GRANDE`; un `401` de la fuente, `FUENTE_NO_DISPONIBLE`.
+10. La traducción desde SEM: un permiso por pago, la comuna por nombre (o sin código), el vehículo y sus permisos con una sola llamada, y una forma inesperada que no queda en el caché.
 
 ## 7. Qué no implementar
 

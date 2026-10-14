@@ -10,7 +10,7 @@ from apps.integraciones.errores import FuenteNoDisponible, NoEncontrado, Paramet
 from apps.integraciones.permisos import MUESTRA, AdaptadorPermisos, Contexto
 from apps.integraciones.respuesta import Origen
 
-from .conftest import PERMISOS, http
+from .conftest import FISCALIZACION, PERMISOS, http
 
 pytestmark = pytest.mark.django_db
 
@@ -33,31 +33,46 @@ def test_el_vehiculo_sigue_el_contrato(fuente, contexto):
     )
 
 
-def test_los_permisos_traen_comuna_y_cuotas(fuente, contexto):
+def test_cada_pago_de_sem_es_un_permiso_con_su_cuota(fuente, contexto):
     permisos = AdaptadorPermisos().permisos("BDPF18", contexto).datos
 
-    assert [p.anio for p in permisos] == [2026, 2024]
-    assert permisos[0].comuna.cut == "13101"
-    assert permisos[0].cuotas[1].fecha_pago == datetime.date(2026, 8, 14)
-    assert permisos[1].vigente_hasta is None
+    assert [(p.anio, p.cuotas[0].numero) for p in permisos] == [(2026, 2), (2026, 1), (2024, 1)]
+    assert permisos[0].cuotas[0].fecha_pago == datetime.date(2026, 8, 14)
+    assert permisos[0].vigente_hasta == datetime.date(2027, 3, 31)
+    assert permisos[2].vigente_hasta is None
 
 
-def test_desde_anio_viaja_a_la_fuente_y_se_respeta(fuente, contexto):
-    fuente.rutas[f"{PERMISOS}/vehiculos/BDPF18/permisos?desde_anio=2025"] = fuente.rutas[
-        f"{PERMISOS}/vehiculos/BDPF18/permisos"
-    ]
+def test_la_comuna_sale_del_nombre_de_la_municipalidad(fuente, contexto):
+    permisos = AdaptadorPermisos().permisos("BDPF18", contexto).datos
 
+    assert (permisos[0].comuna.cut, permisos[0].comuna.nombre) == ("13101", "Santiago")
+    assert (permisos[2].comuna.cut, permisos[2].comuna.nombre) == ("", "")
+
+
+def test_un_nombre_que_no_esta_en_el_cut_queda_sin_codigo(fuente, contexto):
+    pagos = fuente.rutas[f"{PERMISOS}/fiscalizaciones/BDPF18"]["data"]["pagos"]
+    pagos[0]["institucion_nombre"] = "MUNICIPALIDAD DE NINGUNA PARTE"
+
+    comuna = AdaptadorPermisos().permisos("BDPF18", contexto).datos[0].comuna
+
+    assert (comuna.cut, comuna.nombre) == ("", "MUNICIPALIDAD DE NINGUNA PARTE")
+
+
+def test_desde_anio_se_aplica_en_el_nodo_y_queda_en_el_acceso(fuente, contexto):
     permisos = AdaptadorPermisos().permisos("BDPF18", contexto, desde_anio=2025).datos
 
-    assert [p.anio for p in permisos] == [2026]
+    assert [p.anio for p in permisos] == [2026, 2026]
+    assert fuente.urls() == [f"{PERMISOS}/fiscalizaciones/BDPF18"]
     assert Acceso.objects.get().parametros == {"patente": "BDPF18", "desde_anio": 2025}
 
 
-def test_los_provisionales_normalizan_el_rut_de_la_empresa(fuente, contexto):
-    provisional = AdaptadorPermisos().provisionales("PR0909", contexto).datos[0]
+def test_los_provisionales_aun_no_se_consultan_a_sem(fuente, contexto):
+    with pytest.raises(FuenteNoDisponible) as error:
+        AdaptadorPermisos().provisionales("PR0909", contexto)
 
-    assert provisional.titular.rut == "77777777-7"
-    assert provisional.semestre == 2
+    assert "provisionales" in error.value.mensaje
+    assert fuente.pedidos == []
+    assert accesos() == [("consultar_permisos_provisionales", "error")]
 
 
 def test_los_metadatos_de_trazabilidad_viajan_a_la_fuente(fuente, contexto):
@@ -107,7 +122,7 @@ def test_una_patente_inexistente_es_no_encontrado(fuente, contexto):
 
 @pytest.mark.parametrize("falla", [http(503), http(401), http(403), TimeoutError()])
 def test_la_fuente_caida_es_fuente_no_disponible_y_nunca_la_muestra(fuente, contexto, falla):
-    fuente.rutas[f"{PERMISOS}/vehiculos/BDPF18"] = falla
+    fuente.rutas[f"{PERMISOS}/fiscalizaciones/BDPF18"] = falla
 
     with pytest.raises(FuenteNoDisponible) as error:
         AdaptadorPermisos().vehiculo("BDPF18", contexto)
@@ -117,10 +132,20 @@ def test_la_fuente_caida_es_fuente_no_disponible_y_nunca_la_muestra(fuente, cont
 
 
 def test_una_forma_inesperada_de_la_fuente_es_fuente_no_disponible(fuente, contexto):
-    fuente.rutas[f"{PERMISOS}/vehiculos/BDPF18"] = {"patente": "BDPF18"}
+    fuente.rutas[f"{PERMISOS}/fiscalizaciones/BDPF18"] = {"data": {"patente": "BDPF18"}}
 
     with pytest.raises(FuenteNoDisponible):
         AdaptadorPermisos().vehiculo("BDPF18", contexto)
+
+
+def test_una_forma_inesperada_no_queda_en_el_cache(fuente, contexto):
+    fuente.rutas[f"{PERMISOS}/fiscalizaciones/BDPF18"] = {"data": {"patente": "BDPF18"}}
+    with pytest.raises(FuenteNoDisponible):
+        AdaptadorPermisos().vehiculo("BDPF18", contexto)
+
+    fuente.rutas[f"{PERMISOS}/fiscalizaciones/BDPF18"] = FISCALIZACION
+    assert AdaptadorPermisos().vehiculo("BDPF18", contexto).datos.marca == "TOYOTA"
+    assert len(fuente.pedidos) == 2
 
 
 # Prueba 6: caché
@@ -150,7 +175,8 @@ def test_cada_consulta_escribe_exactamente_un_acceso_tambien_desde_el_cache(
     permisos.vehiculo("BDPF18", contexto)
     permisos.permisos("BDPF18", contexto)
 
-    assert len(fuente.pedidos) == 2
+    # El vehículo y sus permisos vienen en la misma respuesta de SEM.
+    assert len(fuente.pedidos) == 1
     assert accesos() == [
         ("consultar_permisos", "encontrado"),
         ("consultar_vehiculo", "encontrado"),
@@ -203,10 +229,22 @@ def test_las_patentes_y_los_rut_de_la_muestra_pasan_la_validacion():
     respuestas = json.loads(MUESTRA.read_text(encoding="utf-8"))["respuestas"]
 
     for ruta, datos in respuestas.items():
-        valor = ruta.split("/")[2]
-        if ruta.startswith("/permisos-provisionales/"):
+        valor = ruta.rsplit("/", 1)[1]
+        if ruta.startswith("/fiscalizaciones/provisionales/"):
             assert patente.validar_provisoria(valor) == valor
             for permiso in datos:
-                run.leer(permiso["titular"]["rut"])
+                for propietario in permiso["propietarios"]:
+                    run.leer(propietario["automotora_rut"])
         else:
             assert patente.validar(valor) == valor
+
+
+def test_la_muestra_pasa_por_el_mismo_traductor(contexto, settings):
+    settings.PERMISOS_CIRCULACION_API_URL = ""
+    permisos = AdaptadorPermisos()
+
+    vigente = permisos.permisos("ZZZZ10", contexto).datos[0]
+    sin_permisos = permisos.permisos("ZZ0001", contexto).datos
+
+    assert (vigente.comuna.cut, vigente.cuotas[0].numero) == ("13101", 2)
+    assert sin_permisos == []

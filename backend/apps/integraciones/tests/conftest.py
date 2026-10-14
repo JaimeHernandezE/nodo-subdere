@@ -1,3 +1,4 @@
+import copy
 import io
 import json
 import time
@@ -14,47 +15,43 @@ from apps.cuentas.tests.conftest import crear_perfil
 from apps.integraciones.permisos import Contexto
 
 CUT = "https://cut.prueba/api/utilitarios"
-PERMISOS = "https://permisos.prueba/api/bum/v1"
+PERMISOS = "https://permisos.prueba/api/bum"
 
-# Respuestas grabadas: los ejemplos del contrato propuesto (fiscalizacion.openapi.yaml).
-VEHICULO = {
-    "patente": "BDPF18",
-    "marca": "TOYOTA",
-    "modelo": "YARIS",
-    "color": "BLANCO",
-    "anio_fabricacion": 2019,
-    "tipo": "AUTOMOVIL",
-}
-PERMISOS_DEL_VEHICULO = [
-    {
-        "anio": 2026,
-        "estado": "VIGENTE",
-        "comuna": {"cut": "13101", "nombre": "Santiago"},
+
+def pago(ano, tipo_pago, fecha_pago, estado, institucion="SANTIAGO", **campos):
+    return {
+        "ano": ano,
+        "monto_cuota": 107150,
+        "fecha_pago_cuota": fecha_pago,
+        "tipo_pago": tipo_pago,
+        "fecha_vigencia": f"31-03-{ano + 1}",
         "monto_total": 214300,
-        "vigente_hasta": "2027-03-31",
-        "cuotas": [
-            {"numero": 1, "monto": 107150, "fecha_pago": "2026-03-18", "medio_pago": "EN LINEA"},
-            {"numero": 2, "monto": 107150, "fecha_pago": "2026-08-14", "medio_pago": "EN LINEA"},
-        ],
-    },
-    {
-        "anio": 2024,
-        "estado": "VENCIDO",
-        "comuna": {"cut": "13101", "nombre": "Santiago"},
-        "monto_total": 198000,
-        "cuotas": [],
-    },
-]
-PROVISIONALES = [
-    {
-        "anio": 2026,
-        "semestre": 2,
-        "comuna": {"cut": "13123", "nombre": "Providencia"},
-        "marca": "HONDA",
-        "modelo": "PILOT",
-        "titular": {"rut": "77.777.777-7", "razon_social": "AUTOMOTORA DE EJEMPLO SPA"},
+        "institucion_id": 69070100,
+        "institucion_nombre": institucion,
+        "nro_serie_documento": None,
+        "codigo_sii": None,
+        "estado": estado,
+        **campos,
     }
-]
+
+
+# Respuesta grabada con la forma de la API de fiscalización de SEM, y datos sintéticos.
+FISCALIZACION = {
+    "data": {
+        "id": 1,
+        "patente": "BDPF18",
+        "marca": "TOYOTA",
+        "modelo": "YARIS",
+        "color": "BLANCO",
+        "ano_fabricacion": 2019,
+        "chasis": "SINTETICO0000001",
+        "pagos": [
+            pago(2026, "2", "14-08-2026", "VIGENTE"),
+            pago(2026, "1", "18-03-2026", "VIGENTE"),
+            pago(2024, "T", "12-03-2024", "VENCIDO", institucion="", fecha_vigencia=None),
+        ],
+    }
+}
 
 
 class Respuesta(io.BytesIO):
@@ -109,9 +106,7 @@ def fuente(monkeypatch):
     falsa = FuenteFalsa()
     for listado in foto_cut.LISTADOS:
         falsa.rutas[f"{CUT}/{listado}"] = foto_cut.leer(listado)["datos"]
-    falsa.rutas[f"{PERMISOS}/vehiculos/BDPF18"] = VEHICULO
-    falsa.rutas[f"{PERMISOS}/vehiculos/BDPF18/permisos"] = PERMISOS_DEL_VEHICULO
-    falsa.rutas[f"{PERMISOS}/permisos-provisionales/PR0909"] = PROVISIONALES
+    falsa.rutas[f"{PERMISOS}/fiscalizaciones/BDPF18"] = copy.deepcopy(FISCALIZACION)
     monkeypatch.setattr(urllib.request, "urlopen", falsa)
     return falsa
 

@@ -1,8 +1,12 @@
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, type ReactNode } from "react";
-import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
+import { Navigate, Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
 
 import { ErrorApi, esError } from "../api/cliente";
+import { Fuentes } from "../paginas/admin/Fuentes";
+import { MarcoAdmin } from "../paginas/admin/Marco";
+import { Nodos } from "../paginas/admin/Nodos";
+import { Perfiles } from "../paginas/admin/Perfiles";
 import { Apis } from "../paginas/Apis";
 import { Entrar } from "../paginas/Entrar";
 import { Ficha } from "../paginas/Ficha";
@@ -87,6 +91,12 @@ export function RutasDelSitio() {
         <Route path="participar" element={<Participar />} />
         <Route path="entrar" element={<Entrar />} />
         <Route path="sin-perfil" element={<SinPerfil />} />
+        <Route path="admin" element={<MarcoAdmin />}>
+          <Route index element={<Navigate to="fuentes" replace />} />
+          <Route path="fuentes" element={<Fuentes />} />
+          <Route path="nodos" element={<Nodos />} />
+          <Route path="perfiles" element={<Perfiles />} />
+        </Route>
         <Route path="*" element={<NoEncontrada />} />
       </Route>
     </Routes>
