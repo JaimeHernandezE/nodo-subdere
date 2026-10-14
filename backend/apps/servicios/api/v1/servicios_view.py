@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.catalogo.api.v1.nodos_view import resolver_nodo
+from apps.catalogo.api.v1.nodos_view import VISIBILIDADES_CON_SESION, resolver_nodo
 from apps.catalogo.models import Visibilidad
 from apps.cuentas.actuaciones import registrar_bitacora
 from apps.cuentas.autenticacion import AutenticacionOpcional
@@ -49,6 +49,12 @@ class _ConCurador:
                 OpenApiTypes.STR,
                 description="Identificador o alias del nodo. Un oculto exige sesión.",
             ),
+            OpenApiParameter(
+                "visibilidad",
+                OpenApiTypes.STR,
+                enum=sorted(VISIBILIDADES_CON_SESION),
+                description="Con sesión: los servicios de nodos con esa visibilidad, o `todas`.",
+            ),
         ],
     ),
     post=extend_schema(
@@ -65,6 +71,17 @@ class ServiciosView(_ConCurador, generics.ListAPIView):
     def get_queryset(self):
         servicios = Servicio.objects.select_related("nodo")
         identificador = self.request.query_params.get("nodo")
+        visibilidad = self.request.query_params.get("visibilidad")
+        if visibilidad is not None:
+            if self.request.user is None:
+                raise exceptions.NotAuthenticated()
+            if visibilidad not in VISIBILIDADES_CON_SESION:
+                opciones = ", ".join(sorted(VISIBILIDADES_CON_SESION))
+                raise exceptions.ValidationError({"visibilidad": [f"Debe ser una de: {opciones}."]})
+            if visibilidad != "todas":
+                servicios = servicios.filter(nodo__visibilidad=visibilidad)
+            if identificador is None:
+                return servicios
         if identificador is None:
             return servicios.filter(nodo__visibilidad=Visibilidad.PUBLICADO)
         try:

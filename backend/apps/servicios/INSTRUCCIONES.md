@@ -62,7 +62,7 @@ Dos familias, y conviene no mezclarlas.
 
 | Método y ruta | Quién | Qué hace |
 |---|---|---|
-| `GET /api/v1/servicios` | público | Los servicios de nodos `publicados()`. Con `?nodo={identificador}` —o un alias—, solo los construidos sobre ese nodo: es lo que pide la ficha del nodo, porque `catalogo` no consulta esta aplicación. Un nodo oculto, solo con sesión; uno retirado, lista vacía |
+| `GET /api/v1/servicios` | público | Los servicios de nodos `publicados()`. Con `?nodo={identificador}` —o un alias—, solo los construidos sobre ese nodo: es lo que pide la ficha del nodo, porque `catalogo` no consulta esta aplicación. Un nodo oculto, solo con sesión; uno retirado, lista vacía. Con sesión, `?visibilidad=todas` —o una visibilidad— trae los de nodos ocultos y retirados: es lo que usa la pestaña de servicios de la administración |
 | `POST /api/v1/servicios` | curador | Crea un servicio sobre un nodo vigente |
 | `GET /api/v1/servicios/{slug}` | público | Uno, con sus tareas y su estado. Si su nodo no está publicado, `404` sin sesión |
 | `PATCH /api/v1/servicios/{slug}` | curador | Edita todo menos `slug` y `nodo` |

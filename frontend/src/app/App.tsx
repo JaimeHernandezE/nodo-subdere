@@ -7,6 +7,7 @@ import { Fuentes } from "../paginas/admin/Fuentes";
 import { MarcoAdmin } from "../paginas/admin/Marco";
 import { Nodos } from "../paginas/admin/Nodos";
 import { Perfiles } from "../paginas/admin/Perfiles";
+import { Servicios as ServiciosAdmin } from "../paginas/admin/Servicios";
 import { Apis } from "../paginas/Apis";
 import { Entrar } from "../paginas/Entrar";
 import { Ficha } from "../paginas/Ficha";
@@ -95,6 +96,7 @@ export function RutasDelSitio() {
           <Route index element={<Navigate to="fuentes" replace />} />
           <Route path="fuentes" element={<Fuentes />} />
           <Route path="nodos" element={<Nodos />} />
+          <Route path="servicios" element={<ServiciosAdmin />} />
           <Route path="perfiles" element={<Perfiles />} />
         </Route>
         <Route path="*" element={<NoEncontrada />} />

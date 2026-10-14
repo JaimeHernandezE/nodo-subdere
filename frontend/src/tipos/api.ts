@@ -1521,6 +1521,8 @@ export interface operations {
             query?: {
                 /** @description Identificador o alias del nodo. Un oculto exige sesión. */
                 nodo?: string;
+                /** @description Con sesión: los servicios de nodos con esa visibilidad, o `todas`. */
+                visibilidad?: "oculto" | "publicado" | "retirado" | "todas";
             };
             header?: never;
             path?: never;

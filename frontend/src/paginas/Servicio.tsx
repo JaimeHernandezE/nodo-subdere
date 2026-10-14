@@ -21,6 +21,10 @@ const HERRAMIENTAS: Record<string, ComponentType<{ alResponder: AlResponder }>> 
   "permisos-de-circulacion": ConsultaPermisos,
 };
 
+export function tieneHerramienta(nodo: string): boolean {
+  return nodo in HERRAMIENTAS;
+}
+
 export function Servicio() {
   const { slug = "" } = useParams();
   const consulta = useServicio(slug);

@@ -523,6 +523,16 @@ paths:
         schema:
           type: string
         description: Identificador o alias del nodo. Un oculto exige sesión.
+      - in: query
+        name: visibilidad
+        schema:
+          type: string
+          enum:
+          - oculto
+          - publicado
+          - retirado
+          - todas
+        description: 'Con sesión: los servicios de nodos con esa visibilidad, o `todas`.'
       tags:
       - servicios
       security:

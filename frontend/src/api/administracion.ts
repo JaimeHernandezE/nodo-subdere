@@ -10,6 +10,7 @@ import type {
   NodoResumen,
   Perfil,
   Rol,
+  Servicio,
   Visibilidad,
 } from "../tipos";
 import { pedir } from "./cliente";
@@ -30,6 +31,13 @@ export function useNodosTodos() {
   return useQuery({
     queryKey: ["admin", "nodos"],
     queryFn: () => pedir<NodoResumen[]>("/nodos", { params: { visibilidad: "todas" } }),
+  });
+}
+
+export function useServiciosTodos() {
+  return useQuery({
+    queryKey: ["admin", "servicios"],
+    queryFn: () => pedir<Servicio[]>("/servicios", { params: { visibilidad: "todas" } }),
   });
 }
 
@@ -94,6 +102,29 @@ export function useEditarNodo() {
     mutationFn: ({ identificador, ...cambios }: CambiosNodo & { identificador: string }) =>
       pedir<Nodo>(`/nodos/${encodeURIComponent(identificador)}`, { metodo: "PATCH", cuerpo: cambios }),
     onSuccess: (_, { identificador }) => invalidar(["nodos"], ["nodo", identificador]),
+  });
+}
+
+export type DatosServicio = Pick<
+  Servicio,
+  "nombre" | "funcion" | "descripcion" | "tareas" | "fuentes" | "estado" | "nota"
+>;
+
+export function useCrearServicio() {
+  const invalidar = useInvalidar();
+  return useMutation({
+    mutationFn: (datos: DatosServicio & { slug: string; nodo: string }) =>
+      pedir<Servicio>("/servicios", { metodo: "POST", cuerpo: datos }),
+    onSuccess: () => invalidar(["servicios"]),
+  });
+}
+
+export function useEditarServicio() {
+  const invalidar = useInvalidar();
+  return useMutation({
+    mutationFn: ({ slug, ...cambios }: Partial<DatosServicio> & { slug: string }) =>
+      pedir<Servicio>(`/servicios/${encodeURIComponent(slug)}`, { metodo: "PATCH", cuerpo: cambios }),
+    onSuccess: (_, { slug }) => invalidar(["servicios"], ["servicio", slug]),
   });
 }
 

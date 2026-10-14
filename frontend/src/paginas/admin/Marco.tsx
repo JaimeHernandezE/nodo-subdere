@@ -33,6 +33,7 @@ export function MarcoAdmin() {
         <nav className="admin__nav" aria-label="Secciones de la administración">
           <NavLink to="/admin/fuentes">Fuentes</NavLink>
           <NavLink to="/admin/nodos">Visibilidad</NavLink>
+          <NavLink to="/admin/servicios">Servicios</NavLink>
           {gestionaPerfiles(yo) && <NavLink to="/admin/perfiles">Perfiles</NavLink>}
         </nav>
         <Outlet />

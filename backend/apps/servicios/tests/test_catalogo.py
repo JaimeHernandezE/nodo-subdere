@@ -73,6 +73,26 @@ class TestListado:
             assert respuesta.status_code == 200
             assert respuesta.json() == []
 
+    def test_con_sesion_lista_todas_o_una_visibilidad(self, nodo_cut, nodo_oculto, lector, como):
+        crear_servicio(nodo_cut)
+        crear_servicio(nodo_oculto, slug="consulta-permiso-circulacion")
+        cliente = como(lector)
+
+        todas = cliente.get("/api/v1/servicios", {"visibilidad": "todas"})
+        ocultos = cliente.get("/api/v1/servicios", {"visibilidad": "oculto"})
+
+        assert sorted(slugs(todas)) == ["buscador-cut", "consulta-permiso-circulacion"]
+        assert slugs(ocultos) == ["consulta-permiso-circulacion"]
+
+    def test_pedir_otra_visibilidad_sin_sesion_da_401_y_una_desconocida_400(
+        self, nodo_cut, lector, como
+    ):
+        sin_sesion = anonimo().get("/api/v1/servicios", {"visibilidad": "todas"})
+        desconocida = como(lector).get("/api/v1/servicios", {"visibilidad": "borrador"})
+
+        assert sin_sesion.status_code == 401
+        assert desconocida.status_code == 400
+
 
 class TestDetalle:
     def test_uno_publicado_lo_ve_cualquiera(self, nodo_cut):

@@ -91,6 +91,8 @@ td.admin-meta{display:table-cell}
 .admin-form form{padding:0 18px 6px}
 .admin-fila{display:flex;gap:16px;flex-wrap:wrap}
 .admin-fila .campo{flex:1 1 220px}
+.admin-fila>.btn-copiar{align-self:flex-end;margin-bottom:14px}
+.admin-tabla .admin-motivo{display:block}
 .admin-editar{margin-top:12px;padding:12px 14px;border:1px dashed var(--line-l);border-radius:8px;background:#fff}
 .admin-editar .campo{margin-top:10px}
 .admin-filtro{width:auto;min-width:180px}

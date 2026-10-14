@@ -49,8 +49,11 @@ async function entrarComo(yo: Yo, ruta: string, backend: Backend = {}) {
   await usuario.click(screen.getByText(yo.nombre, { selector: "summary" }));
   await usuario.click(screen.getByRole("link", { name: "Administración" }));
   if (ruta !== "/admin/fuentes") {
-    const pestana = { "/admin/nodos": "Visibilidad", "/admin/perfiles": "Perfiles" }[ruta]!;
-    await usuario.click(await screen.findByRole("link", { name: pestana }));
+    const pestana = { "/admin/nodos": "Visibilidad", "/admin/servicios": "Servicios", "/admin/perfiles": "Perfiles" }[
+      ruta
+    ]!;
+    const secciones = await screen.findByRole("navigation", { name: "Secciones de la administración" });
+    await usuario.click(within(secciones).getByRole("link", { name: pestana }));
   }
   return { ...r, usuario };
 }
@@ -111,6 +114,50 @@ describe("Administración", () => {
     await usuario.click(within(oculto).getByRole("button", { name: "Publicar" }));
     expect(await screen.findByText(/Visibilidad de cut: oculto a publicado/)).toBeInTheDocument();
     expect(cuerpos).toEqual([{ visibilidad: "publicado" }]);
+  });
+
+  it("un curador crea un servicio sobre un nodo oculto y se le avisa que aún no aparece", async () => {
+    const creados: unknown[] = [];
+    const { usuario } = await entrarComo({ ...ADMIN, rol: "curador" }, "/admin/servicios", {
+      "/nodos": (url) => ({ json: url.searchParams.get("visibilidad") === "todas" ? [OCULTO, RETIRADO] : [] }),
+      "/servicios": (url, init) => {
+        if (init?.method === "POST") {
+          const cuerpo = JSON.parse(String(init.body));
+          creados.push(cuerpo);
+          return { status: 201, json: { ...cuerpo, actualizado: "2026-10-14T13:00:00Z" } };
+        }
+        expect(url.searchParams.get("visibilidad")).toBe("todas");
+        return { json: [] };
+      },
+    });
+    expect(await screen.findByText("Todavía no hay servicios.")).toBeInTheDocument();
+
+    await usuario.click(screen.getByText("Crear un servicio"));
+    const nodo = screen.getByLabelText("Nodo");
+    expect(within(nodo).queryByRole("option", { name: /retirado/ })).not.toBeInTheDocument();
+    await usuario.type(screen.getByLabelText("Slug"), "buscador-cut");
+    await usuario.type(screen.getByLabelText("Nombre de la herramienta"), "Buscador de códigos territoriales");
+    await usuario.type(screen.getByLabelText(/Función/), "Buscar el código de una comuna.");
+    await usuario.type(screen.getByLabelText("Descripción"), "Escribe un nombre o un código.");
+    await usuario.type(screen.getByLabelText(/Tareas/), "Buscar un código{enter}Ver una comuna");
+    await usuario.type(screen.getByLabelText("Dato"), "Los códigos");
+    await usuario.type(screen.getByLabelText("Origen"), "SUBDERE");
+    await usuario.click(screen.getByRole("button", { name: "Crear servicio" }));
+
+    expect(await screen.findByText(/aparecerá en el sitio cuando se publique el nodo/)).toBeInTheDocument();
+    expect(creados).toEqual([
+      {
+        slug: "buscador-cut",
+        nodo: "cut",
+        nombre: "Buscador de códigos territoriales",
+        funcion: "Buscar el código de una comuna.",
+        descripcion: "Escribe un nombre o un código.",
+        tareas: ["Buscar un código", "Ver una comuna"],
+        fuentes: [{ dato: "Los códigos", origen: "SUBDERE" }],
+        estado: "en_construccion",
+        nota: "",
+      },
+    ]);
   });
 
   it("un lector no ve botones que cambien algo ni la pestaña de perfiles", async () => {
