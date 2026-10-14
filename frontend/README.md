@@ -10,7 +10,9 @@ No se parte de cero. La maqueta de [`prototipos/`](../prototipos/) ya tiene el c
 
 **Primera etapa: el sitio público, la sesión y `/yo`.** Portada, Qué es, Cómo participar, los dos catálogos, la ficha con su especificación renderizada, las pantallas de servicio (buscador CUT y consulta de permisos de circulación), la wiki con su menú e índice, la pantalla `SIN_PERFIL`, la 404 y las redirecciones de la maqueta.
 
-**Falta:** la administración (`/admin/*`, §5 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md)) y el ingreso con Keycloak. Mientras no exista el *realm*, se entra pegando un token del emisor local del backend en `/entrar`.
+**El ingreso con Keycloak** (Authorization Code + PKCE) está hecho y se activa con `VITE_KEYCLOAK_URL` y `VITE_KEYCLOAK_CLIENTE`; exige HTTPS. Sin esas variables se entra pegando un token del emisor local del backend en `/entrar`. Ver §2 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md).
+
+**Falta:** la administración (`/admin/*`, §5 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md)).
 
 ---
 
@@ -139,7 +141,7 @@ docker compose up                 # instala y deja Vite en http://localhost:5173
 
 Si el backend está en otra dirección, copiar `.env.example` a `.env.local` y cambiar `VITE_API_URL`.
 
-**Entrar.** En `/entrar` se pega un token del emisor local:
+**Entrar.** Sin `VITE_KEYCLOAK_URL`, en `/entrar` se pega un token del emisor local:
 
 ```powershell
 # desde backend/; el RUN necesita un Perfil activo

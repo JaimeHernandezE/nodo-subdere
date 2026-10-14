@@ -9,7 +9,7 @@ import { Nodos } from "../paginas/admin/Nodos";
 import { Perfiles } from "../paginas/admin/Perfiles";
 import { Servicios as ServiciosAdmin } from "../paginas/admin/Servicios";
 import { Apis } from "../paginas/Apis";
-import { Entrar } from "../paginas/Entrar";
+import { Entrar, RetornoDeKeycloak } from "../paginas/Entrar";
 import { Ficha } from "../paginas/Ficha";
 import { NoEncontrada } from "../paginas/NoEncontrada";
 import { Participar } from "../paginas/Participar";
@@ -91,6 +91,7 @@ export function RutasDelSitio() {
         <Route path="wiki/:slug" element={<WikiEntrada />} />
         <Route path="participar" element={<Participar />} />
         <Route path="entrar" element={<Entrar />} />
+        <Route path="entrar/retorno" element={<RetornoDeKeycloak />} />
         <Route path="sin-perfil" element={<SinPerfil />} />
         <Route path="admin" element={<MarcoAdmin />}>
           <Route index element={<Navigate to="fuentes" replace />} />

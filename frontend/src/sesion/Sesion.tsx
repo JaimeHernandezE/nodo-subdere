@@ -1,10 +1,19 @@
 // La sesión: un token en memoria y el perfil que devuelve `GET /yo`.
 // La interfaz se arma con `yo`, nunca con los reclamos del token.
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { esError, fijarToken, pedir } from "../api/cliente";
 import type { Yo } from "../tipos";
+import { gestorOidc, hayKeycloak, salirDeKeycloak } from "./oidc";
 
 type Sesion = {
   token: string | null;
@@ -43,11 +52,31 @@ export function ProveedorDeSesion({ children }: { children: ReactNode }) {
     [cliente],
   );
 
-  const salir = useCallback(() => {
+  const cerrar = useCallback(() => {
     fijarToken(null);
     setToken(null);
     cliente.clear();
   }, [cliente]);
+
+  const salir = useCallback(() => {
+    cerrar();
+    if (hayKeycloak()) void salirDeKeycloak();
+  }, [cerrar]);
+
+  // El refresco silencioso trae otro token para la misma persona: cambia la cabecera, no la
+  // sesión, y `yo` no se vuelve a pedir. Si no se pudo refrescar, la sesión termina.
+  useEffect(() => {
+    if (!hayKeycloak()) return;
+    const eventos = gestorOidc().events;
+    const renovado = eventos.addUserLoaded((usuario) => fijarToken(usuario.access_token));
+    const vencido = eventos.addAccessTokenExpired(cerrar);
+    const fallido = eventos.addSilentRenewError(cerrar);
+    return () => {
+      renovado();
+      vencido();
+      fallido();
+    };
+  }, [cerrar]);
 
   const valor = useMemo<Sesion>(
     () => ({

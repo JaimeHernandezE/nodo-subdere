@@ -2,7 +2,7 @@
 
 Lee también [`README.md`](README.md) y, para las reglas comunes, [`../backend/INSTRUCCIONES.md`](../backend/INSTRUCCIONES.md) secciones 3 a 6.
 
-> **Estado: primera etapa construida.** El sitio público, la sesión con token del emisor local y `/yo` están hechos; cómo levantarlo y probarlo está en el [`README.md`](README.md). Falta la administración (§5) y el flujo OIDC de §2.
+> **Estado: primera etapa construida.** El sitio público, la sesión con token del emisor local y `/yo` están hechos; cómo levantarlo y probarlo está en el [`README.md`](README.md). El flujo OIDC de §2 está hecho y se activa al configurar el *realm*. Falta la administración (§5).
 
 **No se parte de cero.** La maqueta de [`../prototipos/`](../prototipos/) tiene el contenido escrito, la paleta institucional verificada y las interacciones probadas. Este proyecto **la traduce a componentes; no la rediseña.** Si algo se ve distinto, es un cambio deliberado y debe quedar anotado en [`../docs/maqueta.md`](../docs/maqueta.md).
 
@@ -23,12 +23,20 @@ Accesibilidad de teclado y foco visible se cuidan desde el principio. El despleg
 
 ## 2. Autenticación
 
-Authorization Code + PKCE contra el *realm* de Keycloak, como **cliente público**. Biblioteca estándar de OIDC para navegador; no escribir el flujo a mano.
+Authorization Code + PKCE contra el *realm* de Keycloak, como **cliente público**, con `oidc-client-ts`. Todo lo que habla con Keycloak está en `src/sesion/oidc.ts`.
 
-Mientras el *realm* no exista, `/entrar` recibe un token pegado del emisor local del backend (`emitir_token_local`). Todo lo demás de esta sección ya rige: el token vive en memoria (`src/sesion/`), va en cada llamada y la interfaz se arma con `/yo`. Al llegar Keycloak se reemplaza solo la pantalla `Entrar` y la función `entrar` de la sesión.
+**Se activa con `VITE_KEYCLOAK_URL` (el *issuer*, `https://<keycloak>/realms/<realm>`) y `VITE_KEYCLOAK_CLIENTE`.** Son variables de construcción: entran al compilar, no al servir. Sin ellas, `/entrar` recibe un token pegado del emisor local del backend (`emitir_token_local`), que solo existe en desarrollo. Con ellas, `/entrar` lleva al *realm*, y Keycloak vuelve a `/entrar/retorno`, que canjea el código, pide `/yo` y sigue a la ruta desde donde se pidió entrar.
+
+- **Exige HTTPS.** PKCE calcula un SHA-256 con `crypto.subtle`, y el navegador solo lo da en un contexto seguro: HTTPS o `localhost`. Por HTTP la pantalla lo dice y no deja intentarlo.
+- En el *realm*: cliente público con *Standard flow* y PKCE `S256`; *Valid redirect URIs* `https://<sitio>/entrar/retorno`; *Valid post logout redirect URIs* y *Web origins* `https://<sitio>`.
+- El backend valida `aud` contra su `KEYCLOAK_AUDIENCE`. Keycloak no pone el `client_id` en `aud` del *access token* por defecto: hace falta un *Audience mapper* en el cliente, o que `KEYCLOAK_AUDIENCE` sea lo que el *realm* ya pone.
+- **Salir cierra también la sesión del *realm*.** Si no, el próximo «Entrar» volvería sin preguntar.
+- El estado del pedido (`state` y el verificador de PKCE) vive en `sessionStorage` mientras dura la redirección: es lo único que tiene que sobrevivir a ella, y la biblioteca lo borra al volver. Los tokens, no.
+
+Lo demás rige igual con los dos ingresos: el token vive en memoria (`src/sesion/`), va en cada llamada y la interfaz se arma con `/yo`.
 
 - El *access token* va en `Authorization: Bearer` en cada llamada al backend.
-- El token **no** se guarda en `localStorage`. En memoria, con refresco silencioso.
+- El token **no** se guarda en `localStorage`. En memoria, con refresco silencioso: el token nuevo cambia la cabecera y no vuelve a pedir `/yo`; si no se puede refrescar, la sesión termina. Al recargar la página la sesión se pierde, y «Entrar» vuelve sin pedir la clave mientras siga viva la sesión del *realm*.
 - Al entrar, la aplicación llama `GET /api/v1/yo` y de ahí saca nombre, rol y municipio. **La interfaz se arma con eso, no con los *claims* del token.**
 - Un `403` con código `SIN_PERFIL` tiene su propia pantalla: «te autenticaste, pero no tienes perfil en el nodo», con a quién escribir. No es un error genérico.
 
