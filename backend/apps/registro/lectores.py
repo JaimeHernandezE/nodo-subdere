@@ -46,35 +46,110 @@ def _decodificar(crudo: bytes, ruta: str) -> str:
 
 
 class LectorGitLab:
-    """La API v4 de archivos de GitLab, con el token del nodo en `PRIVATE-TOKEN`."""
+    """La API v4 de GitLab, con el token del nodo en `PRIVATE-TOKEN`.
+
+    Ninguna dirección lleva una barra codificada (`%2F`): el Apache delante de
+    gitlab.subdere.gob.cl responde 404 a esas rutas. El proyecto se pide por su id, y las
+    rutas, ramas y commits van en la consulta, donde la barra sí pasa.
+    """
 
     def __init__(self, api_url: str | None = None, token: str | None = None, espera=None):
         self.api_url = (settings.REGISTRO_GIT_API_URL if api_url is None else api_url).rstrip("/")
         self.token = settings.REGISTRO_GIT_TOKEN if token is None else token
         self.espera = settings.REGISTRO_TIEMPO_ESPERA_SEGUNDOS if espera is None else espera
+        self._ids: dict[str, int] = {}
 
     def leer_ficha(self, fuente: Fuente) -> Leido:
-        datos = self._pedir(fuente, fuente.ruta_ficha, fuente.rama)
-        commit = datos.get("commit_id")
+        ruta, rama = fuente.ruta_ficha, fuente.rama
+        proyecto = self._id_proyecto(fuente, ruta, rama)
+        commits = self._pedir(
+            f"/projects/{proyecto}/repository/commits",
+            {"ref_name": rama, "per_page": 1},
+            fuente,
+            ruta,
+            rama,
+        )
+        if not isinstance(commits, list):
+            raise RepositorioNoDisponible(f"GitLab respondió algo inesperado al pedir {ruta}.")
+        if not commits:
+            raise RepositorioNoDisponible(self._motivo_http(404, fuente, ruta, rama))
+        commit = commits[0].get("id") if isinstance(commits[0], dict) else None
         if not isinstance(commit, str) or not commit:
             raise RepositorioNoDisponible("GitLab respondió sin el commit de la rama.")
-        return Leido(commit=commit, contenido=self._contenido(datos, fuente.ruta_ficha))
+        return Leido(commit=commit, contenido=self._leer(fuente, proyecto, ruta, commit, rama))
 
     def leer_archivo(self, fuente: Fuente, ruta: str, commit: str) -> str:
-        return self._contenido(self._pedir(fuente, ruta, commit), ruta)
+        proyecto = self._id_proyecto(fuente, ruta, commit)
+        return self._leer(fuente, proyecto, ruta, commit, commit)
 
-    def _pedir(self, fuente: Fuente, ruta: str, ref: str) -> dict:
+    def _id_proyecto(self, fuente: Fuente, ruta: str, ref: str) -> int:
+        nombre = fuente.proyecto
+        if nombre not in self._ids:
+            encontrados = self._pedir(
+                "/projects",
+                {"search": nombre, "search_namespaces": "true", "simple": "true", "per_page": 100},
+                fuente,
+                ruta,
+                ref,
+            )
+            if not isinstance(encontrados, list):
+                raise RepositorioNoDisponible(
+                    f"GitLab respondió algo inesperado al buscar {nombre}."
+                )
+            for proyecto in encontrados:
+                if (
+                    isinstance(proyecto, dict)
+                    and str(proyecto.get("path_with_namespace", "")).lower() == nombre.lower()
+                    and isinstance(proyecto.get("id"), int)
+                ):
+                    self._ids[nombre] = proyecto["id"]
+                    break
+            else:
+                raise RepositorioNoDisponible(self._motivo_http(404, fuente, ruta, ref))
+        return self._ids[nombre]
+
+    def _leer(self, fuente: Fuente, proyecto: int, ruta: str, commit: str, ref: str) -> str:
+        carpeta, _, nombre = ruta.rpartition("/")
+        sha = None
+        pagina = 1
+        while sha is None:
+            entradas = self._pedir(
+                f"/projects/{proyecto}/repository/tree",
+                {"path": carpeta, "ref": commit, "per_page": 100, "page": pagina},
+                fuente,
+                ruta,
+                ref,
+            )
+            if not isinstance(entradas, list):
+                raise RepositorioNoDisponible(f"GitLab respondió algo inesperado al pedir {ruta}.")
+            for entrada in entradas:
+                if (
+                    isinstance(entrada, dict)
+                    and entrada.get("name") == nombre
+                    and entrada.get("type") == "blob"
+                ):
+                    sha = entrada.get("id")
+                    break
+            else:
+                if len(entradas) < 100:
+                    raise RepositorioNoDisponible(self._motivo_http(404, fuente, ruta, ref))
+                pagina += 1
+        if not isinstance(sha, str) or not sha:
+            raise RepositorioNoDisponible(f"GitLab respondió algo inesperado al pedir {ruta}.")
+        datos = self._pedir(f"/projects/{proyecto}/repository/blobs/{sha}", {}, fuente, ruta, ref)
+        if not isinstance(datos, dict):
+            raise RepositorioNoDisponible(f"GitLab respondió algo inesperado al pedir {ruta}.")
+        return self._contenido(datos, ruta)
+
+    def _pedir(self, camino: str, consulta: dict, fuente: Fuente, ruta: str, ref: str):
         if not self.api_url or not self.token:
             raise RepositorioNoDisponible(
                 "La lectura de repositorios no está configurada en el nodo: "
                 "faltan REGISTRO_GIT_API_URL o REGISTRO_GIT_TOKEN."
             )
-        proyecto = fuente.proyecto
-        direccion = (
-            f"{self.api_url}/projects/{urllib.parse.quote(proyecto, safe='')}"
-            f"/repository/files/{urllib.parse.quote(ruta, safe='')}"
-            f"?ref={urllib.parse.quote(ref, safe='')}"
-        )
+        direccion = f"{self.api_url}{camino}"
+        if consulta:
+            direccion += f"?{urllib.parse.urlencode(consulta)}"
         pedido = urllib.request.Request(direccion, headers={"PRIVATE-TOKEN": self.token})
         try:
             with urllib.request.urlopen(pedido, timeout=self.espera) as respuesta:
@@ -95,8 +170,6 @@ class LectorGitLab:
             raise RepositorioNoDisponible(
                 f"GitLab respondió algo que no se pudo leer al pedir {ruta}."
             ) from None
-        if not isinstance(datos, dict):
-            raise RepositorioNoDisponible(f"GitLab respondió algo inesperado al pedir {ruta}.")
         return datos
 
     def _contenido(self, datos: dict, ruta: str) -> str:

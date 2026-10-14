@@ -22,8 +22,8 @@ SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = env.bool("COOKIES_SEGURAS", default=True)
+CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
 X_FRAME_OPTIONS = "DENY"
 
 # Los estáticos (admin y Swagger) los sirve whitenoise desde la imagen; collectstatic

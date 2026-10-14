@@ -1,7 +1,9 @@
 import base64
+import hashlib
 import io
 import json
 import urllib.error
+import urllib.parse
 import urllib.request
 
 import pytest
@@ -11,9 +13,12 @@ from apps.registro.lectores import LIMITE_BYTES, LectorGitLab
 from apps.registro.models import Fuente, problema_de_url
 from apps.registro.sincronizacion import sincronizar
 
-from .conftest import API, URL, ficha
+from .conftest import API, RUTA_CONTRATO, RUTA_FICHA, URL, ficha
 
 pytestmark = pytest.mark.django_db
+
+ID_PROYECTO = 7
+CABEZA = "c" * 40
 
 
 class Respuesta(io.BytesIO):
@@ -24,11 +29,21 @@ class Respuesta(io.BytesIO):
         self.close()
 
 
-class GitLabFalso:
-    """Reemplaza `urlopen`: anota cada pedido y responde lo que se le diga."""
+def _sha(ruta: str) -> str:
+    return hashlib.sha1(ruta.encode()).hexdigest()
 
-    def __init__(self, *, datos=None, error=None):
-        self.datos = datos
+
+class GitLabFalso:
+    """Reemplaza `urlopen`: anota cada pedido y responde como la API de GitLab.
+
+    `archivos` va de ruta a la respuesta de su blob, todos en la rama `main`, cuya cabeza es
+    `CABEZA`. `errores` va de ruta a la excepción con que termina el pedido de su blob.
+    `error`, si se da, termina cualquier pedido.
+    """
+
+    def __init__(self, *, archivos=None, errores=None, error=None):
+        self.archivos = dict(archivos or {})
+        self.errores = dict(errores or {})
         self.error = error
         self.pedidos: list[urllib.request.Request] = []
 
@@ -36,16 +51,32 @@ class GitLabFalso:
         self.pedidos.append(pedido)
         if self.error:
             raise self.error
-        return Respuesta(json.dumps(self.datos).encode())
+        partes = urllib.parse.urlsplit(pedido.full_url)
+        consulta = dict(urllib.parse.parse_qsl(partes.query))
+        camino = partes.path.removeprefix(urllib.parse.urlsplit(API).path)
+        repositorio = f"/projects/{ID_PROYECTO}/repository"
+        if camino == "/projects":
+            datos = [{"id": ID_PROYECTO, "path_with_namespace": "modernizacion/cut"}]
+        elif camino == f"{repositorio}/commits":
+            datos = [{"id": CABEZA}] if consulta["ref_name"] == "main" else []
+        elif camino == f"{repositorio}/tree":
+            datos = [
+                {"name": ruta.rpartition("/")[2], "type": "blob", "id": _sha(ruta)}
+                for ruta in self.archivos
+                if ruta.rpartition("/")[0] == consulta.get("path", "")
+            ]
+        elif camino.startswith(f"{repositorio}/blobs/"):
+            ruta = next(r for r in self.archivos if _sha(r) == camino.rpartition("/")[2])
+            if ruta in self.errores:
+                raise self.errores[ruta]
+            datos = self.archivos[ruta]
+        else:
+            raise AssertionError(f"Pedido inesperado: {pedido.full_url}")
+        return Respuesta(json.dumps(datos).encode())
 
 
 def archivo(contenido: str, **extra) -> dict:
-    return {
-        "content": base64.b64encode(contenido.encode()).decode(),
-        "commit_id": "c" * 40,
-        "last_commit_id": "d" * 40,
-        **extra,
-    }
+    return {"content": base64.b64encode(contenido.encode()).decode(), **extra}
 
 
 def http(codigo: int) -> urllib.error.HTTPError:
@@ -71,29 +102,67 @@ def test_ninguna_prueba_sale_a_la_red(fuente):
 
 
 def test_la_ficha_se_lee_en_la_rama_y_vale_el_commit_de_la_cabeza(fuente, gitlab):
-    falso = gitlab(datos=archivo("ficha: 1\n"))
+    falso = gitlab(archivos={RUTA_FICHA: archivo("ficha: 1\n")})
 
     leido = LectorGitLab().leer_ficha(fuente)
 
-    assert leido.commit == "c" * 40
+    assert leido.commit == CABEZA
     assert leido.contenido == "ficha: 1\n"
-    pedido = falso.pedidos[0]
-    assert pedido.full_url == (
-        f"{API}/projects/modernizacion%2Fcut/repository/files/nodo%2Fficha.yaml?ref=main"
-    )
-    assert pedido.get_header("Private-token") == "token-de-prueba"
+    urls = [pedido.full_url for pedido in falso.pedidos]
+    assert urls[1] == f"{API}/projects/{ID_PROYECTO}/repository/commits?ref_name=main&per_page=1"
+    assert f"ref={CABEZA}" in urls[2]
+    assert all(pedido.get_header("Private-token") == "token-de-prueba" for pedido in falso.pedidos)
+
+
+def test_ninguna_direccion_lleva_una_barra_codificada_en_el_camino(fuente, gitlab):
+    falso = gitlab(archivos={RUTA_FICHA: archivo("ficha: 1\n")})
+
+    LectorGitLab().leer_ficha(fuente)
+
+    assert all("%2F" not in urllib.parse.urlsplit(p.full_url).path for p in falso.pedidos)
 
 
 def test_un_archivo_se_lee_en_el_commit_pedido(fuente, gitlab):
-    falso = gitlab(datos=archivo("openapi: 3.0.3\n"))
+    falso = gitlab(archivos={RUTA_CONTRATO: archivo("openapi: 3.0.3\n")})
 
-    LectorGitLab().leer_archivo(fuente, "nodo/cut.openapi.yaml", "c" * 40)
+    contenido = LectorGitLab().leer_archivo(fuente, RUTA_CONTRATO, CABEZA)
 
-    assert falso.pedidos[0].full_url.endswith(f"nodo%2Fcut.openapi.yaml?ref={'c' * 40}")
+    assert contenido == "openapi: 3.0.3\n"
+    assert not any("/commits" in pedido.full_url for pedido in falso.pedidos)
+    arbol = next(p.full_url for p in falso.pedidos if "/tree" in p.full_url)
+    assert f"ref={CABEZA}" in arbol
+
+
+def test_el_proyecto_se_busca_una_sola_vez_por_lector(fuente, gitlab):
+    falso = gitlab(archivos={RUTA_FICHA: archivo("ficha: 1\n"), RUTA_CONTRATO: archivo("x")})
+    lector = LectorGitLab()
+
+    leido = lector.leer_ficha(fuente)
+    lector.leer_archivo(fuente, RUTA_CONTRATO, leido.commit)
+
+    busquedas = [
+        p for p in falso.pedidos if urllib.parse.urlsplit(p.full_url).path.endswith("/projects")
+    ]
+    assert len(busquedas) == 1
+
+
+def test_una_rama_que_no_existe_da_el_motivo_del_404(fuente, gitlab):
+    gitlab(archivos={RUTA_FICHA: archivo("ficha: 1\n")})
+    fuente.rama = "otra"
+
+    with pytest.raises(RepositorioNoDisponible, match="«otra»"):
+        LectorGitLab().leer_ficha(fuente)
+
+
+def test_un_archivo_que_no_esta_da_el_motivo_del_404(fuente, gitlab):
+    gitlab(archivos={})
+
+    with pytest.raises(RepositorioNoDisponible, match="rol Reporter"):
+        LectorGitLab().leer_ficha(fuente)
 
 
 def test_un_archivo_de_mas_de_1_mb_se_rechaza(fuente, gitlab):
-    gitlab(datos=archivo("x", size=LIMITE_BYTES + 1))
+    gitlab(archivos={RUTA_FICHA: archivo("x", size=LIMITE_BYTES + 1)})
 
     with pytest.raises(RepositorioNoDisponible, match="1 MB"):
         LectorGitLab().leer_ficha(fuente)
@@ -102,7 +171,7 @@ def test_un_archivo_de_mas_de_1_mb_se_rechaza(fuente, gitlab):
 def test_un_archivo_que_no_es_utf8_se_rechaza(fuente, gitlab):
     datos = archivo("")
     datos["content"] = base64.b64encode("ñ".encode("latin-1")).decode()
-    gitlab(datos=datos)
+    gitlab(archivos={RUTA_FICHA: datos})
 
     with pytest.raises(RepositorioNoDisponible, match="UTF-8"):
         LectorGitLab().leer_ficha(fuente)
@@ -140,7 +209,7 @@ def test_el_motivo_de_un_404_nombra_la_rama_y_la_ruta(fuente, gitlab):
 
 def test_sin_configuracion_no_se_pide_nada(fuente, gitlab, settings):
     settings.REGISTRO_GIT_TOKEN = ""
-    falso = gitlab(datos=archivo(ficha()))
+    falso = gitlab(archivos={RUTA_FICHA: archivo(ficha())})
 
     lectura = sincronizar(fuente)
 
@@ -148,20 +217,15 @@ def test_sin_configuracion_no_se_pide_nada(fuente, gitlab, settings):
     assert falso.pedidos == []
 
 
-def test_un_contrato_que_falla_al_leerse_deja_el_motivo_del_archivo(fuente, monkeypatch):
-    respuestas = iter([archivo(ficha())])
-
-    def urlopen(pedido, timeout=None):
-        try:
-            return Respuesta(json.dumps(next(respuestas)).encode())
-        except StopIteration:
-            raise http(403) from None
-
-    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+def test_un_contrato_que_falla_al_leerse_deja_el_motivo_del_archivo(fuente, gitlab):
+    gitlab(
+        archivos={RUTA_FICHA: archivo(ficha()), RUTA_CONTRATO: archivo("")},
+        errores={RUTA_CONTRATO: http(403)},
+    )
 
     lectura = sincronizar(fuente)
 
-    assert lectura.commit == "c" * 40
+    assert lectura.commit == CABEZA
     assert lectura.motivo.startswith("especificacion.archivo: GitLab no deja leer")
 
 

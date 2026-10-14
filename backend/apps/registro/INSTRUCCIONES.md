@@ -67,7 +67,12 @@ Implementar detrás de una interfaz pequeña —leer la ficha, que devuelve el *
 
 **Cómo se lee en GitLab.** Está probado contra `gitlab.subdere.gob.cl` (16.11) y el repositorio `modernizacion/cut`, desde el contenedor de la API:
 
-- `GET {REGISTRO_GIT_API_URL}/projects/{grupo%2Frepo}/repository/files/{ruta%2Fcodificada}?ref={rama}`, con el token en la cabecera `PRIVATE-TOKEN`. Una sola respuesta trae `content` en base64 y el *commit*: no hace falta clonar.
+- **Ninguna dirección lleva una barra codificada (`%2F`) en el camino.** El Apache delante de `gitlab.subdere.gob.cl` responde `404` a esas rutas, así que `/projects/{grupo%2Frepo}/repository/files/{ruta%2Fcodificada}` no sirve desde el servidor del nodo aunque el proyecto y el archivo existan. En la consulta, después del `?`, la barra sí pasa.
+- Por eso la lectura toma cuatro pedidos, todos con el token en la cabecera `PRIVATE-TOKEN` y sin clonar:
+  1. `GET /projects?search={grupo/repo}&search_namespaces=true`, para el id del proyecto: el que tiene ese `path_with_namespace`. El lector lo guarda y no lo vuelve a buscar.
+  2. `GET /projects/{id}/repository/commits?ref_name={rama}&per_page=1`, para la cabeza de la rama. Una rama que no existe da una lista vacía, que se trata como `404`.
+  3. `GET /projects/{id}/repository/tree?path={carpeta}&ref={commit}`, para el `sha` del archivo. Un archivo que no está también se trata como `404`.
+  4. `GET /projects/{id}/repository/blobs/{sha}`, que trae `content` en base64 y `size`.
 - **El *commit* que vale es `commit_id`, la cabeza de la rama al leer**, no `last_commit_id`, que es el último *commit* que tocó la ficha. Si el contrato cambió después que la ficha, leerlo en `last_commit_id` traería una versión vieja. `commit_id` es el que se guarda en `Lectura.commit` y en `Nodo.commit`.
 - **La ficha se lee en la rama y el archivo de la especificación en ese `commit_id`**, con `ref={commit_id}`. Así los dos salen de la misma versión del repositorio aunque alguien haga *push* entremedio, que es lo que pide la validación 4.
 - Los bytes llegan intactos: la huella del contrato leído coincide con la del archivo original. La validación 8 puede confiar en ella.
