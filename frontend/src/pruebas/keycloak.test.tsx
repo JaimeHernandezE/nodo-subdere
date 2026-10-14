@@ -37,7 +37,7 @@ describe("Entrar con Keycloak", () => {
     renderizar("/entrar");
 
     expect(screen.queryByLabelText("Token")).not.toBeInTheDocument();
-    await usuario.click(screen.getByRole("button", { name: "Entrar con Clave Única" }));
+    await usuario.click(screen.getByRole("button", { name: "Iniciar sesión con Clave Única" }));
 
     expect(oidc.irAKeycloak).toHaveBeenCalledWith("/");
   });
@@ -47,7 +47,7 @@ describe("Entrar con Keycloak", () => {
     renderizar("/entrar");
 
     expect(screen.getByRole("alert")).toHaveTextContent("HTTPS");
-    expect(screen.getByRole("button", { name: "Entrar con Clave Única" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Iniciar sesión con Clave Única" })).toBeDisabled();
   });
 
   it("al volver, usa el token, pide /yo y sigue a donde iba", async () => {

@@ -1,7 +1,8 @@
 """Autenticación con el access token del realm de Keycloak.
 
 Keycloak autentica; el perfil del nodo autoriza. La persona se identifica por el RUN que
-trae el claim `RolUnico`, no por el `sub`, que es del realm y puede cambiar.
+trae el claim `RolUnico` (o `rut_numero` y `rut_dv`), no por el `sub`, que es del realm y
+puede cambiar.
 """
 
 import functools
@@ -126,15 +127,27 @@ def _nombre(reclamos: dict) -> str:
     return texto[:LARGO_NOMBRE]
 
 
-def resolver_perfil(reclamos: dict) -> Perfil:
-    rol_unico = reclamos.get("RolUnico")
-    try:
+def _rol_unico(reclamos: dict) -> dict:
+    """`RolUnico` si viene; si no, el par `rut_numero` y `rut_dv`, que es como lo mapea el
+    cliente de Banco de Proyectos en el mismo realm. Si viene `RolUnico`, manda él."""
+    if "RolUnico" in reclamos:
+        rol_unico = reclamos["RolUnico"]
         if not isinstance(rol_unico, dict):
-            raise ValueError("sin RolUnico")
+            raise ValueError("RolUnico sin forma de objeto")
+        return rol_unico
+    if "rut_numero" in reclamos:
+        return {"numero": reclamos["rut_numero"], "DV": reclamos.get("rut_dv")}
+    raise ValueError("sin RolUnico")
+
+
+def resolver_perfil(reclamos: dict) -> Perfil:
+    try:
+        rol_unico = _rol_unico(reclamos)
         numero, _ = run.validar(rol_unico.get("numero"), rol_unico.get("DV"))
     except ValueError:
         logger.warning(
-            "Token válido sin un RolUnico utilizable (sub=%s). Revisar los mapeos del realm.",
+            "Token válido sin un RolUnico ni rut_numero/rut_dv utilizables (sub=%s). "
+            "Revisar los mapeos del realm.",
             reclamos.get("sub"),
         )
         raise SinPerfil() from None

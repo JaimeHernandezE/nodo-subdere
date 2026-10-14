@@ -96,6 +96,34 @@ def test_sin_rol_unico_utilizable_da_sin_perfil_y_avisa_en_el_log(realm, caplog,
     assert "12345678" not in caplog.text
 
 
+def test_sin_rol_unico_el_run_sale_de_rut_numero_y_rut_dv(realm):
+    perfil = crear_perfil(12345678)
+
+    respuesta = pedir_yo(realm.token(rut_numero="12345678", rut_dv="5"))
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["id"] == perfil.pk
+
+
+@pytest.mark.parametrize("rut_dv", ["9", None])
+def test_rut_numero_sin_un_dv_que_corresponda_da_sin_perfil(realm, caplog, rut_dv):
+    crear_perfil(12345678)
+
+    respuesta = pedir_yo(realm.token(rut_numero="12345678", rut_dv=rut_dv))
+
+    assert respuesta.json()["error"]["codigo"] == "SIN_PERFIL"
+    assert "rut_numero" in caplog.text
+
+
+def test_si_vienen_los_dos_manda_rol_unico(realm):
+    crear_perfil(12345678)
+    otro = crear_perfil(11111111)
+
+    respuesta = pedir_yo(realm.token(otro, rut_numero="12345678", rut_dv="5"))
+
+    assert respuesta.json()["id"] == otro.pk
+
+
 def test_el_perfil_se_encuentra_por_run_aunque_cambie_el_sub(realm):
     perfil = crear_perfil(12345678, sub="sub-antiguo")
 

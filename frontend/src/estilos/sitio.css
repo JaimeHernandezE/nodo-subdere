@@ -24,6 +24,19 @@
 .entrar{color:var(--navy-t);font-size:14px;padding:6px 10px;border:1px solid var(--navy-2);border-radius:6px}
 .entrar:hover{color:#fff;border-color:var(--navy-l);text-decoration:none}
 
+/* ---------- botón de Clave Única ----------
+   La gráfica del botón de Banco de Proyectos: los colores son los suyos, no tokens de la maqueta. */
+.clave-unica{display:inline-flex;border:1px solid transparent}
+.clave-unica:active{border:1px dashed #000}
+.clave-unica__btn{display:inline-flex;align-items:center;gap:12px;margin:4px;padding:13px 20px;border:0;
+  background:#0F69C4;color:#fff;font-family:var(--font-tit);font-size:16px;cursor:pointer}
+.clave-unica__btn>span{text-decoration:underline}
+.clave-unica__btn:hover{background:#0C549C}
+.clave-unica__btn:disabled{opacity:.6;cursor:not-allowed}
+.clave-unica__btn:disabled:hover{background:#0F69C4}
+.clave-unica__logo{width:24px;height:24px;flex:none}
+.oculto{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
 /* ---------- contenido de la wiki ----------
    Llega del backend como HTML saneado. Los componentes de la maqueta llegan
    como <div class="aviso|tarjetas|tarjeta|tecnico">. */

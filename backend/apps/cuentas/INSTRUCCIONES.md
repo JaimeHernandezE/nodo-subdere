@@ -47,6 +47,8 @@ Del token se toman el *claim* `RolUnico` y el nombre. **Nada más.** No se copia
 
 `RolUnico` llega como lo entrega Clave Única: `{"numero": 12345678, "DV": "5", "tipo": "RUN"}`. Se valida con `core.run.validar` y el perfil se busca por `(run_tipo, run_numero)`. Si no trae `tipo` —el realm de Banco de Proyectos no lo trae—, se asume `RUN`.
 
+Si el token no trae `RolUnico`, el RUN se toma de los *claims* `rut_numero` y `rut_dv`, que es como lo mapea el cliente de Banco de Proyectos en el realm `app-qa`, con mapeadores de atributo de usuario. Pasa por la misma validación. Si vienen los dos, manda `RolUnico`: un `RolUnico` inválido da `SIN_PERFIL` aunque `rut_numero` sirva, para no esconder un realm mal configurado.
+
 El nombre sale de `name` (texto, o `{"nombres": [...], "apellidos": [...]}` como lo entrega Clave Única), o si no de `firstName` y `lastName`, que es como lo mapea el realm de Banco de Proyectos, o de `given_name` y `family_name`. Cuál usa nuestro realm se fija en HR-21; el código acepta los tres para no depender de eso.
 
 El `sub` **no** es la llave. La guía de integración de Clave Única lo dice explícitamente: viene porque OpenID Connect lo exige, y el identificador de la persona es el RUN. Además, con Keycloak en medio el `sub` del token es el del realm, no el de Clave Única: si se recrea el usuario en el realm o se cambia de realm, cambia. Se guarda solo como referencia para depurar.
@@ -188,7 +190,7 @@ Lo que un encargado no puede hacer responde `403 PERMISO_DENEGADO`; un perfil de
 En `tests/`. Si una de estas deja de cumplirse, se rompió una decisión de arriba:
 
 1. Un token con firma inválida, `aud` o `iss` equivocado, expirado o sin `exp` da `401`. Si el realm no responde, `503 REALM_NO_DISPONIBLE`.
-2. Un token válido sin perfil activo da `403` con código `SIN_PERFIL`; también uno sin `RolUnico` o con un dígito verificador que no corresponde.
+2. Un token válido sin perfil activo da `403` con código `SIN_PERFIL`; también uno sin `RolUnico` ni `rut_numero`, o con un dígito verificador que no corresponde. Sin `RolUnico`, el RUN sale de `rut_numero` y `rut_dv`; si vienen los dos, manda `RolUnico`.
 3. El perfil se encuentra por el RUN aunque el `sub` del token haya cambiado, y en ese ingreso se actualiza el `sub`.
 4. No se pueden crear dos perfiles con el mismo RUN, aunque se escriba con y sin puntos.
 5. Los roles son acumulativos: un `curador` puede lo de un `editor`, pero no crear perfiles; un `administrador` sí.
