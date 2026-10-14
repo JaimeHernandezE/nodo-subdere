@@ -31,15 +31,27 @@ class PerfilForm(forms.ModelForm):
         if self.instance.pk:
             return self.instance.run_numero, self.instance.run_dv
         try:
-            return run.leer(self.cleaned_data["run_texto"])
+            numero, dv = run.leer(self.cleaned_data["run_texto"])
         except ValueError as error:
-            raise forms.ValidationError("El RUN no es válido.") from error
+            raise forms.ValidationError(f"El RUN no es válido: {error}") from error
+        # La restricción de unicidad usa campos que el formulario no tiene, así que Django no
+        # la revisa: sin esto, un RUN repetido llega a la base y termina en un 500.
+        if Perfil.objects.filter(run_tipo=self.instance.run_tipo, run_numero=numero).exists():
+            raise forms.ValidationError("Ya existe un perfil con ese RUN.")
+        return numero, dv
 
     def clean(self):
         datos = super().clean()
         if not self.instance.pk and "run_texto" in datos:
             self.instance.run_numero, self.instance.run_dv = datos["run_texto"]
         return datos
+
+    def _post_clean(self):
+        # Sin un RUN válido la instancia no tiene número, y la validación del modelo informaría
+        # el error en `run_dv`, que no es un campo del formulario: Django respondería un 500.
+        if "run_texto" in self.errors:
+            return
+        super()._post_clean()
 
 
 @admin.register(Perfil)

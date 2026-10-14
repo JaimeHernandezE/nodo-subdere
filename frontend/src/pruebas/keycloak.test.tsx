@@ -10,7 +10,6 @@ import { renderizar, ubicacionActual } from "./util";
 vi.mock("../sesion/oidc", async (original) => ({
   ...(await original<typeof import("../sesion/oidc")>()),
   hayKeycloak: () => true,
-  contextoSeguro: vi.fn(() => true),
   irAKeycloak: vi.fn(async () => {}),
   completarIngreso: vi.fn(),
   salirDeKeycloak: vi.fn(async () => {}),
@@ -40,14 +39,6 @@ describe("Entrar con Keycloak", () => {
     await usuario.click(screen.getByRole("button", { name: "Iniciar sesión con Clave Única" }));
 
     expect(oidc.irAKeycloak).toHaveBeenCalledWith("/");
-  });
-
-  it("sin HTTPS lo dice y no deja intentarlo", () => {
-    vi.mocked(oidc.contextoSeguro).mockReturnValue(false);
-    renderizar("/entrar");
-
-    expect(screen.getByRole("alert")).toHaveTextContent("HTTPS");
-    expect(screen.getByRole("button", { name: "Iniciar sesión con Clave Única" })).toBeDisabled();
   });
 
   it("al volver, usa el token, pide /yo y sigue a donde iba", async () => {

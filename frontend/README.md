@@ -10,7 +10,7 @@ No se parte de cero. La maqueta de [`prototipos/`](../prototipos/) ya tiene el c
 
 **Primera etapa: el sitio público, la sesión y `/yo`.** Portada, Qué es, Cómo participar, los dos catálogos, la ficha con su especificación renderizada, las pantallas de servicio (buscador CUT y consulta de permisos de circulación), la wiki con su menú e índice, la pantalla `SIN_PERFIL`, la 404 y las redirecciones de la maqueta.
 
-**El ingreso con Keycloak** (Authorization Code + PKCE) está hecho y se activa con `VITE_KEYCLOAK_URL` y `VITE_KEYCLOAK_CLIENTE`; exige HTTPS. Sin esas variables se entra pegando un token del emisor local del backend en `/entrar`. Ver §2 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md).
+**El ingreso con Keycloak** (Authorization Code + PKCE) está hecho y se activa con `VITE_KEYCLOAK_URL` y `VITE_KEYCLOAK_CLIENTE`. Funciona también por HTTP, con PKCE. Sin esas variables se entra pegando un token del emisor local del backend en `/entrar`. Ver §2 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md).
 
 **Falta:** la administración (`/admin/*`, §5 de [`INSTRUCCIONES.md`](INSTRUCCIONES.md)).
 
