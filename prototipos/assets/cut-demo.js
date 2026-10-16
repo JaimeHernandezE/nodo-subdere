@@ -135,19 +135,13 @@ if (typeof Sandbox !== 'undefined') {
         { ruta: '/comunas/{comuna_id}/full', valores: { comuna_id: '9999' },
           que: 'Código que no existe: 404.' },
         { ruta: '/comunas/{comuna_id}/full', valores: { comuna_id: 'Talca' },
-          que: 'Nombre en vez de código: el contrato pide un número y la consulta no se envía.' },
-        { ruta: '/readyz', valores: {},
-          que: 'Confirma que el catálogo está cargado y cuántas comunas tiene.' }
+          que: 'Nombre en vez de código: el contrato pide un número y la consulta no se envía.' }
       ],
 
       responder: function (req) {
         var id = Number(req.path.region_id || req.path.provincia_id || req.path.comuna_id);
         var r, p, c;
         switch (req.ruta) {
-          case '/healthz':
-            return { status: 200, body: { status: 'ok' } };
-          case '/readyz':
-            return { status: 200, body: { comunas_count: d.comunas.length, catalog_ok: true } };
           case '/regiones':
             return { status: 200, body: d.regiones };
           case '/provincias':

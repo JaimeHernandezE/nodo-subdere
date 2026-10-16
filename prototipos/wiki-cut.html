@@ -98,11 +98,9 @@
     <tr><td><code>GET /provincias/{id}</code><br><code>GET /provincias/{id}/comunas</code></td><td>El detalle de una provincia, con su región, y sus comunas</td></tr>
     <tr><td rowspan="2"><strong>Comunas</strong></td><td><code>GET /comunas</code></td><td>Todas las comunas, con código y nombre</td></tr>
     <tr><td><code>GET /comunas/{id}/full</code></td><td>Una comuna con su provincia y su región, sin tener que hacer tres consultas</td></tr>
-    <tr><td><strong>Estado del servicio</strong></td><td><code>GET /healthz</code><br><code>GET /readyz</code></td><td>Si el servicio está funcionando, y si alcanzó a cargar los códigos</td></tr>
   </table></div>
   <ul>
     <li><b>Lo más usado es pedir una comuna completa.</b> Para eso existe <code>/comunas/{id}/full</code>: entrega la comuna con su provincia y su región en una sola respuesta.</li>
-    <li><b>Las dos últimas direcciones son para quien opera el servicio.</b> <code>healthz</code> y <code>readyz</code> dicen si está funcionando; un sistema que solo pide datos no las necesita en su trabajo normal.</li>
     <li><b>Actualizar el CUT es reiniciar el servicio con un archivo nuevo.</b> Los códigos se cargan desde un archivo al encender el servicio, sin base de datos. Eso lo hace rápido y simple.</li>
   </ul>
   <div class="acciones" style="margin-top:22px">

@@ -10,46 +10,11 @@ servers:
     description: Base path producción
 
 tags:
-  - name: Health
   - name: Comunas
   - name: Provincias
   - name: Regiones
 
 paths:
-  /healthz:
-    get:
-      tags: [Health]
-      summary: Health check
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
-
-  /readyz:
-    get:
-      tags: [Health]
-      summary: Confirma la carga del catálogo y cuenta comunas
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  comunas_count:
-                    type: integer
-                    example: 346
-                  catalog_ok:
-                    type: boolean
-                    example: true
   /comunas:
     get:
       tags: [Comunas]

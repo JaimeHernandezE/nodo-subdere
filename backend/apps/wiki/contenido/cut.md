@@ -55,10 +55,8 @@ Al servicio solo se le consultan datos; no se le envía nada. Se le puede pedir 
 |  | `GET /provincias/{id}` · `GET /provincias/{id}/comunas` | El detalle de una provincia, con su región, y sus comunas |
 | **Comunas** | `GET /comunas` | Todas las comunas, con código y nombre |
 |  | `GET /comunas/{id}/full` | Una comuna con su provincia y su región, sin tener que hacer tres consultas |
-| **Estado del servicio** | `GET /healthz` · `GET /readyz` | Si el servicio está funcionando, y si alcanzó a cargar los códigos |
 
 - **Lo más usado es pedir una comuna completa.** Para eso existe `/comunas/{id}/full`: entrega la comuna con su provincia y su región en una sola respuesta.
-- **Las dos últimas direcciones son para quien opera el servicio.** `healthz` y `readyz` dicen si está funcionando; un sistema que solo pide datos no las necesita en su trabajo normal.
 - **Actualizar el CUT es reiniciar el servicio con un archivo nuevo.** Los códigos se cargan desde un archivo al encender el servicio, sin base de datos. Eso lo hace rápido y simple.
 
 [Ver la especificación completa](/apis/cut) · [Abrir el buscador](/servicios/buscador-cut)
