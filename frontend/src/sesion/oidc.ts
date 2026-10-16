@@ -1,6 +1,7 @@
 // El ingreso contra el realm de Keycloak: Authorization Code + PKCE, como cliente público.
 // Sin `VITE_KEYCLOAK_URL` y `VITE_KEYCLOAK_CLIENTE` no hay realm, y `/entrar` recibe un token
 // pegado del emisor local del backend.
+import { sha256 } from "@noble/hashes/sha2.js";
 import { InMemoryWebStorage, UserManager, WebStorageStateStore } from "oidc-client-ts";
 
 export const RUTA_RETORNO = "/entrar/retorno";
@@ -20,9 +21,25 @@ export function hayKeycloak(): boolean {
   return Boolean(autoridad && cliente);
 }
 
-/** PKCE necesita `crypto.subtle`, y el navegador solo lo da en HTTPS o en localhost. */
-export function contextoSeguro(): boolean {
-  return window.isSecureContext && Boolean(window.crypto?.subtle);
+const SIN_RELLENO = /=+$/;
+
+function base64url(bytes: Uint8Array): string {
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(SIN_RELLENO, "");
+}
+
+/** PKCE `S256` (RFC 7636). El SHA-256 es de `@noble/hashes` y no de `crypto.subtle`, que el
+ * navegador solo da en HTTPS o en localhost: así el realm puede exigir PKCE aunque el sitio
+ * se abra por HTTP. `getRandomValues` sí existe en cualquier contexto. */
+export function parPkce(): { verificador: string; desafio: string } {
+  const verificador = base64url(crypto.getRandomValues(new Uint8Array(32)));
+  return { verificador, desafio: desafioPkce(verificador) };
+}
+
+export function desafioPkce(verificador: string): string {
+  return base64url(sha256(new TextEncoder().encode(verificador)));
 }
 
 let gestor: UserManager | null = null;
@@ -37,8 +54,10 @@ export function gestorOidc(): UserManager {
       redirect_uri: new URL(RUTA_RETORNO.slice(1), base).href,
       post_logout_redirect_uri: base.href,
       scope: "openid",
-      // Los tokens, solo en memoria. El estado del pedido sí tiene que sobrevivir a la
-      // redirección: vive en sessionStorage y se borra al volver.
+      // El PKCE de la biblioteca usa `crypto.subtle`; el par lo arma `irAKeycloak`.
+      disablePKCE: true,
+      // Los tokens, solo en memoria. El estado del pedido, con el verificador, sí tiene que
+      // sobrevivir a la redirección: vive en sessionStorage y se borra al volver.
       userStore: new WebStorageStateStore({ store: new InMemoryWebStorage() }),
       stateStore: new WebStorageStateStore({ store: window.sessionStorage }),
       automaticSilentRenew: true,
@@ -47,8 +66,15 @@ export function gestorOidc(): UserManager {
   return gestor;
 }
 
+/** El verificador viaja en `extraTokenParams`, que la biblioteca guarda con el `state` y
+ * manda al canjear el código. */
 export function irAKeycloak(volverA: string): Promise<void> {
-  return gestorOidc().signinRedirect({ state: { volverA } satisfies Estado });
+  const { verificador, desafio } = parPkce();
+  return gestorOidc().signinRedirect({
+    state: { volverA } satisfies Estado,
+    extraQueryParams: { code_challenge: desafio, code_challenge_method: "S256" },
+    extraTokenParams: { code_verifier: verificador },
+  });
 }
 
 let retorno: Promise<{ token: string; volverA: string }> | null = null;

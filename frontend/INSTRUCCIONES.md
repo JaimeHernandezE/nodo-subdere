@@ -27,7 +27,7 @@ Authorization Code + PKCE contra el *realm* de Keycloak, como **cliente público
 
 **Se activa con `VITE_KEYCLOAK_URL` (el *issuer*, `https://<keycloak>/realms/<realm>`) y `VITE_KEYCLOAK_CLIENTE`.** Son variables de construcción: entran al compilar, no al servir. Sin ellas, `/entrar` recibe un token pegado del emisor local del backend (`emitir_token_local`), que solo existe en desarrollo. Con ellas, `/entrar` lleva al *realm*, y Keycloak vuelve a `/entrar/retorno`, que canjea el código, pide `/yo` y sigue a la ruta desde donde se pidió entrar.
 
-- **Exige HTTPS.** PKCE calcula un SHA-256 con `crypto.subtle`, y el navegador solo lo da en un contexto seguro: HTTPS o `localhost`. Por HTTP la pantalla lo dice y no deja intentarlo.
+- **PKCE `S256` también por HTTP.** El PKCE de la biblioteca calcula el SHA-256 con `crypto.subtle`, que el navegador solo da en HTTPS o en `localhost`. Por eso va con `disablePKCE` y el par lo arma `irAKeycloak` con el SHA-256 de `@noble/hashes`: el desafío en `extraQueryParams` y el verificador en `extraTokenParams`, que la biblioteca guarda con el `state` y manda al canjear el código. Es lo que hacían las versiones de `keycloak-js` que funcionan en los ambientes de QA sin certificado.
 - En el *realm*: cliente público con *Standard flow* y PKCE `S256`; *Valid redirect URIs* `https://<sitio>/entrar/retorno`; *Valid post logout redirect URIs* y *Web origins* `https://<sitio>`.
 - El backend valida `aud` contra su `KEYCLOAK_AUDIENCE`. Keycloak no pone el `client_id` en `aud` del *access token* por defecto: hace falta un *Audience mapper* en el cliente, o que `KEYCLOAK_AUDIENCE` sea lo que el *realm* ya pone.
 - **Salir cierra también la sesión del *realm*.** Si no, el próximo «Entrar» volvería sin preguntar.

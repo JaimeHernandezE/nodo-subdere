@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 
 import { ErrorApi, esError } from "../api/cliente";
-import { completarIngreso, contextoSeguro, hayKeycloak, irAKeycloak } from "../sesion/oidc";
+import { completarIngreso, hayKeycloak, irAKeycloak } from "../sesion/oidc";
 import { useSesion } from "../sesion/Sesion";
 import { useTitulo } from "../util/formato";
 
@@ -17,7 +17,6 @@ export function Entrar() {
 function EntrarConKeycloak({ volverA }: { volverA: string }) {
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const seguro = contextoSeguro();
 
   const ir = async () => {
     setEnviando(true);
@@ -39,19 +38,13 @@ function EntrarConKeycloak({ volverA }: { volverA: string }) {
           Se entra con Clave Única. Al volver, el nodo revisa tu perfil: rol, municipio y lo que puedes
           administrar.
         </p>
-        {!seguro && (
-          <p className="error-campo" role="alert">
-            El ingreso necesita que el sitio se abra por HTTPS. Por HTTP el navegador no permite completar
-            el inicio de sesión de forma segura.
-          </p>
-        )}
         {error && (
           <p className="error-campo" role="alert">
             {error}
           </p>
         )}
         <p className="clave-unica">
-          <button className="clave-unica__btn" type="button" onClick={ir} disabled={!seguro || enviando}>
+          <button className="clave-unica__btn" type="button" onClick={ir} disabled={enviando}>
             <LogoClaveUnica />
             {enviando ? (
               <span>Redirigiendo…</span>
@@ -172,8 +165,14 @@ export function RetornoDeKeycloak() {
           else setError("Entraste con Clave Única, pero el nodo no pudo verificar tu sesión.");
         }
       })
-      .catch(() => {
-        if (vigente) setError("No se pudo completar el ingreso. Puede que el enlace haya vencido.");
+      .catch((e: unknown) => {
+        if (!vigente) return;
+        const detalle = (e as { error_description?: string } | null)?.error_description;
+        setError(
+          detalle
+            ? `No se pudo completar el ingreso. Keycloak respondió: ${detalle}`
+            : "No se pudo completar el ingreso. Puede que el enlace haya vencido.",
+        );
       });
     return () => {
       vigente = false;
